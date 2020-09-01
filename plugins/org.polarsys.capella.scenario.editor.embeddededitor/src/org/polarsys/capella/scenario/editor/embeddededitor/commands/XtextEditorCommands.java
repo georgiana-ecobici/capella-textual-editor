@@ -13,8 +13,11 @@
 package org.polarsys.capella.scenario.editor.embeddededitor.commands;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.common.util.EList;
@@ -22,9 +25,11 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.emf.transaction.util.TransactionUtil;
+import org.eclipse.gmf.runtime.emf.commands.core.command.CompositeTransactionalCommand;
 import org.eclipse.xtext.resource.XtextResource;
 import org.polarsys.capella.common.data.modellingcore.AbstractNamedElement;
 import org.polarsys.capella.common.data.modellingcore.AbstractType;
+import org.polarsys.capella.common.helpers.TransactionHelper;
 import org.polarsys.capella.core.data.capellacore.CapellaElement;
 import org.polarsys.capella.core.data.cs.BlockArchitecture;
 import org.polarsys.capella.core.data.ctx.impl.SystemAnalysisImpl;
@@ -100,7 +105,7 @@ public class XtextEditorCommands {
 
       // Project project;
       BlockArchitecture blockArchitecture = BlockArchitectureExt.getRootBlockArchitecture(scenario);
-
+   
       doEditingOnParticipants(scenario, blockArchitecture, participants);
 
       doEditingOnMessages(scenario, blockArchitecture, messages);
@@ -117,7 +122,7 @@ public class XtextEditorCommands {
       protected void doExecute() {
         InstanceRole instanceRole;
         EList<InstanceRole> instanceRoles = scenario.getOwnedInstanceRoles();
-
+        
         for (Iterator<Participant> iterator = participants.iterator(); iterator.hasNext();) {
           EObject participant = iterator.next();
 
@@ -142,11 +147,54 @@ public class XtextEditorCommands {
 
             instanceRole.setRepresentedInstance((AbstractInstance) capellaParticipant);
             instanceRoles.add(instanceRole);
+            
           }
         }
-      }
+        
+     // if a participant is in diagram, but not in editor, delete it
+        List<InstanceRole> irToRemove = new ArrayList<InstanceRole>();
+        for (InstanceRole ir : instanceRoles) {
+        	List<String> participantsName = participants.stream().map(x -> x.getName()).collect(Collectors.toList());
+        	if (!participantsName.contains(ir.getName())){       		
+        		irToRemove.add(ir);       		
+        	}
+        }
+        for (InstanceRole ir : irToRemove) {
+        	instanceRoles.remove(ir);
+        }
+        // remove all messages that contains that actor
+                
+        // switch participants if they are not in the same order as they are in editor
+        for (int i = 0; i < instanceRoles.size(); i++) {       	
+        	if (!instanceRoles.get(i).getName().equals(participants.get(i).getName())) {
+        		for (int j = 0; j < participants.size(); j++) {
+        			if (instanceRoles.get(i).getName().equals(participants.get(j).getName())) {
+        				instanceRoles.move(j, instanceRoles.get(i));
+//        				InstanceRole ir = instanceRoles.get(i);
+//        				scenario.getOwnedInstanceRoles().remove(ir);        			      
+//        			    scenario.getOwnedInstanceRoles().add(j, ir);
+        			    
+        			}
+        		}
+        	}
+        }
+      }    
     });
   }
+  
+  public static void reorderInstanceRole(EObject irToMove, EObject predecessor) {
+	    InstanceRole ir = (InstanceRole) irToMove;
+	    InstanceRole pred = (InstanceRole) predecessor;
+	    Scenario scenario = (Scenario) ir.eContainer();
+
+	    scenario.getOwnedInstanceRoles().remove(ir);
+	    if (predecessor == null) {
+	      scenario.getOwnedInstanceRoles().add(0, ir);
+	    } else {
+	      int pos = scenario.getOwnedInstanceRoles().indexOf(pred);
+	      scenario.getOwnedInstanceRoles().add(pos + 1, ir);
+	    }
+	  }
 
   private static void doEditingOnMessages(Scenario scenario, BlockArchitecture blockArchitecture,
       EList<EObject> messages) {
