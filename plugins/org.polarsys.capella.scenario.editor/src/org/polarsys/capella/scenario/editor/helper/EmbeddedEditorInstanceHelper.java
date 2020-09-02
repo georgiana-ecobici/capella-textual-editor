@@ -59,11 +59,11 @@ public class EmbeddedEditorInstanceHelper {
     }
     return name;
   }
-  
+
   public static String getScenarioType() {
-	    Scenario currentScenario = EmbeddedEditorInstance.getAssociatedScenarioDiagram();
-	    return currentScenario.getKind().toString();
-	  }
+    Scenario currentScenario = EmbeddedEditorInstance.getAssociatedScenarioDiagram();
+    return currentScenario.getKind().toString();
+  }
 
   /**
    * get the names of the available exchanges
@@ -262,10 +262,12 @@ public class EmbeddedEditorInstanceHelper {
    * architecture level
    * 
    * @param keyword
+   * @param name
+   *          - need for some particular cases (ex: allow component only for "System" as SA level)
    * @return boolean
    *
    */
-  public static boolean checkValidKeyword(String keyword) {
+  public static boolean checkValidKeyword(String keyword, String name) {
     Scenario currentScenario = EmbeddedEditorInstance.getAssociatedScenarioDiagram();
     BlockArchitecture blockArchitecture = BlockArchitectureExt.getRootBlockArchitecture(currentScenario);
 
@@ -280,7 +282,8 @@ public class EmbeddedEditorInstanceHelper {
     // IS and ES
     if (currentScenario.getKind() == ScenarioKind.INTERFACE || currentScenario.getKind() == ScenarioKind.DATA_FLOW) {
       if (blockArchitecture instanceof SystemAnalysis) {
-        return keyword.equals(DslConstants.ACTOR);
+        return keyword.equals(DslConstants.ACTOR)
+            || (keyword.equals(DslConstants.COMPONENT) && DslConstants.SYSTEM.equals(name.toUpperCase()));
       }
       if (blockArchitecture instanceof LogicalArchitecture || blockArchitecture instanceof PhysicalArchitecture) {
         return keyword.equals(DslConstants.ACTOR) || keyword.equals(DslConstants.COMPONENT);

@@ -59,7 +59,7 @@ public class DslValidator extends AbstractDslValidator {
   
   @Check
   public void checkParticipantKeywordIsValid(final Participant participant) {
-    boolean _checkValidKeyword = EmbeddedEditorInstanceHelper.checkValidKeyword(participant.getKeyword());
+    boolean _checkValidKeyword = EmbeddedEditorInstanceHelper.checkValidKeyword(participant.getKeyword(), participant.getName());
     boolean _not = (!_checkValidKeyword);
     if (_not) {
       String _keyword = participant.getKeyword();

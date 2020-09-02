@@ -54,7 +54,7 @@ class DslValidator extends AbstractDslValidator {
 
 	@Check
 	def checkParticipantKeywordIsValid(Participant participant) {
-		if (!EmbeddedEditorInstanceHelper.checkValidKeyword(participant.keyword)) {
+		if (!EmbeddedEditorInstanceHelper.checkValidKeyword(participant.keyword, participant.name)) {
 			error('\'' + participant.keyword + '\' could not be used in this diagram',
 				DslPackage.Literals.PARTICIPANT__KEYWORD)
 		}
