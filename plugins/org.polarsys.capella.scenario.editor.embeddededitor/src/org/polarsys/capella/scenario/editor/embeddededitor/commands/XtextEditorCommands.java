@@ -13,11 +13,9 @@
 package org.polarsys.capella.scenario.editor.embeddededitor.commands;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
+
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.common.util.EList;
@@ -26,6 +24,14 @@ import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.emf.transaction.util.TransactionUtil;
 import org.eclipse.gmf.runtime.emf.commands.core.command.CompositeTransactionalCommand;
+import org.eclipse.gmf.runtime.notation.Diagram;
+import org.eclipse.sirius.diagram.DDiagram;
+import org.eclipse.sirius.diagram.DDiagramElement;
+import org.eclipse.sirius.diagram.sequence.business.internal.elements.ISequenceElementAccessor;
+import org.eclipse.sirius.diagram.sequence.business.internal.elements.SequenceDiagram;
+import org.eclipse.sirius.diagram.sequence.business.internal.metamodel.SequenceDDiagramSpec;
+import org.eclipse.sirius.diagram.sequence.business.internal.operation.RefreshGraphicalOrderingOperation;
+import org.eclipse.sirius.viewpoint.description.AnnotationEntry;
 import org.eclipse.xtext.resource.XtextResource;
 import org.polarsys.capella.common.data.modellingcore.AbstractNamedElement;
 import org.polarsys.capella.common.data.modellingcore.AbstractType;
@@ -169,15 +175,25 @@ public class XtextEditorCommands {
         	if (!instanceRoles.get(i).getName().equals(participants.get(i).getName())) {
         		for (int j = 0; j < participants.size(); j++) {
         			if (instanceRoles.get(i).getName().equals(participants.get(j).getName())) {
-        				instanceRoles.move(j, instanceRoles.get(i));
-//        				InstanceRole ir = instanceRoles.get(i);
-//        				scenario.getOwnedInstanceRoles().remove(ir);        			      
-//        			    scenario.getOwnedInstanceRoles().add(j, ir);
-        			    
+        				instanceRoles.move(j, instanceRoles.get(i));        			    
         			}
         		}
         	}
         }
+                      
+        DDiagram diag = EmbeddedEditorInstance.diagram;
+        EList<AnnotationEntry> ownedAnnotationEntries = diag.getOwnedAnnotationEntries();
+        EObject data = null;
+        for (AnnotationEntry annotationEntry : ownedAnnotationEntries) {
+          if ((annotationEntry != null) && (annotationEntry.getData() instanceof Diagram)) {
+            data = annotationEntry.getData();
+          }
+        }
+        Diagram diagram = (Diagram) data;
+
+        SequenceDiagram sequenceDiagram = ISequenceElementAccessor.getSequenceDiagram(diagram).get();
+        RefreshGraphicalOrderingOperation refresh = new RefreshGraphicalOrderingOperation(sequenceDiagram);
+        refresh.execute();
       }    
     });
   }

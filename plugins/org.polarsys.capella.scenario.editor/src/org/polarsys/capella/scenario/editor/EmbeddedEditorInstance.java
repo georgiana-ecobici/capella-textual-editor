@@ -12,6 +12,7 @@
  *******************************************************************************/
 package org.polarsys.capella.scenario.editor;
 
+import org.eclipse.sirius.diagram.DDiagram;
 import org.eclipse.xtext.ui.editor.embedded.EmbeddedEditor;
 import org.polarsys.capella.core.data.interaction.Scenario;
 
@@ -23,6 +24,7 @@ public class EmbeddedEditorInstance {
   private static Scenario associatedScenarioDiagram;
 
   private static EmbeddedEditorInstance eINSTANCE;
+  public static DDiagram diagram;
 
   private EmbeddedEditorInstance() {
   }

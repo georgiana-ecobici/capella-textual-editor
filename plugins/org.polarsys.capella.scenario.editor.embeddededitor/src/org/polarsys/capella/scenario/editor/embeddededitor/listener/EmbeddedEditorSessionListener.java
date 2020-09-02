@@ -16,7 +16,9 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.sirius.business.api.session.Session;
 import org.eclipse.sirius.business.api.session.SessionManagerListener;
+import org.eclipse.sirius.diagram.DDiagram;
 import org.eclipse.sirius.diagram.ui.tools.api.editor.DDiagramEditor;
+import org.eclipse.sirius.ui.business.api.dialect.DialectEditor;
 import org.eclipse.sirius.viewpoint.DRepresentationDescriptor;
 import org.eclipse.sirius.viewpoint.description.Viewpoint;
 import org.eclipse.ui.ISelectionListener;
@@ -56,6 +58,9 @@ public class EmbeddedEditorSessionListener implements SessionManagerListener {
 
   public Object handleSelection(IWorkbenchPart part, ISelection selection,
       boolean handleSemanticBrowserSelectionEvent) {
+	  DialectEditor dEditor = (DialectEditor) part;
+      DDiagram diagram = (DDiagram) dEditor.getRepresentation();
+      EmbeddedEditorInstance.diagram = diagram;
     Object result = null;
     if (selection != null && !selection.isEmpty() && (!(part instanceof EmbeddedEditorView))) {
       if (selection instanceof IStructuredSelection) {
