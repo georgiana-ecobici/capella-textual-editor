@@ -358,7 +358,7 @@ public class XtextEditorCommands {
         content.add(domainModel);
 
         String serialized = ((XtextResource) domainModel.eResource()).getSerializer().serialize(domainModel);
-        EmbeddedEditorInstance.geteEditor().getDocument().set(serialized);
+        EmbeddedEditorInstance.getEmbeddedEditor().getDocument().set(serialized);
       }
     }
   }
@@ -601,7 +601,7 @@ public class XtextEditorCommands {
     if (!content.isEmpty() && content.get(0) instanceof Model) {
       domainModel = (Model) resource.getContents().get(0);
     } else {
-      EmbeddedEditorInstance.geteEditor().getDocument().set("scenario {}");
+      EmbeddedEditorInstance.getEmbeddedEditor().getDocument().set("scenario {}");
       EList<EObject> content1 = resource.getContents();
       if (!content1.isEmpty() && content1.get(0) instanceof Model) {
         domainModel = (Model) resource.getContents().get(0);

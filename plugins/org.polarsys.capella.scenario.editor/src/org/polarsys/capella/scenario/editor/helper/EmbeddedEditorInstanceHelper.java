@@ -53,11 +53,7 @@ public class EmbeddedEditorInstanceHelper {
   }
 
   public static String getName(EObject element) {
-    String name = "";
-    if (element instanceof AbstractNamedElement) {
-      name = ((AbstractNamedElement) element).getName();
-    }
-    return name;
+    return org.polarsys.capella.core.model.helpers.CapellaElementExt.getName(element);
   }
 
   public static String getScenarioType() {
@@ -279,10 +275,8 @@ public class EmbeddedEditorInstanceHelper {
     }
     // IS and ES
     if (currentScenario.getKind() == ScenarioKind.INTERFACE || currentScenario.getKind() == ScenarioKind.DATA_FLOW) {
-      if (blockArchitecture instanceof SystemAnalysis) {
-        return keyword.equals(DslConstants.ACTOR) || keyword.equals(DslConstants.COMPONENT);
-      }
-      if (blockArchitecture instanceof LogicalArchitecture || blockArchitecture instanceof PhysicalArchitecture) {
+      if (blockArchitecture instanceof SystemAnalysis || blockArchitecture instanceof LogicalArchitecture
+          || blockArchitecture instanceof PhysicalArchitecture) {
         return keyword.equals(DslConstants.ACTOR) || keyword.equals(DslConstants.COMPONENT);
       }
       if (blockArchitecture instanceof EPBSArchitecture) {
