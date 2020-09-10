@@ -56,6 +56,7 @@ import org.polarsys.capella.scenario.editor.dsl.textualScenario.Model;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.Participant;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.ParticipantDeactivation;
 import org.polarsys.capella.scenario.editor.dsl.ui.provider.TextualScenarioProvider;
+import org.polarsys.capella.scenario.editor.embeddededitor.helper.XtextEditorHelper;
 import org.polarsys.capella.scenario.editor.embeddededitor.views.EmbeddedEditorView;
 import org.polarsys.capella.scenario.editor.helper.EmbeddedEditorInstanceHelper;
 
@@ -76,14 +77,20 @@ public class XtextToDiagramCommands {
       // Project project;
       BlockArchitecture blockArchitecture = BlockArchitectureExt.getRootBlockArchitecture(scenario);
 
-      doEditingOnParticipants(scenario, blockArchitecture, participants);
+      doEditingOnParticipants(scenario, blockArchitecture, participants, messages);
 
       doEditingOnMessages(scenario, blockArchitecture, messages);
+
+      // do refresh - when the messages associated with the removed actors are deleted too,
+      // a refresh is needed to update also the editor
+      EmbeddedEditorView eeView = XtextEditorHelper.getActiveEmbeddedEditorView();
+      Scenario scenarioDiagram = EmbeddedEditorInstance.getAssociatedScenarioDiagram();
+      DiagramToXtextCommands.process(scenarioDiagram, eeView);
     }
   }
 
   private static void doEditingOnParticipants(Scenario scenario, BlockArchitecture blockArchitecture,
-      EList<Participant> participants) {
+      EList<Participant> participants, EList<EObject> messages) {
     // Make sure your element is attached to a resource, otherwise this will return null
     TransactionalEditingDomain domain = TransactionUtil.getEditingDomain(scenario);
     domain.getCommandStack().execute(new RecordingCommand(domain) {
@@ -118,9 +125,15 @@ public class XtextToDiagramCommands {
             instanceRoles.add(instanceRole);
           }
         }
-
-        removeParticipantsFromDiagram(instanceRoles, participants);
-
+        // remove all instance roles from diagram that do not exist in editor
+        List<InstanceRole> removedIR = removeParticipantsFromDiagram(instanceRoles, participants);
+        
+        // for each removed instance role, delete the messages containing it.
+        for (InstanceRole ir : removedIR) {
+          removeEditorMessages(messages, ir.getName());
+        }
+        
+        // reorder participants and if there was any change, do graphical synchronization
         if (reorderParticipants(instanceRoles, participants)) {
           syncGraphicalOrdering();
         }
@@ -129,14 +142,17 @@ public class XtextToDiagramCommands {
   }
 
   /**
-   * If a participant is in diagram, but not in editor, delete it
+   * Remove all instance roles that are in the diagram, but not in the editor 
    * 
    * @param instanceRoles
    *          Instance roles from diagram
    * @param participants
    *          Participants from editor
+   * @return 
+   *          Return the list of the removed participants       
    */
-  private static void removeParticipantsFromDiagram(List<InstanceRole> instanceRoles, EList<Participant> participants) {
+  private static List<InstanceRole> removeParticipantsFromDiagram(List<InstanceRole> instanceRoles,
+      EList<Participant> participants) {
     List<InstanceRole> irToRemove = new ArrayList<InstanceRole>();
     for (InstanceRole ir : instanceRoles) {
       List<String> participantsName = participants.stream().map(x -> x.getName()).collect(Collectors.toList());
@@ -147,6 +163,29 @@ public class XtextToDiagramCommands {
     for (InstanceRole ir : irToRemove) {
       instanceRoles.remove(ir);
     }
+    return irToRemove;
+  }
+
+  /**
+   * Remove from xtext model all messages containing the participant that has just been deleted
+   * 
+   * @param messagesOrReferences
+   *          All messages and references from textual editor
+   * @param participantName
+   *          The participant that has just been deleted
+   */
+  private static void removeEditorMessages(EList<EObject> messagesOrReferences, String participantName) {
+    List<EObject> messagesToRemove = new ArrayList<EObject>();
+    for (EObject message : messagesOrReferences) {
+      if (message instanceof org.polarsys.capella.scenario.editor.dsl.textualScenario.SequenceMessage) {
+        String source = ((org.polarsys.capella.scenario.editor.dsl.textualScenario.SequenceMessage) message).getSource();
+        String target = ((org.polarsys.capella.scenario.editor.dsl.textualScenario.SequenceMessage) message).getTarget();
+        if (source.equals(participantName) || target.equals(participantName)) {
+          messagesToRemove.add(message);
+        }
+      }
+    }  
+    messagesOrReferences.removeAll(messagesToRemove);
   }
 
   /**
@@ -242,16 +281,17 @@ public class XtextToDiagramCommands {
 
     });
   }
-  
+
   private static void cleanUpMessages(Scenario scenario, EList<EObject> messages) {
     // Delete all diagram messages that don't appear in the xtext scenario
 
     EList<SequenceMessage> sequenceMessages = scenario.getOwnedMessages();
-    List<SequenceMessage> messagesToBeDeleted = 
-        sequenceMessages.stream().filter(sm -> !foundMsgInXText(sm, messages)).collect(Collectors.toList());
-    
+    List<SequenceMessage> messagesToBeDeleted = sequenceMessages.stream().filter(sm -> !foundMsgInXText(sm, messages))
+        .collect(Collectors.toList());
+
     for (SequenceMessage sequenceMessage : messagesToBeDeleted) {
-      // Remove message from Capella scenario, together with execution, interaction fragments and events related to this message
+      // Remove message from Capella scenario, together with execution, interaction fragments and events related to this
+      // message
       removeMessageFromScenario(scenario, sequenceMessage);
     }
   }
@@ -269,7 +309,7 @@ public class XtextToDiagramCommands {
       }
     }
     scenario.getOwnedTimeLapses().remove(execution);
-    
+
     // Remove interaction fragments for sending end, receiving end and execution end
     MessageEnd sendingEnd = sequenceMessage.getSendingEnd();
     MessageEnd receivingEnd = sequenceMessage.getReceivingEnd();
@@ -277,7 +317,7 @@ public class XtextToDiagramCommands {
     scenario.getOwnedInteractionFragments().remove(sendingEnd);
     scenario.getOwnedInteractionFragments().remove(receivingEnd);
     scenario.getOwnedInteractionFragments().remove(executionEnd);
-    
+
     // Remove events: send, receive, execution
     AbstractEventOperation operation = SequenceMessageExt.getOperation(sequenceMessage);
     Event eventSendOp = sendingEnd.getEvent();
@@ -285,7 +325,7 @@ public class XtextToDiagramCommands {
     scenario.getOwnedEvents().remove(operation);
     scenario.getOwnedEvents().remove(eventSendOp);
     scenario.getOwnedEvents().remove(eventReveivOp);
-    
+
     // Remove sequence message
     scenario.getOwnedMessages().remove(sequenceMessage);
   }
@@ -303,11 +343,10 @@ public class XtextToDiagramCommands {
     if (!(m instanceof org.polarsys.capella.scenario.editor.dsl.textualScenario.SequenceMessage)) {
       return false;
     }
-    org.polarsys.capella.scenario.editor.dsl.textualScenario.SequenceMessage message = 
-        (org.polarsys.capella.scenario.editor.dsl.textualScenario.SequenceMessage) m;
-    if (message.getSource().equals(seqMessage.getSendingEnd().getCoveredInstanceRoles().get(0).getName()) &&
-      message.getTarget().equals(seqMessage.getReceivingEnd().getCoveredInstanceRoles().get(0).getName()) &&
-      message.getName().equals(seqMessage.getName())) {
+    org.polarsys.capella.scenario.editor.dsl.textualScenario.SequenceMessage message = (org.polarsys.capella.scenario.editor.dsl.textualScenario.SequenceMessage) m;
+    if (message.getSource().equals(seqMessage.getSendingEnd().getCoveredInstanceRoles().get(0).getName())
+        && message.getTarget().equals(seqMessage.getReceivingEnd().getCoveredInstanceRoles().get(0).getName())
+        && message.getName().equals(seqMessage.getName())) {
       return true;
     }
     return false;
