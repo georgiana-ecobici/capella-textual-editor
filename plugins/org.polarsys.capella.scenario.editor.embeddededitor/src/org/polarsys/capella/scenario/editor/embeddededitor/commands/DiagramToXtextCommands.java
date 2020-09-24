@@ -34,6 +34,7 @@ import org.polarsys.capella.core.data.interaction.FragmentEnd;
 import org.polarsys.capella.core.data.interaction.InstanceRole;
 import org.polarsys.capella.core.data.interaction.InteractionFragment;
 import org.polarsys.capella.core.data.interaction.InteractionOperand;
+import org.polarsys.capella.core.data.interaction.InteractionOperatorKind;
 import org.polarsys.capella.core.data.interaction.InteractionState;
 import org.polarsys.capella.core.data.interaction.MessageEnd;
 import org.polarsys.capella.core.data.interaction.MessageKind;
@@ -44,13 +45,14 @@ import org.polarsys.capella.core.data.interaction.impl.StateFragmentImpl;
 import org.polarsys.capella.core.data.oa.Entity;
 import org.polarsys.capella.core.data.oa.OperationalActivity;
 import org.polarsys.capella.core.data.oa.Role;
+import org.polarsys.capella.core.model.helpers.AbstractFragmentExt;
 import org.polarsys.capella.core.model.helpers.ScenarioExt;
 import org.polarsys.capella.core.sirius.analysis.SequenceDiagramServices;
-import org.polarsys.capella.scenario.editor.dsl.textualScenario.Alt;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.Block;
-import org.polarsys.capella.scenario.editor.dsl.textualScenario.ElseBlock;
+import org.polarsys.capella.scenario.editor.dsl.textualScenario.CombinedFragment;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.Message;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.Model;
+import org.polarsys.capella.scenario.editor.dsl.textualScenario.Operand;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.Participant;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.ParticipantDeactivation;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.StateFragment;
@@ -84,7 +86,7 @@ public class DiagramToXtextCommands {
         generateActors(domainModel, scenario, factory);
 
         // Generate Sequence Messages
-        generateSequenceMessages(domainModel, scenario, factory);
+        generateElements(domainModel, scenario, factory);
 
         content.add(domainModel);
 
@@ -194,8 +196,8 @@ public class DiagramToXtextCommands {
     participants.add(role);
   }
 
-  private static void generateSequenceMessages(Model domainModel, Scenario scenario, TextualScenarioFactory factory) {
-    EList<EObject> messagesOrReferences = domainModel.getElements();
+  private static void generateElements(Model domainModel, Scenario scenario, TextualScenarioFactory factory) {
+    EList<EObject> elements = domainModel.getElements();
 
     List<InteractionFragment> fragments = SequenceDiagramServices.getOrderedInteractionFragments(scenario);
     Object[] ends = fragments.toArray();
@@ -205,150 +207,204 @@ public class DiagramToXtextCommands {
     // The list of fragments contains both ends of each sequence message (sender and receiver)
     // and only one end of each execution (the one where execution ends). This means that we should skip
     // the receiving end for each message, so that we don't duplicate the generated xtext message.
-    int i = 0;
     Stack<org.polarsys.capella.scenario.editor.dsl.textualScenario.SequenceMessage> messagesToDeactivate = new Stack();
-    Stack<Alt> conditions = new Stack();
-    Stack<Block> blockConditons = new Stack();
 
+    Stack<CombinedFragment> combinedFragments = new Stack();
+    Stack<Block> blockOperands = new Stack();
+
+    int i = 0;
     while (i < ends.length) {
       if (ends[i] instanceof MessageEnd) {
-        SequenceMessage currentSequenceMessage = ((MessageEnd) ends[i]).getMessage();
-
-        if (currentSequenceMessage.getKind() == MessageKind.REPLY) {
-          // this is the reply message for currentSequenceMessage, at the end of the current execution
-          EObject participantDeactivateMsg = getParticipantDeactivationMsgFromMessageEnd(ends[i], factory);
-
-          // add the deactivation, to the model, or to a block
-          if (blockConditons.isEmpty()) {
-            messagesOrReferences.add(participantDeactivateMsg);
-          } else {
-            blockConditons.peek().getBlockElements().add((Message) participantDeactivateMsg);
-          }
-          updateMessagesToDeactivate(messagesToDeactivate);
-
-          // skip another end, because it will be the corresponding receiving end of the REPLY message
-          i = i + 2;
-        } else {
-          // this is a sequence message without return branch OR the first part of a sequence message with return branch
-          EObject message = copyMessageFromMsgEnd(ends[i], factory);
-
-          // if this sequence message has return branch, add return to the xtext message
-          currentSequenceMessage = ((MessageEnd) ends[i]).getMessage();
-          if (ScenarioExt.hasReply(currentSequenceMessage)) {
-            ((org.polarsys.capella.scenario.editor.dsl.textualScenario.SequenceMessage) message)
-                .setReturn(DslConstants.WITH_RETURN);
-          }
-
-          // add the sequence message, to the model, or to a block
-          if (blockConditons.isEmpty()) {
-            messagesOrReferences.add(message);
-          } else {
-            blockConditons.peek().getBlockElements().add((Message) message);
-          }
-
-          // skip the next MessageEnd (the receiving end), as it will generate the same xtext message
-          i = i + 2;
-
-          // check to see if this is a simple message (in this case, the next fragment will be its own execution end
-          // or its own reply message)
-          if (i < ends.length && ends[i] instanceof ExecutionEnd) {
-            // check if end is its own execution end
-            SequenceMessage seqMessFromMessageEnd = ((MessageEnd) ends[i - 2]).getMessage();
-            SequenceMessage seqMessFromExecutionEnd = ExecutionEndExt.getMessage((ExecutionEnd) ends[i]);
-
-            if (seqMessFromMessageEnd.equals(seqMessFromExecutionEnd)) {
-              // nothing to do, skip this execution end
-              i = i + 1;
-            } else {
-              addMessageToDeactivate(messagesToDeactivate, message);
-            }
-          } else if (i < ends.length && ends[i] instanceof MessageEnd) {
-            // check if end is its own reply message
-            SequenceMessage seqMessFromMessageEnd = ((MessageEnd) ends[i - 2]).getMessage();
-            SequenceMessage seqMessFromNextMessageEnd = ((MessageEnd) ends[i]).getMessage();
-            SequenceMessage replyMessage = seqMessFromNextMessageEnd != null
-                && seqMessFromNextMessageEnd.getKind() == MessageKind.REPLY
-                    ? SequenceMessageExt.getOppositeSequenceMessage(seqMessFromMessageEnd)
-                    : null;
-
-            if (replyMessage != null && replyMessage.equals(seqMessFromNextMessageEnd)) {
-              // nothing to do, skip this message end and the next one, they belong to the same message
-              i = i + 2;
-            } else {
-              addMessageToDeactivate(messagesToDeactivate, message);
-            }
-          } else {
-            addMessageToDeactivate(messagesToDeactivate, message);
-          }
-        }
+        i = generateMessages(ends, i, messagesToDeactivate, combinedFragments, blockOperands, elements, factory);
       } else if (ends[i] instanceof ExecutionEnd) {
-        EObject participantDeactivateMsg = getParticipantDeactivationMsgFromExecutionEnd(ends[i], factory);
-
-        // add the deactivation, to the model, or to a block
-        if (blockConditons.isEmpty()) {
-          messagesOrReferences.add(participantDeactivateMsg);
-        } else {
-          blockConditons.peek().getBlockElements().add((Message) participantDeactivateMsg);
-        }
-
-        updateMessagesToDeactivate(messagesToDeactivate);
-        i = i + 1;
-      } else if (ends[i] instanceof FragmentEnd) {
-        if (ends.length > i + 1 && ends[i + 1] instanceof InteractionOperand) {
-          // when we encounter a combination of FragmentEnd + Interaction operand, generate alt sequence
-          Alt alt = createAlt(factory, (InteractionOperand) ends[i + 1]);
-          conditions.push(alt);
-
-          // add the new encountered alt, to the model, or to a block
-          if (blockConditons.isEmpty()) {
-            domainModel.getElements().add(alt);
-          } else {
-            blockConditons.peek().getBlockElements().add(alt);
-          }
-
-          Block altBlock = createBlock(factory);
-          blockConditons.push(altBlock);
-          alt.setBlock(altBlock);
-
-          i++;
-        } else {
-          // here is the end of the alt sequence, extract the last processed alt and its last block
-          if (!conditions.empty())
-            conditions.pop();
-          if (!blockConditons.empty())
-            blockConditons.pop();
-        }
+        generateDeactivatioOnMessages((ExecutionEnd) ends[i], messagesToDeactivate, blockOperands, elements, factory);
         i++;
+      } else if (ends[i] instanceof FragmentEnd) {
+        i = processCombinedFragments(ends, i, combinedFragments, blockOperands, elements, scenario, factory);
       } else if (ends[i] instanceof InteractionOperand) {
-        // the previous operation block is ended, extract it from the stack, we are done with it
-        if (!blockConditons.empty())
-          blockConditons.pop();
-
-        // generate a new branch for alt (else sequence)
-        Block altBlock = addAltBlock(factory, conditions.peek(), (InteractionOperand) ends[i]);
-
-        blockConditons.push(altBlock);
-
+        generateOperandsOnCombinedFragment((InteractionOperand) ends[i], combinedFragments, blockOperands, factory);
         i++;
       } else if (ends[i] instanceof InteractionState) {
-        for (EObject timeLapse : timeLapses) {
-          if (timeLapse instanceof org.polarsys.capella.core.data.interaction.StateFragment) {
-            if (((org.polarsys.capella.core.data.interaction.StateFragment) timeLapse).getStart().equals(ends[i])) {
-              String timelineName = ((InteractionState) ends[i]).getCovered().getName();
-              StateFragment stateFragment = createStateFragment(factory, timeLapse, timelineName);
-              if (blockConditons.isEmpty()) {
-                messagesOrReferences.add(stateFragment);
-              } else {
-                blockConditons.peek().getBlockElements().add((StateFragment) stateFragment);
-              }
-            }
-          }
-        }
+        generateStateFragment((InteractionState) ends[i], timeLapses, blockOperands, elements, factory);
         i++;
       } else {
         i = i + 1;
       }
     }
+  }
+
+  private static int processCombinedFragments(Object[] ends, int i, Stack<CombinedFragment> combinedFragments,
+      Stack<Block> blockOperands, EList<EObject> elements, Scenario scenario, TextualScenarioFactory factory) {
+    if (((FragmentEnd) ends[i])
+        .getAbstractFragment() instanceof org.polarsys.capella.core.data.interaction.CombinedFragment) {
+      // obtain the combined fragment
+      org.polarsys.capella.core.data.interaction.CombinedFragment capellaCombinedFragment = (org.polarsys.capella.core.data.interaction.CombinedFragment) ((FragmentEnd) ends[i])
+          .getAbstractFragment();
+      // get the operands for the combined fragment and if the next element, on i+1 is an InteractionOperand and
+      // belongs to the combined fragment, then create a new Combined fragment structure, otherwise, the Fragment end
+      // is the end of a previous message
+      List<InteractionOperand> operands = AbstractFragmentExt.getOwnedOperands(capellaCombinedFragment, scenario);
+      if (ends.length > i + 1 && ends[i + 1] instanceof InteractionOperand && operands.contains(ends[i + 1])) {
+        generateCombinedFragments((InteractionOperand) ends[i + 1], capellaCombinedFragment, combinedFragments,
+            blockOperands, elements, factory);
+        i++;
+      } else {
+        // here is the end of the combined fragment sequence, extract the last processed combined fragment and its
+        // last block
+        if (!combinedFragments.empty())
+          combinedFragments.pop();
+        if (!blockOperands.empty())
+          blockOperands.pop();
+      }
+    }
+    i++;
+    return i;
+  }
+
+  private static void generateCombinedFragments(InteractionOperand interactionOperand,
+      org.polarsys.capella.core.data.interaction.CombinedFragment capellaCombinedFragment,
+      Stack<CombinedFragment> combinedFragments, Stack<Block> blockOperands, EList<EObject> elements,
+      TextualScenarioFactory factory) {
+    // when we encounter a combination of FragmentEnd + Interaction operand, generate combined fragment sequence
+    CombinedFragment combinedFragment = createCombinedFragment(factory, interactionOperand,
+        capellaCombinedFragment.getOperator());
+    combinedFragments.push(combinedFragment);
+
+    // add the new encountered combined fragment, to the model, or to a block
+    if (blockOperands.isEmpty()) {
+      elements.add(combinedFragment);
+    } else {
+      blockOperands.peek().getBlockElements().add(combinedFragment);
+    }
+
+    Block block = createBlock(factory);
+    blockOperands.push(block);
+    combinedFragment.setBlock(block);
+
+  }
+
+  private static void generateStateFragment(InteractionState interactionState, EList<TimeLapse> timeLapses,
+      Stack<Block> blockOperands, EList<EObject> elements, TextualScenarioFactory factory) {
+    for (EObject timeLapse : timeLapses) {
+      if (timeLapse instanceof org.polarsys.capella.core.data.interaction.StateFragment) {
+        if (((org.polarsys.capella.core.data.interaction.StateFragment) timeLapse).getStart()
+            .equals(interactionState)) {
+          String timelineName = interactionState.getCovered().getName();
+          StateFragment stateFragment = createStateFragment(factory, timeLapse, timelineName);
+          if (blockOperands.isEmpty()) {
+            elements.add(stateFragment);
+          } else {
+            blockOperands.peek().getBlockElements().add((StateFragment) stateFragment);
+          }
+        }
+      }
+    }
+  }
+
+  private static void generateOperandsOnCombinedFragment(InteractionOperand operand,
+      Stack<CombinedFragment> combinedFragments, Stack<Block> blockOperands, TextualScenarioFactory factory) {
+    // the previous operation block is ended, extract it from the stack, we are done with it
+    if (!blockOperands.empty())
+      blockOperands.pop();
+
+    // generate a new branch for combined fragment (else sequence)
+    Block block = addOperandBlock(factory, combinedFragments.peek(), operand);
+
+    blockOperands.push(block);
+  }
+
+  private static void generateDeactivatioOnMessages(ExecutionEnd executionEnd,
+      Stack<org.polarsys.capella.scenario.editor.dsl.textualScenario.SequenceMessage> messagesToDeactivate,
+      Stack<Block> blockOperands, EList<EObject> elements, TextualScenarioFactory factory) {
+    EObject participantDeactivateMsg = getParticipantDeactivationMsgFromExecutionEnd(executionEnd, factory);
+
+    // add the deactivation, to the model, or to a block
+    if (blockOperands.isEmpty()) {
+      elements.add(participantDeactivateMsg);
+    } else {
+      blockOperands.peek().getBlockElements().add((Message) participantDeactivateMsg);
+    }
+
+    updateMessagesToDeactivate(messagesToDeactivate);
+  }
+
+  private static int generateMessages(Object[] ends, int i,
+      Stack<org.polarsys.capella.scenario.editor.dsl.textualScenario.SequenceMessage> messagesToDeactivate,
+      Stack<CombinedFragment> combinedFragments, Stack<Block> blockOperands, EList<EObject> elements,
+      TextualScenarioFactory factory) {
+
+    SequenceMessage currentSequenceMessage = ((MessageEnd) ends[i]).getMessage();
+    if (currentSequenceMessage != null) {
+      if (currentSequenceMessage.getKind() == MessageKind.REPLY) {
+        // this is the reply message for currentSequenceMessage, at the end of the current execution
+        EObject participantDeactivateMsg = getParticipantDeactivationMsgFromMessageEnd(ends[i], factory);
+
+        // add the deactivation, to the model, or to a block
+        if (blockOperands.isEmpty()) {
+          elements.add(participantDeactivateMsg);
+        } else {
+          blockOperands.peek().getBlockElements().add((Message) participantDeactivateMsg);
+        }
+        updateMessagesToDeactivate(messagesToDeactivate);
+
+        // skip another end, because it will be the corresponding receiving end of the REPLY message
+        i = i + 2;
+      } else {
+        // this is a sequence message without return branch OR the first part of a sequence message with return branch
+        EObject message = copyMessageFromMsgEnd(ends[i], factory);
+
+        // if this sequence message has return branch, add return to the xtext message
+        currentSequenceMessage = ((MessageEnd) ends[i]).getMessage();
+        if (ScenarioExt.hasReply(currentSequenceMessage)) {
+          ((org.polarsys.capella.scenario.editor.dsl.textualScenario.SequenceMessage) message)
+              .setReturn(DslConstants.WITH_RETURN);
+        }
+
+        // add the sequence message, to the model, or to a block
+        if (blockOperands.isEmpty()) {
+          elements.add(message);
+        } else {
+          blockOperands.peek().getBlockElements().add((Message) message);
+        }
+
+        // skip the next MessageEnd (the receiving end), as it will generate the same xtext message
+        i = i + 2;
+
+        // check to see if this is a simple message (in this case, the next fragment will be its own execution end
+        // or its own reply message)
+        if (i < ends.length && ends[i] instanceof ExecutionEnd) {
+          // check if end is its own execution end
+          SequenceMessage seqMessFromMessageEnd = ((MessageEnd) ends[i - 2]).getMessage();
+          SequenceMessage seqMessFromExecutionEnd = ExecutionEndExt.getMessage((ExecutionEnd) ends[i]);
+
+          if (seqMessFromMessageEnd.equals(seqMessFromExecutionEnd)) {
+            // nothing to do, skip this execution end
+            i = i + 1;
+          } else {
+            addMessageToDeactivate(messagesToDeactivate, message);
+          }
+        } else if (i < ends.length && ends[i] instanceof MessageEnd) {
+          // check if end is its own reply message
+          SequenceMessage seqMessFromMessageEnd = ((MessageEnd) ends[i - 2]).getMessage();
+          SequenceMessage seqMessFromNextMessageEnd = ((MessageEnd) ends[i]).getMessage();
+          SequenceMessage replyMessage = seqMessFromNextMessageEnd != null
+              && seqMessFromNextMessageEnd.getKind() == MessageKind.REPLY
+                  ? SequenceMessageExt.getOppositeSequenceMessage(seqMessFromMessageEnd)
+                  : null;
+
+          if (replyMessage != null && replyMessage.equals(seqMessFromNextMessageEnd)) {
+            // nothing to do, skip this message end and the next one, they belong to the same message
+            i = i + 2;
+          } else {
+            addMessageToDeactivate(messagesToDeactivate, message);
+          }
+        } else {
+          addMessageToDeactivate(messagesToDeactivate, message);
+        }
+      }
+      return i;
+    }
+    return i+1;
   }
 
   private static void addMessageToDeactivate(
@@ -496,27 +552,29 @@ public class DiagramToXtextCommands {
     }
   }
 
-  private static Alt createAlt(TextualScenarioFactory factory, InteractionOperand operand) {
-    Alt alt = factory.createAlt();
-    alt.setKeyword(DslConstants.ALT);
-    alt.setOver(DslConstants.OVER);
+  private static CombinedFragment createCombinedFragment(TextualScenarioFactory factory, InteractionOperand operand,
+      InteractionOperatorKind operatorKind) {
+    CombinedFragment combinedFragment = factory.createCombinedFragment();
+    combinedFragment.setKeyword(operatorKind.toString().toLowerCase());
+    combinedFragment.setOver(DslConstants.OVER);
     EList<InstanceRole> coveredInstanceRoles = operand.getCoveredInstanceRoles();
     for (InstanceRole ir : coveredInstanceRoles) {
-      alt.getTimelines().add(ir.getName());
+      combinedFragment.getTimelines().add(ir.getName());
     }
-    alt.setCondition(getConditionText(operand));
-    return alt;
+    combinedFragment.setExpression(HelperCommands.getExpressionText(operand));
+    return combinedFragment;
   }
 
-  private static Block addAltBlock(TextualScenarioFactory factory, Alt alt, InteractionOperand operand) {
-    ElseBlock elseBlock = factory.createElseBlock();
-    elseBlock.setCondition(getConditionText(operand));
-    alt.getElseBlocks().add(elseBlock);
+  private static Block addOperandBlock(TextualScenarioFactory factory, CombinedFragment combinedFragment,
+      InteractionOperand operand) {
+    Operand operandBlock = factory.createOperand();
+    operandBlock.setExpression(HelperCommands.getExpressionText(operand));
+    combinedFragment.getOperands().add(operandBlock);
 
-    Block altBlock = createBlock(factory);
-    elseBlock.setBlock(altBlock);
+    Block block = createBlock(factory);
+    operandBlock.setBlock(block);
 
-    return altBlock;
+    return block;
   }
 
   private static Block createBlock(TextualScenarioFactory factory) {
@@ -564,14 +622,5 @@ public class DiagramToXtextCommands {
     stateFragment.setTimeline(timelineName);
 
     return stateFragment;
-  }
-
-  private static String getConditionText(InteractionOperand operand) {
-    Constraint guard = operand.getGuard();
-    if (guard != null) {
-      OpaqueExpression expression = (OpaqueExpression) guard.getOwnedSpecification();
-      return expression.getBodies().isEmpty() ? "" : expression.getBodies().get(0);
-    }
-    return "";
   }
 }

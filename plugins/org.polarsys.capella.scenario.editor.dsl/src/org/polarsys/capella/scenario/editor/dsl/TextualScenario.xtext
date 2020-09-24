@@ -91,22 +91,17 @@ Reference:
 	keyword = 'ref' over='over' (timelines+=STRING)+ name=STRING
 ;
 
-CombinedFragment:
-	Alt
+CombinedFragment: 
+	keyword = ('alt'|'loop'|'par'|'assert'|'critical'|'ignore'|'neg'|'opt'|'seq'|'strict')? expression=STRING over='over' (timelines+=STRING)+ block=Block (operands+=Operand)*
 ;
 
-Alt: 
-	keyword = 'alt' condition=STRING over='over' (timelines+=STRING)+ block=Block (elseBlocks+=ElseBlock)*
-;
-
-ElseBlock:
-	'else' condition=STRING block=Block
+Operand:
+	keyword='else'? expression=STRING block=Block
 ;
 
 Block:
 	begin="{" (blockElements+=(Message | Reference | CombinedFragment | StateFragment))* end="}"
 ;
-
 
 StateFragment:
 	on='on' timeline=STRING keyword=('state' | 'mode' | 'function') name=STRING

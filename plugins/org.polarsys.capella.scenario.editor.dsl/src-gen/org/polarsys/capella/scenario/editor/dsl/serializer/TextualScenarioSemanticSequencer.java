@@ -29,17 +29,17 @@ import org.eclipse.xtext.serializer.sequencer.ITransientValueService.ValueTransi
 import org.polarsys.capella.scenario.editor.dsl.services.TextualScenarioGrammarAccess;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.Activity;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.Actor;
-import org.polarsys.capella.scenario.editor.dsl.textualScenario.Alt;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.ArmTimerMessage;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.Block;
+import org.polarsys.capella.scenario.editor.dsl.textualScenario.CombinedFragment;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.Component;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.ConfigurationItem;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.CreateMessage;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.DeleteMessage;
-import org.polarsys.capella.scenario.editor.dsl.textualScenario.ElseBlock;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.Entity;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.Function;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.Model;
+import org.polarsys.capella.scenario.editor.dsl.textualScenario.Operand;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.ParticipantDeactivation;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.Reference;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.Role;
@@ -67,14 +67,14 @@ public class TextualScenarioSemanticSequencer extends AbstractDelegatingSemantic
 			case TextualScenarioPackage.ACTOR:
 				sequence_Actor(context, (Actor) semanticObject); 
 				return; 
-			case TextualScenarioPackage.ALT:
-				sequence_Alt(context, (Alt) semanticObject); 
-				return; 
 			case TextualScenarioPackage.ARM_TIMER_MESSAGE:
 				sequence_ArmTimerMessage(context, (ArmTimerMessage) semanticObject); 
 				return; 
 			case TextualScenarioPackage.BLOCK:
 				sequence_Block(context, (Block) semanticObject); 
+				return; 
+			case TextualScenarioPackage.COMBINED_FRAGMENT:
+				sequence_CombinedFragment(context, (CombinedFragment) semanticObject); 
 				return; 
 			case TextualScenarioPackage.COMPONENT:
 				sequence_Component(context, (Component) semanticObject); 
@@ -88,9 +88,6 @@ public class TextualScenarioSemanticSequencer extends AbstractDelegatingSemantic
 			case TextualScenarioPackage.DELETE_MESSAGE:
 				sequence_DeleteMessage(context, (DeleteMessage) semanticObject); 
 				return; 
-			case TextualScenarioPackage.ELSE_BLOCK:
-				sequence_ElseBlock(context, (ElseBlock) semanticObject); 
-				return; 
 			case TextualScenarioPackage.ENTITY:
 				sequence_Entity(context, (Entity) semanticObject); 
 				return; 
@@ -99,6 +96,9 @@ public class TextualScenarioSemanticSequencer extends AbstractDelegatingSemantic
 				return; 
 			case TextualScenarioPackage.MODEL:
 				sequence_Model(context, (Model) semanticObject); 
+				return; 
+			case TextualScenarioPackage.OPERAND:
+				sequence_Operand(context, (Operand) semanticObject); 
 				return; 
 			case TextualScenarioPackage.PARTICIPANT_DEACTIVATION:
 				sequence_ParticipantDeactivation(context, (ParticipantDeactivation) semanticObject); 
@@ -168,26 +168,6 @@ public class TextualScenarioSemanticSequencer extends AbstractDelegatingSemantic
 	
 	/**
 	 * Contexts:
-	 *     CombinedFragment returns Alt
-	 *     Alt returns Alt
-	 *
-	 * Constraint:
-	 *     (
-	 *         keyword='alt' 
-	 *         condition=STRING 
-	 *         over='over' 
-	 *         timelines+=STRING+ 
-	 *         block=Block 
-	 *         elseBlocks+=ElseBlock*
-	 *     )
-	 */
-	protected void sequence_Alt(ISerializationContext context, Alt semanticObject) {
-		genericSequencer.createSequence(context, semanticObject);
-	}
-	
-	
-	/**
-	 * Contexts:
 	 *     Message returns ArmTimerMessage
 	 *     ArmTimerMessage returns ArmTimerMessage
 	 *
@@ -216,6 +196,36 @@ public class TextualScenarioSemanticSequencer extends AbstractDelegatingSemantic
 	 *     (begin='{' (blockElements+=Message | blockElements+=Reference | blockElements+=CombinedFragment | blockElements+=StateFragment)* end='}')
 	 */
 	protected void sequence_Block(ISerializationContext context, Block semanticObject) {
+		genericSequencer.createSequence(context, semanticObject);
+	}
+	
+	
+	/**
+	 * Contexts:
+	 *     CombinedFragment returns CombinedFragment
+	 *
+	 * Constraint:
+	 *     (
+	 *         (
+	 *             keyword='alt' | 
+	 *             keyword='loop' | 
+	 *             keyword='par' | 
+	 *             keyword='assert' | 
+	 *             keyword='critical' | 
+	 *             keyword='ignore' | 
+	 *             keyword='neg' | 
+	 *             keyword='opt' | 
+	 *             keyword='seq' | 
+	 *             keyword='strict'
+	 *         )? 
+	 *         expression=STRING 
+	 *         over='over' 
+	 *         timelines+=STRING+ 
+	 *         block=Block 
+	 *         operands+=Operand*
+	 *     )
+	 */
+	protected void sequence_CombinedFragment(ISerializationContext context, CombinedFragment semanticObject) {
 		genericSequencer.createSequence(context, semanticObject);
 	}
 	
@@ -311,27 +321,6 @@ public class TextualScenarioSemanticSequencer extends AbstractDelegatingSemantic
 	
 	/**
 	 * Contexts:
-	 *     ElseBlock returns ElseBlock
-	 *
-	 * Constraint:
-	 *     (condition=STRING block=Block)
-	 */
-	protected void sequence_ElseBlock(ISerializationContext context, ElseBlock semanticObject) {
-		if (errorAcceptor != null) {
-			if (transientValues.isValueTransient(semanticObject, TextualScenarioPackage.Literals.ELSE_BLOCK__CONDITION) == ValueTransient.YES)
-				errorAcceptor.accept(diagnosticProvider.createFeatureValueMissing(semanticObject, TextualScenarioPackage.Literals.ELSE_BLOCK__CONDITION));
-			if (transientValues.isValueTransient(semanticObject, TextualScenarioPackage.Literals.ELSE_BLOCK__BLOCK) == ValueTransient.YES)
-				errorAcceptor.accept(diagnosticProvider.createFeatureValueMissing(semanticObject, TextualScenarioPackage.Literals.ELSE_BLOCK__BLOCK));
-		}
-		SequenceFeeder feeder = createSequencerFeeder(context, semanticObject);
-		feeder.accept(grammarAccess.getElseBlockAccess().getConditionSTRINGTerminalRuleCall_1_0(), semanticObject.getCondition());
-		feeder.accept(grammarAccess.getElseBlockAccess().getBlockBlockParserRuleCall_2_0(), semanticObject.getBlock());
-		feeder.finish();
-	}
-	
-	
-	/**
-	 * Contexts:
 	 *     Participant returns Entity
 	 *     GenericComponent returns Entity
 	 *     Entity returns Entity
@@ -384,6 +373,18 @@ public class TextualScenarioSemanticSequencer extends AbstractDelegatingSemantic
 	 *     (begin='{' participants+=Participant* (elements+=Message | elements+=Reference | elements+=CombinedFragment | elements+=StateFragment)* end='}')
 	 */
 	protected void sequence_Model(ISerializationContext context, Model semanticObject) {
+		genericSequencer.createSequence(context, semanticObject);
+	}
+	
+	
+	/**
+	 * Contexts:
+	 *     Operand returns Operand
+	 *
+	 * Constraint:
+	 *     (keyword='else'? expression=STRING block=Block)
+	 */
+	protected void sequence_Operand(ISerializationContext context, Operand semanticObject) {
 		genericSequencer.createSequence(context, semanticObject);
 	}
 	

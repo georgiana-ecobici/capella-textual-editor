@@ -97,8 +97,7 @@ public class TextualScenarioFactoryImpl extends EFactoryImpl implements TextualS
       case TextualScenarioPackage.PARTICIPANT_DEACTIVATION: return createParticipantDeactivation();
       case TextualScenarioPackage.REFERENCE: return createReference();
       case TextualScenarioPackage.COMBINED_FRAGMENT: return createCombinedFragment();
-      case TextualScenarioPackage.ALT: return createAlt();
-      case TextualScenarioPackage.ELSE_BLOCK: return createElseBlock();
+      case TextualScenarioPackage.OPERAND: return createOperand();
       case TextualScenarioPackage.BLOCK: return createBlock();
       case TextualScenarioPackage.STATE_FRAGMENT: return createStateFragment();
       default:
@@ -352,22 +351,10 @@ public class TextualScenarioFactoryImpl extends EFactoryImpl implements TextualS
    * @generated
    */
   @Override
-  public Alt createAlt()
+  public Operand createOperand()
   {
-    AltImpl alt = new AltImpl();
-    return alt;
-  }
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
-  @Override
-  public ElseBlock createElseBlock()
-  {
-    ElseBlockImpl elseBlock = new ElseBlockImpl();
-    return elseBlock;
+    OperandImpl operand = new OperandImpl();
+    return operand;
   }
 
   /**

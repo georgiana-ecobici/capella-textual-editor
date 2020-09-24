@@ -24,7 +24,6 @@ import org.eclipse.emf.ecore.impl.EPackageImpl;
 
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.Activity;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.Actor;
-import org.polarsys.capella.scenario.editor.dsl.textualScenario.Alt;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.ArmTimerMessage;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.Block;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.CombinedFragment;
@@ -32,13 +31,13 @@ import org.polarsys.capella.scenario.editor.dsl.textualScenario.Component;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.ConfigurationItem;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.CreateMessage;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.DeleteMessage;
-import org.polarsys.capella.scenario.editor.dsl.textualScenario.ElseBlock;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.Entity;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.Function;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.GenericComponent;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.GenericFunction;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.Message;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.Model;
+import org.polarsys.capella.scenario.editor.dsl.textualScenario.Operand;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.Participant;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.ParticipantDeactivation;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.Reference;
@@ -202,14 +201,7 @@ public class TextualScenarioPackageImpl extends EPackageImpl implements TextualS
    * <!-- end-user-doc -->
    * @generated
    */
-  private EClass altEClass = null;
-
-  /**
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   */
-  private EClass elseBlockEClass = null;
+  private EClass operandEClass = null;
 
   /**
    * <!-- begin-user-doc -->
@@ -712,9 +704,9 @@ public class TextualScenarioPackageImpl extends EPackageImpl implements TextualS
    * @generated
    */
   @Override
-  public EClass getAlt()
+  public EAttribute getCombinedFragment_Keyword()
   {
-    return altEClass;
+    return (EAttribute)combinedFragmentEClass.getEStructuralFeatures().get(0);
   }
 
   /**
@@ -723,9 +715,9 @@ public class TextualScenarioPackageImpl extends EPackageImpl implements TextualS
    * @generated
    */
   @Override
-  public EAttribute getAlt_Keyword()
+  public EAttribute getCombinedFragment_Expression()
   {
-    return (EAttribute)altEClass.getEStructuralFeatures().get(0);
+    return (EAttribute)combinedFragmentEClass.getEStructuralFeatures().get(1);
   }
 
   /**
@@ -734,9 +726,9 @@ public class TextualScenarioPackageImpl extends EPackageImpl implements TextualS
    * @generated
    */
   @Override
-  public EAttribute getAlt_Condition()
+  public EAttribute getCombinedFragment_Over()
   {
-    return (EAttribute)altEClass.getEStructuralFeatures().get(1);
+    return (EAttribute)combinedFragmentEClass.getEStructuralFeatures().get(2);
   }
 
   /**
@@ -745,9 +737,9 @@ public class TextualScenarioPackageImpl extends EPackageImpl implements TextualS
    * @generated
    */
   @Override
-  public EAttribute getAlt_Over()
+  public EAttribute getCombinedFragment_Timelines()
   {
-    return (EAttribute)altEClass.getEStructuralFeatures().get(2);
+    return (EAttribute)combinedFragmentEClass.getEStructuralFeatures().get(3);
   }
 
   /**
@@ -756,9 +748,9 @@ public class TextualScenarioPackageImpl extends EPackageImpl implements TextualS
    * @generated
    */
   @Override
-  public EAttribute getAlt_Timelines()
+  public EReference getCombinedFragment_Block()
   {
-    return (EAttribute)altEClass.getEStructuralFeatures().get(3);
+    return (EReference)combinedFragmentEClass.getEStructuralFeatures().get(4);
   }
 
   /**
@@ -767,9 +759,9 @@ public class TextualScenarioPackageImpl extends EPackageImpl implements TextualS
    * @generated
    */
   @Override
-  public EReference getAlt_Block()
+  public EReference getCombinedFragment_Operands()
   {
-    return (EReference)altEClass.getEStructuralFeatures().get(4);
+    return (EReference)combinedFragmentEClass.getEStructuralFeatures().get(5);
   }
 
   /**
@@ -778,9 +770,9 @@ public class TextualScenarioPackageImpl extends EPackageImpl implements TextualS
    * @generated
    */
   @Override
-  public EReference getAlt_ElseBlocks()
+  public EClass getOperand()
   {
-    return (EReference)altEClass.getEStructuralFeatures().get(5);
+    return operandEClass;
   }
 
   /**
@@ -789,9 +781,9 @@ public class TextualScenarioPackageImpl extends EPackageImpl implements TextualS
    * @generated
    */
   @Override
-  public EClass getElseBlock()
+  public EAttribute getOperand_Keyword()
   {
-    return elseBlockEClass;
+    return (EAttribute)operandEClass.getEStructuralFeatures().get(0);
   }
 
   /**
@@ -800,9 +792,9 @@ public class TextualScenarioPackageImpl extends EPackageImpl implements TextualS
    * @generated
    */
   @Override
-  public EAttribute getElseBlock_Condition()
+  public EAttribute getOperand_Expression()
   {
-    return (EAttribute)elseBlockEClass.getEStructuralFeatures().get(0);
+    return (EAttribute)operandEClass.getEStructuralFeatures().get(1);
   }
 
   /**
@@ -811,9 +803,9 @@ public class TextualScenarioPackageImpl extends EPackageImpl implements TextualS
    * @generated
    */
   @Override
-  public EReference getElseBlock_Block()
+  public EReference getOperand_Block()
   {
-    return (EReference)elseBlockEClass.getEStructuralFeatures().get(1);
+    return (EReference)operandEClass.getEStructuralFeatures().get(2);
   }
 
   /**
@@ -1003,18 +995,17 @@ public class TextualScenarioPackageImpl extends EPackageImpl implements TextualS
     createEAttribute(referenceEClass, REFERENCE__NAME);
 
     combinedFragmentEClass = createEClass(COMBINED_FRAGMENT);
+    createEAttribute(combinedFragmentEClass, COMBINED_FRAGMENT__KEYWORD);
+    createEAttribute(combinedFragmentEClass, COMBINED_FRAGMENT__EXPRESSION);
+    createEAttribute(combinedFragmentEClass, COMBINED_FRAGMENT__OVER);
+    createEAttribute(combinedFragmentEClass, COMBINED_FRAGMENT__TIMELINES);
+    createEReference(combinedFragmentEClass, COMBINED_FRAGMENT__BLOCK);
+    createEReference(combinedFragmentEClass, COMBINED_FRAGMENT__OPERANDS);
 
-    altEClass = createEClass(ALT);
-    createEAttribute(altEClass, ALT__KEYWORD);
-    createEAttribute(altEClass, ALT__CONDITION);
-    createEAttribute(altEClass, ALT__OVER);
-    createEAttribute(altEClass, ALT__TIMELINES);
-    createEReference(altEClass, ALT__BLOCK);
-    createEReference(altEClass, ALT__ELSE_BLOCKS);
-
-    elseBlockEClass = createEClass(ELSE_BLOCK);
-    createEAttribute(elseBlockEClass, ELSE_BLOCK__CONDITION);
-    createEReference(elseBlockEClass, ELSE_BLOCK__BLOCK);
+    operandEClass = createEClass(OPERAND);
+    createEAttribute(operandEClass, OPERAND__KEYWORD);
+    createEAttribute(operandEClass, OPERAND__EXPRESSION);
+    createEReference(operandEClass, OPERAND__BLOCK);
 
     blockEClass = createEClass(BLOCK);
     createEAttribute(blockEClass, BLOCK__BEGIN);
@@ -1072,7 +1063,6 @@ public class TextualScenarioPackageImpl extends EPackageImpl implements TextualS
     deleteMessageEClass.getESuperTypes().add(this.getSequenceMessageType());
     armTimerMessageEClass.getESuperTypes().add(this.getMessage());
     participantDeactivationEClass.getESuperTypes().add(this.getMessage());
-    altEClass.getESuperTypes().add(this.getCombinedFragment());
 
     // Initialize classes and features; add operations and parameters
     initEClass(modelEClass, Model.class, "Model", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
@@ -1132,18 +1122,17 @@ public class TextualScenarioPackageImpl extends EPackageImpl implements TextualS
     initEAttribute(getReference_Name(), ecorePackage.getEString(), "name", null, 0, 1, Reference.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
     initEClass(combinedFragmentEClass, CombinedFragment.class, "CombinedFragment", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+    initEAttribute(getCombinedFragment_Keyword(), ecorePackage.getEString(), "keyword", null, 0, 1, CombinedFragment.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEAttribute(getCombinedFragment_Expression(), ecorePackage.getEString(), "expression", null, 0, 1, CombinedFragment.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEAttribute(getCombinedFragment_Over(), ecorePackage.getEString(), "over", null, 0, 1, CombinedFragment.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEAttribute(getCombinedFragment_Timelines(), ecorePackage.getEString(), "timelines", null, 0, -1, CombinedFragment.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEReference(getCombinedFragment_Block(), this.getBlock(), null, "block", null, 0, 1, CombinedFragment.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEReference(getCombinedFragment_Operands(), this.getOperand(), null, "operands", null, 0, -1, CombinedFragment.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-    initEClass(altEClass, Alt.class, "Alt", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-    initEAttribute(getAlt_Keyword(), ecorePackage.getEString(), "keyword", null, 0, 1, Alt.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-    initEAttribute(getAlt_Condition(), ecorePackage.getEString(), "condition", null, 0, 1, Alt.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-    initEAttribute(getAlt_Over(), ecorePackage.getEString(), "over", null, 0, 1, Alt.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-    initEAttribute(getAlt_Timelines(), ecorePackage.getEString(), "timelines", null, 0, -1, Alt.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, !IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-    initEReference(getAlt_Block(), this.getBlock(), null, "block", null, 0, 1, Alt.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-    initEReference(getAlt_ElseBlocks(), this.getElseBlock(), null, "elseBlocks", null, 0, -1, Alt.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-
-    initEClass(elseBlockEClass, ElseBlock.class, "ElseBlock", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-    initEAttribute(getElseBlock_Condition(), ecorePackage.getEString(), "condition", null, 0, 1, ElseBlock.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-    initEReference(getElseBlock_Block(), this.getBlock(), null, "block", null, 0, 1, ElseBlock.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEClass(operandEClass, Operand.class, "Operand", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+    initEAttribute(getOperand_Keyword(), ecorePackage.getEString(), "keyword", null, 0, 1, Operand.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEAttribute(getOperand_Expression(), ecorePackage.getEString(), "expression", null, 0, 1, Operand.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEReference(getOperand_Block(), this.getBlock(), null, "block", null, 0, 1, Operand.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
     initEClass(blockEClass, Block.class, "Block", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
     initEAttribute(getBlock_Begin(), ecorePackage.getEString(), "begin", null, 0, 1, Block.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
