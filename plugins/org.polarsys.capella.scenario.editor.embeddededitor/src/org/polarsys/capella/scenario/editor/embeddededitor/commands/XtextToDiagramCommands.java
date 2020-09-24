@@ -91,7 +91,7 @@ public class XtextToDiagramCommands {
       doEditingOnParticipants(scenario, participants, messages);
 
       doEditingOnElements(scenario, messages);
-      
+
       // do refresh - when the messages associated with the removed actors are deleted too,
       // a refresh is needed to update also the editor
       EmbeddedEditorView eeView = XtextEditorHelper.getActiveEmbeddedEditorView();
@@ -251,7 +251,7 @@ public class XtextToDiagramCommands {
         cleanUpMessages(scenario, elements);
 
         editElements(scenario, elements);
-        
+
         // fix this
         // Reorder scenario, this means reordering the interaction fragments and sequence messages lists
         reorderCapellaScenario(scenario, elements);
@@ -275,9 +275,8 @@ public class XtextToDiagramCommands {
           EObject messageFromXtext = iterator.next();
 
           if (messageFromXtext instanceof org.polarsys.capella.scenario.editor.dsl.textualScenario.SequenceMessage) {
-            // This is a sequence message, it can be with execution and/or with return            
-            org.polarsys.capella.scenario.editor.dsl.textualScenario.SequenceMessage seqMessage 
-              = (org.polarsys.capella.scenario.editor.dsl.textualScenario.SequenceMessage) messageFromXtext;
+            // This is a sequence message, it can be with execution and/or with return
+            org.polarsys.capella.scenario.editor.dsl.textualScenario.SequenceMessage seqMessage = (org.polarsys.capella.scenario.editor.dsl.textualScenario.SequenceMessage) messageFromXtext;
             InstanceRole source = EmbeddedEditorInstanceHelper.getInstanceRole(seqMessage.getSource());
             InstanceRole target = EmbeddedEditorInstanceHelper.getInstanceRole(seqMessage.getTarget());
 
@@ -290,14 +289,15 @@ public class XtextToDiagramCommands {
 
               Execution execution = getExecutionForSequenceMessage(scenario, capellaSequenceMessage);
               sequenceMessages.add(capellaSequenceMessage);
-              
+
               // For simple messages, execution end will be added here, if no return branch
               if (seqMessage.getExecution() == null) {
                 if (seqMessage.getReturn() == null) {
                   interactionFragments.add(execution.getFinish());
                 } else {
                   // Simple message has return branch, add the return sequence message here
-                  SequenceMessage capellaReturnSequenceMessage = SequenceMessageExt.getOppositeSequenceMessage(capellaSequenceMessage);
+                  SequenceMessage capellaReturnSequenceMessage = SequenceMessageExt
+                      .getOppositeSequenceMessage(capellaSequenceMessage);
                   if (capellaReturnSequenceMessage == null) {
                     capellaReturnSequenceMessage = SequenceMessageExt.findReplySequenceMessage(capellaSequenceMessage);
                   }
@@ -308,10 +308,10 @@ public class XtextToDiagramCommands {
               } else {
                 // For withExecution messages, execution end will be added when deactivate message will be found.
                 // At that point, the return message will be moved in order, too, if this is the case
-                executionEndsToProcess.add(execution.getFinish()); 
+                executionEndsToProcess.add(execution.getFinish());
               }
             }
-          } else if(messageFromXtext instanceof ParticipantDeactivation) {
+          } else if (messageFromXtext instanceof ParticipantDeactivation) {
             // This is a ParticipantDeactivationMessage, so the execution on the corresponding timeline finished.
             // We must move the interaction fragment representing the execution end on the correct position in the
             // ownedInteractionFragments ordered list
@@ -321,11 +321,13 @@ public class XtextToDiagramCommands {
             InstanceRole instanceRole = EmbeddedEditorInstanceHelper
                 .getInstanceRole(participantDeactivationMessage.getName());
 
-            doDeactivationSequenceMessageForReorder(interactionFragments, instanceRole, executionEndsToProcess, sequenceMessages);
+            doDeactivationSequenceMessageForReorder(interactionFragments, instanceRole, executionEndsToProcess,
+                sequenceMessages);
           }
         }
 
-        // Replace sequence message list and interaction fragments list in the real scenario with the newly computed lists
+        // Replace sequence message list and interaction fragments list in the real scenario with the newly computed
+        // lists
         scenario.getOwnedInteractionFragments().clear();
         scenario.getOwnedInteractionFragments().addAll(interactionFragments);
 
@@ -335,7 +337,7 @@ public class XtextToDiagramCommands {
 
     });
   }
-  
+
   private static void editElements(Scenario scenario, EList<EObject> elements) {
     EList<SequenceMessage> sequenceMessages = scenario.getOwnedMessages();
     for (Iterator<EObject> iterator = elements.iterator(); iterator.hasNext();) {
@@ -343,25 +345,25 @@ public class XtextToDiagramCommands {
 
       if (xtextElement instanceof org.polarsys.capella.scenario.editor.dsl.textualScenario.SequenceMessage) {
         // This is a sequence message, it can be with execution and/or with return
-        org.polarsys.capella.scenario.editor.dsl.textualScenario.SequenceMessage seqMessage 
-            = (org.polarsys.capella.scenario.editor.dsl.textualScenario.SequenceMessage) xtextElement;
+        org.polarsys.capella.scenario.editor.dsl.textualScenario.SequenceMessage seqMessage = (org.polarsys.capella.scenario.editor.dsl.textualScenario.SequenceMessage) xtextElement;
         InstanceRole source = EmbeddedEditorInstanceHelper.getInstanceRole(seqMessage.getSource());
         InstanceRole target = EmbeddedEditorInstanceHelper.getInstanceRole(seqMessage.getTarget());
-        
+
         List<SequenceMessage> msgsFilteredByNameTargetSource = sequenceMessages.stream()
             .filter(x -> x.getName().equals(seqMessage.getName()))
             .filter(x -> x.getSendingEnd().getCoveredInstanceRoles().get(0).getName().equals(source.getName()))
             .filter(x -> x.getReceivingEnd().getCoveredInstanceRoles().get(0).getName().equals(target.getName()))
             .collect(Collectors.toList());
-        
+
         if (msgsFilteredByNameTargetSource.isEmpty()) {
           if (source != null && target != null) {
             SequenceMessage sequenceMessage = createCapellaSequenceMessage(scenario, source, target, seqMessage);
             sequenceMessages.add(sequenceMessage);
-            
-            //if message has return branch, create corresponding Capella return message
+
+            // if message has return branch, create corresponding Capella return message
             if (seqMessage.getReturn() != null) {
-              SequenceMessage opposingSequenceMessage = createCapellaSequenceMessage(scenario, target, source, seqMessage, true);
+              SequenceMessage opposingSequenceMessage = createCapellaSequenceMessage(scenario, target, source,
+                  seqMessage, true);
               Execution execution = getExecutionForSequenceMessage(scenario, sequenceMessage);
               execution.setFinish(opposingSequenceMessage.getSendingEnd());
               sequenceMessages.add(opposingSequenceMessage);
@@ -369,9 +371,9 @@ public class XtextToDiagramCommands {
 
           }
         }
-      } else if(xtextElement instanceof Alt) {
+      } else if (xtextElement instanceof Alt) {
         InteractionFragment lastInteractionFragment = null;
-        if(!sequenceMessages.isEmpty()) {
+        if (!sequenceMessages.isEmpty()) {
           SequenceMessage lastSequenceMessage = sequenceMessages.get(sequenceMessages.size() - 1);
           lastInteractionFragment = lastSequenceMessage.getReceivingEnd();
         }
@@ -422,7 +424,7 @@ public class XtextToDiagramCommands {
 
   private static void removeMessageFromScenario(Scenario scenario, SequenceMessage sequenceMessage) {
     // Remove execution - time lapse
-    //Execution execution = getExecutionForSequenceMessage(scenario, sequenceMessage);
+    // Execution execution = getExecutionForSequenceMessage(scenario, sequenceMessage);
     Execution execution = null;
     MessageEnd re = sequenceMessage.getReceivingEnd();
     for (TimeLapse tl : scenario.getOwnedTimeLapses()) {
@@ -448,12 +450,13 @@ public class XtextToDiagramCommands {
     Event eventReveivOp = receivingEnd.getEvent();
     scenario.getOwnedEvents().remove(eventSendOp);
     scenario.getOwnedEvents().remove(eventReveivOp);
-    
+
     if (sequenceMessage.getKind() != MessageKind.REPLY && !ScenarioExt.hasReply(sequenceMessage)) {
       // Remove execution event for normal sequence message
-      Event executionEvent = executionEnd instanceof ExecutionEnd ? 
-          (Event) ExecutionEndExt.getOperation((ExecutionEnd) executionEnd) : null;
-      scenario.getOwnedEvents().remove(executionEvent);      
+      Event executionEvent = executionEnd instanceof ExecutionEnd
+          ? (Event) ExecutionEndExt.getOperation((ExecutionEnd) executionEnd)
+          : null;
+      scenario.getOwnedEvents().remove(executionEvent);
     }
 
     // Remove sequence message
@@ -484,12 +487,11 @@ public class XtextToDiagramCommands {
     return false;
   }
 
-
-  private static SequenceMessage createCapellaSequenceMessage(Scenario scenario, InstanceRole target, InstanceRole source,
-      org.polarsys.capella.scenario.editor.dsl.textualScenario.SequenceMessage seqMessage) {
+  private static SequenceMessage createCapellaSequenceMessage(Scenario scenario, InstanceRole target,
+      InstanceRole source, org.polarsys.capella.scenario.editor.dsl.textualScenario.SequenceMessage seqMessage) {
     return createCapellaSequenceMessage(scenario, target, source, seqMessage, false);
   }
-  
+
   /*
    * Create a capella sequence message (and set all data needed by a capella sequence message : sending end, receiving
    * end, execution etc
@@ -500,8 +502,8 @@ public class XtextToDiagramCommands {
     // create Capella SequenceMessage
     SequenceMessage sequenceMessage = InteractionFactory.eINSTANCE.createSequenceMessage();
     sequenceMessage.setName(seqMessage.getName());
-    sequenceMessage.setKind(isReplyMessage ? MessageKind.REPLY : 
-      seqMessage.getReturn() != null ? MessageKind.SYNCHRONOUS_CALL : MessageKind.ASYNCHRONOUS_CALL);
+    sequenceMessage.setKind(isReplyMessage ? MessageKind.REPLY
+        : seqMessage.getReturn() != null ? MessageKind.SYNCHRONOUS_CALL : MessageKind.ASYNCHRONOUS_CALL);
 
     // sending end
     MessageEnd sendingEnd = InteractionFactory.eINSTANCE.createMessageEnd();
@@ -519,7 +521,8 @@ public class XtextToDiagramCommands {
     if (!isReplyMessage) {
       ExecutionEnd executionEnd = InteractionFactory.eINSTANCE.createExecutionEnd();
       if (seqMessage.getReturn() == null) {
-        // do not add this execution end to the interaction fragments list, as we will add the sending end of the reply message
+        // do not add this execution end to the interaction fragments list, as we will add the sending end of the reply
+        // message
         scenario.getOwnedInteractionFragments().add(executionEnd);
       }
       executionEnd.getCoveredInstanceRoles().add(receivingEnd.getCoveredInstanceRoles().get(0));
@@ -529,12 +532,12 @@ public class XtextToDiagramCommands {
       execution.setFinish(executionEnd);
       execution.setStart(receivingEnd);
       scenario.getOwnedTimeLapses().add(execution);
-      
+
       // execution event
       ExecutionEvent executionEvent = InteractionFactory.eINSTANCE.createExecutionEvent();
       executionEnd.setEvent(executionEvent);
       scenario.getOwnedEvents().add(executionEvent);
-    } 
+    }
 
     // EventSentOperation
     EventSentOperation eventSentOperation = InteractionFactory.eINSTANCE.createEventSentOperation();
@@ -551,8 +554,7 @@ public class XtextToDiagramCommands {
     if (isReplyMessage) {
       exchanges = SelectInvokedOperationModelForSharedDataAndEvent.getAvailableExchangeItems(target, source, false);
     } else {
-      exchanges = SelectInvokedOperationModelForSharedDataAndEvent.getAvailableExchangeItems(source,
-          target, false);
+      exchanges = SelectInvokedOperationModelForSharedDataAndEvent.getAvailableExchangeItems(source, target, false);
     }
     exchanges = exchanges.stream()
         .filter(ex -> ((ExchangeItemAllocation) ex).getAllocatedItem().getName().equals(seqMessage.getName()))
@@ -561,15 +563,16 @@ public class XtextToDiagramCommands {
       eventRecvOperation.setOperation((AbstractEventOperation) exchanges.get(0));
       eventSentOperation.setOperation((AbstractEventOperation) exchanges.get(0));
     }
-    
+
     return sequenceMessage;
   }
-  
+
   private static void doDeactivationSequenceMessageForReorder(ArrayList<InteractionFragment> fragments,
-      InstanceRole instanceRole, ArrayList<InteractionFragment> executionEndsToProcess, ArrayList<SequenceMessage> sequenceMessages) {
-    InteractionFragment executionEnd = getLatestExecutionEndOnTimeline(instanceRole, executionEndsToProcess);    
-    
-    SequenceMessage sequenceMessage = null; 
+      InstanceRole instanceRole, ArrayList<InteractionFragment> executionEndsToProcess,
+      ArrayList<SequenceMessage> sequenceMessages) {
+    InteractionFragment executionEnd = getLatestExecutionEndOnTimeline(instanceRole, executionEndsToProcess);
+
+    SequenceMessage sequenceMessage = null;
     SequenceMessage oppositeSequenceMessage = null;
     if (executionEnd != null) {
       if (executionEnd instanceof ExecutionEnd) {
@@ -578,9 +581,10 @@ public class XtextToDiagramCommands {
         sequenceMessage = ((MessageEnd) executionEnd).getMessage();
         oppositeSequenceMessage = SequenceMessageExt.getOppositeSequenceMessage(sequenceMessage);
       }
-      
+
       if (oppositeSequenceMessage != null) {
-        // This message has return branch, so instead of execution end we must add the sending and receiving end of its reply message
+        // This message has return branch, so instead of execution end we must add the sending and receiving end of its
+        // reply message
         fragments.add(sequenceMessage.getSendingEnd());
         fragments.add(sequenceMessage.getReceivingEnd());
         sequenceMessages.add(sequenceMessage);
@@ -588,7 +592,7 @@ public class XtextToDiagramCommands {
         fragments.add(executionEnd);
       }
     }
-    
+
     // remove executionEnd from the processing list
     executionEndsToProcess.remove(executionEnd);
   }
@@ -600,11 +604,12 @@ public class XtextToDiagramCommands {
         .reduce((first, second) -> second).orElse(null);
     return executionEnd;
   }
-  
+
   /*
    * Display in diagram, the elements of an alt sequence
    */
-  private static void createCapellaAltSequence(Scenario scenario, Alt condition, InteractionFragment lastInteractionFragment) {
+  private static void createCapellaAltSequence(Scenario scenario, Alt condition,
+      InteractionFragment lastInteractionFragment) {
 
     TransactionalEditingDomain domain = TransactionUtil.getEditingDomain(scenario);
     domain.getCommandStack().execute(new RecordingCommand(domain) {
@@ -623,15 +628,15 @@ public class XtextToDiagramCommands {
 
         start.setName("start");
         finish.setName("end");
-        
+
         scenario.getOwnedInteractionFragments().add(start);
         scenario.getOwnedInteractionFragments().add(finish);
 
-        if(lastInteractionFragment != null)
+        if (lastInteractionFragment != null)
           ScenarioExt.moveEndOnBeginingOfScenario(lastInteractionFragment);
         else
           ScenarioExt.moveEndOnBeginingOfScenario(start);
-        
+
         CombinedFragment combinedFragment = addCombinedFragment(start, finish, InteractionOperatorKind.ALT);
         scenario.getOwnedTimeLapses().add(combinedFragment);
 
@@ -641,50 +646,52 @@ public class XtextToDiagramCommands {
           combinedFragment.getReferencedOperands().add(operand);
           scenario.getOwnedInteractionFragments().add(operand);
           ScenarioExt.moveEndOnScenario(operand, start);
-          
-          editElements(scenario,  firstBlock.getBlockElements());
+
+          editElements(scenario, firstBlock.getBlockElements());
 
           InteractionOperand prevEnd = operand;
-          for(ElseBlock elseBlock: condition.getElseBlocks()) {
-            InteractionOperand operand2 = addInteractionOperand(start.getCoveredInstanceRoles(), elseBlock.getCondition());
+          for (ElseBlock elseBlock : condition.getElseBlocks()) {
+            InteractionOperand operand2 = addInteractionOperand(start.getCoveredInstanceRoles(),
+                elseBlock.getCondition());
             combinedFragment.getReferencedOperands().add(operand2);
             scenario.getOwnedInteractionFragments().add(operand2);
             ScenarioExt.moveEndOnScenario(operand2, prevEnd);
             prevEnd = operand2;
-            
-            editElements(scenario,  elseBlock.getBlock().getBlockElements());
+
+            editElements(scenario, elseBlock.getBlock().getBlockElements());
           }
         }
       }
     });
   }
-  
+
   private static InteractionOperand addInteractionOperand(EList<InstanceRole> coveredInstanceRoles, String condition) {
     InteractionOperand operand = InteractionFactory.eINSTANCE.createInteractionOperand();
     operand.setName("operand");
     operand.getCoveredInstanceRoles().addAll(coveredInstanceRoles);
-    
+
     Constraint constraint = CapellacoreFactory.eINSTANCE.createConstraint();
     OpaqueExpression expression = DatavalueFactory.eINSTANCE.createOpaqueExpression();
-    
+
     constraint.setOwnedSpecification(expression);
     operand.getOwnedConstraints().add(constraint);
     CreationHelper.performContributionCommands(constraint, operand);
-    
+
     expression.getLanguages().add(ConstraintExt.OPAQUE_EXPRESSION_LINKED_TEXT);
     expression.getBodies().add(condition);
-    
+
     operand.setGuard(constraint);
     return operand;
   }
-  
-  private static CombinedFragment addCombinedFragment(InteractionFragment start, InteractionFragment finish, InteractionOperatorKind kind) {
+
+  private static CombinedFragment addCombinedFragment(InteractionFragment start, InteractionFragment finish,
+      InteractionOperatorKind kind) {
     CombinedFragment combinedFragment = InteractionFactory.eINSTANCE.createCombinedFragment();
     combinedFragment.setOperator(kind);
     combinedFragment.setStart(start);
     combinedFragment.setFinish(finish);
     combinedFragment.setName("combined fragment");
-    
+
     return combinedFragment;
   }
 }
