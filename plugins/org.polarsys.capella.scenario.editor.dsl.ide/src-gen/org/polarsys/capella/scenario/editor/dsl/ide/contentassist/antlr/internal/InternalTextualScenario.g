@@ -866,6 +866,12 @@ rule__Block__BlockElementsAlternatives_1_0
 		ruleCombinedFragment
 		{ after(grammarAccess.getBlockAccess().getBlockElementsCombinedFragmentParserRuleCall_1_0_2()); }
 	)
+	|
+	(
+		{ before(grammarAccess.getBlockAccess().getBlockElementsStateFragmentParserRuleCall_1_0_3()); }
+		ruleStateFragment
+		{ after(grammarAccess.getBlockAccess().getBlockElementsStateFragmentParserRuleCall_1_0_3()); }
+	)
 ;
 finally {
 	restoreStackSize(stackSize);

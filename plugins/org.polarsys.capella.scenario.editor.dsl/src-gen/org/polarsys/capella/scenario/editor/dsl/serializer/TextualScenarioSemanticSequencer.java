@@ -213,7 +213,7 @@ public class TextualScenarioSemanticSequencer extends AbstractDelegatingSemantic
 	 *     Block returns Block
 	 *
 	 * Constraint:
-	 *     (begin='{' (blockElements+=Message | blockElements+=Reference | blockElements+=CombinedFragment)* end='}')
+	 *     (begin='{' (blockElements+=Message | blockElements+=Reference | blockElements+=CombinedFragment | blockElements+=StateFragment)* end='}')
 	 */
 	protected void sequence_Block(ISerializationContext context, Block semanticObject) {
 		genericSequencer.createSequence(context, semanticObject);

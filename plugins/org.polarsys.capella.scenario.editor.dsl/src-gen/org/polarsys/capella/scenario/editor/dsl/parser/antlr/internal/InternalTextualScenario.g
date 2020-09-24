@@ -1573,6 +1573,22 @@ ruleBlock returns [EObject current=null]
 							"org.polarsys.capella.scenario.editor.dsl.TextualScenario.CombinedFragment");
 						afterParserOrEnumRuleCall();
 					}
+					    |
+					{
+						newCompositeNode(grammarAccess.getBlockAccess().getBlockElementsStateFragmentParserRuleCall_1_0_3());
+					}
+					lv_blockElements_1_4=ruleStateFragment
+					{
+						if ($current==null) {
+							$current = createModelElementForParent(grammarAccess.getBlockRule());
+						}
+						add(
+							$current,
+							"blockElements",
+							lv_blockElements_1_4,
+							"org.polarsys.capella.scenario.editor.dsl.TextualScenario.StateFragment");
+						afterParserOrEnumRuleCall();
+					}
 				)
 			)
 		)*

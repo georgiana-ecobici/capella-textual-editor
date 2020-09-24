@@ -30,6 +30,7 @@ import org.polarsys.capella.scenario.editor.dsl.textualScenario.ElseBlock;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.Message;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.Model;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.Participant;
+import org.polarsys.capella.scenario.editor.dsl.textualScenario.StateFragment;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.TextualScenarioPackage;
 
 @SuppressWarnings("all")
@@ -111,6 +112,13 @@ public class TextualScenarioFormatter extends AbstractFormatter2 {
     block.getBlockElements().forEach(_function_2);
   }
   
+  protected void _format(final StateFragment stateFragment, @Extension final IFormattableDocument document) {
+    final Procedure1<IHiddenRegionFormatter> _function = (IHiddenRegionFormatter it) -> {
+      it.newLine();
+    };
+    document.append(this.textRegionExtensions.regionFor(stateFragment).feature(TextualScenarioPackage.Literals.STATE_FRAGMENT__NAME), _function);
+  }
+  
   public void format(final Object condition, final IFormattableDocument document) {
     if (condition instanceof XtextResource) {
       _format((XtextResource)condition, document);
@@ -132,6 +140,9 @@ public class TextualScenarioFormatter extends AbstractFormatter2 {
       return;
     } else if (condition instanceof Participant) {
       _format((Participant)condition, document);
+      return;
+    } else if (condition instanceof StateFragment) {
+      _format((StateFragment)condition, document);
       return;
     } else if (condition instanceof EObject) {
       _format((EObject)condition, document);
