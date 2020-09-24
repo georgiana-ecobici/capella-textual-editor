@@ -785,14 +785,15 @@ public class TextualScenarioGrammarAccess extends AbstractGrammarElementFinder {
 		private final RuleCall cBlockElementsMessageParserRuleCall_1_0_0 = (RuleCall)cBlockElementsAlternatives_1_0.eContents().get(0);
 		private final RuleCall cBlockElementsReferenceParserRuleCall_1_0_1 = (RuleCall)cBlockElementsAlternatives_1_0.eContents().get(1);
 		private final RuleCall cBlockElementsCombinedFragmentParserRuleCall_1_0_2 = (RuleCall)cBlockElementsAlternatives_1_0.eContents().get(2);
+		private final RuleCall cBlockElementsStateFragmentParserRuleCall_1_0_3 = (RuleCall)cBlockElementsAlternatives_1_0.eContents().get(3);
 		private final Assignment cEndAssignment_2 = (Assignment)cGroup.eContents().get(2);
 		private final Keyword cEndRightCurlyBracketKeyword_2_0 = (Keyword)cEndAssignment_2.eContents().get(0);
 		
 		//Block:
-		//	begin="{" blockElements+=(Message | Reference | CombinedFragment)* end="}";
+		//	begin="{" blockElements+=(Message | Reference | CombinedFragment | StateFragment)* end="}";
 		@Override public ParserRule getRule() { return rule; }
 		
-		//begin="{" blockElements+=(Message | Reference | CombinedFragment)* end="}"
+		//begin="{" blockElements+=(Message | Reference | CombinedFragment | StateFragment)* end="}"
 		public Group getGroup() { return cGroup; }
 		
 		//begin="{"
@@ -801,10 +802,10 @@ public class TextualScenarioGrammarAccess extends AbstractGrammarElementFinder {
 		//"{"
 		public Keyword getBeginLeftCurlyBracketKeyword_0_0() { return cBeginLeftCurlyBracketKeyword_0_0; }
 		
-		//blockElements+=(Message | Reference | CombinedFragment)*
+		//blockElements+=(Message | Reference | CombinedFragment | StateFragment)*
 		public Assignment getBlockElementsAssignment_1() { return cBlockElementsAssignment_1; }
 		
-		//(Message | Reference | CombinedFragment)
+		//(Message | Reference | CombinedFragment | StateFragment)
 		public Alternatives getBlockElementsAlternatives_1_0() { return cBlockElementsAlternatives_1_0; }
 		
 		//Message
@@ -815,6 +816,9 @@ public class TextualScenarioGrammarAccess extends AbstractGrammarElementFinder {
 		
 		//CombinedFragment
 		public RuleCall getBlockElementsCombinedFragmentParserRuleCall_1_0_2() { return cBlockElementsCombinedFragmentParserRuleCall_1_0_2; }
+		
+		//StateFragment
+		public RuleCall getBlockElementsStateFragmentParserRuleCall_1_0_3() { return cBlockElementsStateFragmentParserRuleCall_1_0_3; }
 		
 		//end="}"
 		public Assignment getEndAssignment_2() { return cEndAssignment_2; }
@@ -1189,7 +1193,7 @@ public class TextualScenarioGrammarAccess extends AbstractGrammarElementFinder {
 	}
 	
 	//Block:
-	//	begin="{" blockElements+=(Message | Reference | CombinedFragment)* end="}";
+	//	begin="{" blockElements+=(Message | Reference | CombinedFragment | StateFragment)* end="}";
 	public BlockElements getBlockAccess() {
 		return pBlock;
 	}

@@ -23,6 +23,7 @@ import org.polarsys.capella.scenario.editor.dsl.textualScenario.Message
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.Alt
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.ElseBlock
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.Block
+import org.polarsys.capella.scenario.editor.dsl.textualScenario.StateFragment
 
 class TextualScenarioFormatter extends AbstractFormatter2 {
 	
@@ -69,5 +70,9 @@ class TextualScenarioFormatter extends AbstractFormatter2 {
 		interior(begin, end)[indent]
 		
 		block.blockElements.forEach[ element | element.format ]
+	}
+	
+	def dispatch void format(StateFragment stateFragment, extension IFormattableDocument document) {
+		stateFragment.regionFor.feature(TextualScenarioPackage.Literals.STATE_FRAGMENT__NAME).append[newLine]
 	}
 }

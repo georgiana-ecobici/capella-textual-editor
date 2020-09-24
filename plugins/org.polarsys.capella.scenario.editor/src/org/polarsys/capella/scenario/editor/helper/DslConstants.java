@@ -24,4 +24,8 @@ public class DslConstants {
   public static final String WITH_EXECUTION = "withExecution";
   public static final String WITH_RETURN = "withReturn";
   public static final String ALT = "alt";
+  public static final String MODE = "mode";
+  public static final String STATE = "state";
+  public static final String ON = "on";
+  public static final String OVER = "over";
 }

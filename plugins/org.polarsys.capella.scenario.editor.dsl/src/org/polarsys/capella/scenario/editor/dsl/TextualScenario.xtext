@@ -104,7 +104,7 @@ ElseBlock:
 ;
 
 Block:
-	begin="{" (blockElements+=(Message|Reference|CombinedFragment))* end="}"
+	begin="{" (blockElements+=(Message | Reference | CombinedFragment | StateFragment))* end="}"
 ;
 
 
