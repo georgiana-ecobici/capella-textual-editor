@@ -20,10 +20,10 @@ import org.polarsys.capella.scenario.editor.dsl.textualScenario.Model
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.TextualScenarioPackage
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.Participant
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.Message
-import org.polarsys.capella.scenario.editor.dsl.textualScenario.Alt
-import org.polarsys.capella.scenario.editor.dsl.textualScenario.ElseBlock
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.Block
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.StateFragment
+import org.polarsys.capella.scenario.editor.dsl.textualScenario.CombinedFragment
+import org.polarsys.capella.scenario.editor.dsl.textualScenario.Operand
 
 class TextualScenarioFormatter extends AbstractFormatter2 {
 	
@@ -52,14 +52,14 @@ class TextualScenarioFormatter extends AbstractFormatter2 {
 		participant.regionFor.feature(TextualScenarioPackage.Literals.PARTICIPANT__NAME).append[newLine]
 	}
 	
-	def dispatch void format(Alt condition, extension IFormattableDocument document) {
-		format(condition.block, document)
-		condition.elseBlocks.forEach[ element | element.format ]
-		condition.append[newLine]
+	def dispatch void format(CombinedFragment fragment, extension IFormattableDocument document) {
+		format(fragment.block, document)
+		fragment.operands.forEach[ element | element.format ]
+		fragment.append[newLine]
 	}
 	
-	def dispatch void format(ElseBlock elseBlock, extension IFormattableDocument document) {
-		format(elseBlock.block, document)
+	def dispatch void format(Operand operand, extension IFormattableDocument document) {
+		format(operand.block, document)
 	}
 	
 	def dispatch void format(Block block, extension IFormattableDocument document) {

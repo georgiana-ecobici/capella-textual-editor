@@ -52,18 +52,18 @@
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute TextualScenario.ecore#//Reference/timelines"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute TextualScenario.ecore#//Reference/name"/>
     </genClasses>
-    <genClasses ecoreClass="TextualScenario.ecore#//CombinedFragment"/>
-    <genClasses ecoreClass="TextualScenario.ecore#//Alt">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute TextualScenario.ecore#//Alt/keyword"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute TextualScenario.ecore#//Alt/condition"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute TextualScenario.ecore#//Alt/over"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute TextualScenario.ecore#//Alt/timelines"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference TextualScenario.ecore#//Alt/block"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference TextualScenario.ecore#//Alt/elseBlocks"/>
+    <genClasses ecoreClass="TextualScenario.ecore#//CombinedFragment">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute TextualScenario.ecore#//CombinedFragment/keyword"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute TextualScenario.ecore#//CombinedFragment/expression"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute TextualScenario.ecore#//CombinedFragment/over"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute TextualScenario.ecore#//CombinedFragment/timelines"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference TextualScenario.ecore#//CombinedFragment/block"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference TextualScenario.ecore#//CombinedFragment/operands"/>
     </genClasses>
-    <genClasses ecoreClass="TextualScenario.ecore#//ElseBlock">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute TextualScenario.ecore#//ElseBlock/condition"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference TextualScenario.ecore#//ElseBlock/block"/>
+    <genClasses ecoreClass="TextualScenario.ecore#//Operand">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute TextualScenario.ecore#//Operand/keyword"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute TextualScenario.ecore#//Operand/expression"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference TextualScenario.ecore#//Operand/block"/>
     </genClasses>
     <genClasses ecoreClass="TextualScenario.ecore#//Block">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute TextualScenario.ecore#//Block/begin"/>

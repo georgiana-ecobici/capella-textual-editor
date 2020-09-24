@@ -1302,60 +1302,147 @@ ruleCombinedFragment returns [EObject current=null]
 @after {
 	leaveRule();
 }:
-	{
-		newCompositeNode(grammarAccess.getCombinedFragmentAccess().getAltParserRuleCall());
-	}
-	this_Alt_0=ruleAlt
-	{
-		$current = $this_Alt_0.current;
-		afterParserOrEnumRuleCall();
-	}
-;
-
-// Entry rule entryRuleAlt
-entryRuleAlt returns [EObject current=null]:
-	{ newCompositeNode(grammarAccess.getAltRule()); }
-	iv_ruleAlt=ruleAlt
-	{ $current=$iv_ruleAlt.current; }
-	EOF;
-
-// Rule Alt
-ruleAlt returns [EObject current=null]
-@init {
-	enterRule();
-}
-@after {
-	leaveRule();
-}:
 	(
 		(
 			(
-				lv_keyword_0_0='alt'
-				{
-					newLeafNode(lv_keyword_0_0, grammarAccess.getAltAccess().getKeywordAltKeyword_0_0());
-				}
-				{
-					if ($current==null) {
-						$current = createModelElement(grammarAccess.getAltRule());
+				(
+					lv_keyword_0_1='alt'
+					{
+						newLeafNode(lv_keyword_0_1, grammarAccess.getCombinedFragmentAccess().getKeywordAltKeyword_0_0_0());
 					}
-					setWithLastConsumed($current, "keyword", lv_keyword_0_0, "alt");
-				}
+					{
+						if ($current==null) {
+							$current = createModelElement(grammarAccess.getCombinedFragmentRule());
+						}
+						setWithLastConsumed($current, "keyword", lv_keyword_0_1, null);
+					}
+					    |
+					lv_keyword_0_2='loop'
+					{
+						newLeafNode(lv_keyword_0_2, grammarAccess.getCombinedFragmentAccess().getKeywordLoopKeyword_0_0_1());
+					}
+					{
+						if ($current==null) {
+							$current = createModelElement(grammarAccess.getCombinedFragmentRule());
+						}
+						setWithLastConsumed($current, "keyword", lv_keyword_0_2, null);
+					}
+					    |
+					lv_keyword_0_3='par'
+					{
+						newLeafNode(lv_keyword_0_3, grammarAccess.getCombinedFragmentAccess().getKeywordParKeyword_0_0_2());
+					}
+					{
+						if ($current==null) {
+							$current = createModelElement(grammarAccess.getCombinedFragmentRule());
+						}
+						setWithLastConsumed($current, "keyword", lv_keyword_0_3, null);
+					}
+					    |
+					lv_keyword_0_4='assert'
+					{
+						newLeafNode(lv_keyword_0_4, grammarAccess.getCombinedFragmentAccess().getKeywordAssertKeyword_0_0_3());
+					}
+					{
+						if ($current==null) {
+							$current = createModelElement(grammarAccess.getCombinedFragmentRule());
+						}
+						setWithLastConsumed($current, "keyword", lv_keyword_0_4, null);
+					}
+					    |
+					lv_keyword_0_5='critical'
+					{
+						newLeafNode(lv_keyword_0_5, grammarAccess.getCombinedFragmentAccess().getKeywordCriticalKeyword_0_0_4());
+					}
+					{
+						if ($current==null) {
+							$current = createModelElement(grammarAccess.getCombinedFragmentRule());
+						}
+						setWithLastConsumed($current, "keyword", lv_keyword_0_5, null);
+					}
+					    |
+					lv_keyword_0_6='ignore'
+					{
+						newLeafNode(lv_keyword_0_6, grammarAccess.getCombinedFragmentAccess().getKeywordIgnoreKeyword_0_0_5());
+					}
+					{
+						if ($current==null) {
+							$current = createModelElement(grammarAccess.getCombinedFragmentRule());
+						}
+						setWithLastConsumed($current, "keyword", lv_keyword_0_6, null);
+					}
+					    |
+					lv_keyword_0_7='neg'
+					{
+						newLeafNode(lv_keyword_0_7, grammarAccess.getCombinedFragmentAccess().getKeywordNegKeyword_0_0_6());
+					}
+					{
+						if ($current==null) {
+							$current = createModelElement(grammarAccess.getCombinedFragmentRule());
+						}
+						setWithLastConsumed($current, "keyword", lv_keyword_0_7, null);
+					}
+					    |
+					lv_keyword_0_8='opt'
+					{
+						newLeafNode(lv_keyword_0_8, grammarAccess.getCombinedFragmentAccess().getKeywordOptKeyword_0_0_7());
+					}
+					{
+						if ($current==null) {
+							$current = createModelElement(grammarAccess.getCombinedFragmentRule());
+						}
+						setWithLastConsumed($current, "keyword", lv_keyword_0_8, null);
+					}
+					    |
+					lv_keyword_0_9='seq'
+					{
+						newLeafNode(lv_keyword_0_9, grammarAccess.getCombinedFragmentAccess().getKeywordSeqKeyword_0_0_8());
+					}
+					{
+						if ($current==null) {
+							$current = createModelElement(grammarAccess.getCombinedFragmentRule());
+						}
+						setWithLastConsumed($current, "keyword", lv_keyword_0_9, null);
+					}
+					    |
+					lv_keyword_0_10='strict'
+					{
+						newLeafNode(lv_keyword_0_10, grammarAccess.getCombinedFragmentAccess().getKeywordStrictKeyword_0_0_9());
+					}
+					{
+						if ($current==null) {
+							$current = createModelElement(grammarAccess.getCombinedFragmentRule());
+						}
+						setWithLastConsumed($current, "keyword", lv_keyword_0_10, null);
+					}
+					    |
+					lv_keyword_0_11='unset'
+					{
+						newLeafNode(lv_keyword_0_11, grammarAccess.getCombinedFragmentAccess().getKeywordUnsetKeyword_0_0_10());
+					}
+					{
+						if ($current==null) {
+							$current = createModelElement(grammarAccess.getCombinedFragmentRule());
+						}
+						setWithLastConsumed($current, "keyword", lv_keyword_0_11, null);
+					}
+				)
 			)
 		)
 		(
 			(
-				lv_condition_1_0=RULE_STRING
+				lv_expression_1_0=RULE_STRING
 				{
-					newLeafNode(lv_condition_1_0, grammarAccess.getAltAccess().getConditionSTRINGTerminalRuleCall_1_0());
+					newLeafNode(lv_expression_1_0, grammarAccess.getCombinedFragmentAccess().getExpressionSTRINGTerminalRuleCall_1_0());
 				}
 				{
 					if ($current==null) {
-						$current = createModelElement(grammarAccess.getAltRule());
+						$current = createModelElement(grammarAccess.getCombinedFragmentRule());
 					}
 					setWithLastConsumed(
 						$current,
-						"condition",
-						lv_condition_1_0,
+						"expression",
+						lv_expression_1_0,
 						"org.eclipse.xtext.common.Terminals.STRING");
 				}
 			)
@@ -1364,11 +1451,11 @@ ruleAlt returns [EObject current=null]
 			(
 				lv_over_2_0='over'
 				{
-					newLeafNode(lv_over_2_0, grammarAccess.getAltAccess().getOverOverKeyword_2_0());
+					newLeafNode(lv_over_2_0, grammarAccess.getCombinedFragmentAccess().getOverOverKeyword_2_0());
 				}
 				{
 					if ($current==null) {
-						$current = createModelElement(grammarAccess.getAltRule());
+						$current = createModelElement(grammarAccess.getCombinedFragmentRule());
 					}
 					setWithLastConsumed($current, "over", lv_over_2_0, "over");
 				}
@@ -1378,11 +1465,11 @@ ruleAlt returns [EObject current=null]
 			(
 				lv_timelines_3_0=RULE_STRING
 				{
-					newLeafNode(lv_timelines_3_0, grammarAccess.getAltAccess().getTimelinesSTRINGTerminalRuleCall_3_0());
+					newLeafNode(lv_timelines_3_0, grammarAccess.getCombinedFragmentAccess().getTimelinesSTRINGTerminalRuleCall_3_0());
 				}
 				{
 					if ($current==null) {
-						$current = createModelElement(grammarAccess.getAltRule());
+						$current = createModelElement(grammarAccess.getCombinedFragmentRule());
 					}
 					addWithLastConsumed(
 						$current,
@@ -1395,12 +1482,12 @@ ruleAlt returns [EObject current=null]
 		(
 			(
 				{
-					newCompositeNode(grammarAccess.getAltAccess().getBlockBlockParserRuleCall_4_0());
+					newCompositeNode(grammarAccess.getCombinedFragmentAccess().getBlockBlockParserRuleCall_4_0());
 				}
 				lv_block_4_0=ruleBlock
 				{
 					if ($current==null) {
-						$current = createModelElementForParent(grammarAccess.getAltRule());
+						$current = createModelElementForParent(grammarAccess.getCombinedFragmentRule());
 					}
 					set(
 						$current,
@@ -1414,18 +1501,18 @@ ruleAlt returns [EObject current=null]
 		(
 			(
 				{
-					newCompositeNode(grammarAccess.getAltAccess().getElseBlocksElseBlockParserRuleCall_5_0());
+					newCompositeNode(grammarAccess.getCombinedFragmentAccess().getOperandsOperandParserRuleCall_5_0());
 				}
-				lv_elseBlocks_5_0=ruleElseBlock
+				lv_operands_5_0=ruleOperand
 				{
 					if ($current==null) {
-						$current = createModelElementForParent(grammarAccess.getAltRule());
+						$current = createModelElementForParent(grammarAccess.getCombinedFragmentRule());
 					}
 					add(
 						$current,
-						"elseBlocks",
-						lv_elseBlocks_5_0,
-						"org.polarsys.capella.scenario.editor.dsl.TextualScenario.ElseBlock");
+						"operands",
+						lv_operands_5_0,
+						"org.polarsys.capella.scenario.editor.dsl.TextualScenario.Operand");
 					afterParserOrEnumRuleCall();
 				}
 			)
@@ -1433,15 +1520,15 @@ ruleAlt returns [EObject current=null]
 	)
 ;
 
-// Entry rule entryRuleElseBlock
-entryRuleElseBlock returns [EObject current=null]:
-	{ newCompositeNode(grammarAccess.getElseBlockRule()); }
-	iv_ruleElseBlock=ruleElseBlock
-	{ $current=$iv_ruleElseBlock.current; }
+// Entry rule entryRuleOperand
+entryRuleOperand returns [EObject current=null]:
+	{ newCompositeNode(grammarAccess.getOperandRule()); }
+	iv_ruleOperand=ruleOperand
+	{ $current=$iv_ruleOperand.current; }
 	EOF;
 
-// Rule ElseBlock
-ruleElseBlock returns [EObject current=null]
+// Rule Operand
+ruleOperand returns [EObject current=null]
 @init {
 	enterRule();
 }
@@ -1449,24 +1536,34 @@ ruleElseBlock returns [EObject current=null]
 	leaveRule();
 }:
 	(
-		otherlv_0='else'
-		{
-			newLeafNode(otherlv_0, grammarAccess.getElseBlockAccess().getElseKeyword_0());
-		}
 		(
 			(
-				lv_condition_1_0=RULE_STRING
+				lv_keyword_0_0='else'
 				{
-					newLeafNode(lv_condition_1_0, grammarAccess.getElseBlockAccess().getConditionSTRINGTerminalRuleCall_1_0());
+					newLeafNode(lv_keyword_0_0, grammarAccess.getOperandAccess().getKeywordElseKeyword_0_0());
 				}
 				{
 					if ($current==null) {
-						$current = createModelElement(grammarAccess.getElseBlockRule());
+						$current = createModelElement(grammarAccess.getOperandRule());
+					}
+					setWithLastConsumed($current, "keyword", lv_keyword_0_0, "else");
+				}
+			)
+		)?
+		(
+			(
+				lv_expression_1_0=RULE_STRING
+				{
+					newLeafNode(lv_expression_1_0, grammarAccess.getOperandAccess().getExpressionSTRINGTerminalRuleCall_1_0());
+				}
+				{
+					if ($current==null) {
+						$current = createModelElement(grammarAccess.getOperandRule());
 					}
 					setWithLastConsumed(
 						$current,
-						"condition",
-						lv_condition_1_0,
+						"expression",
+						lv_expression_1_0,
 						"org.eclipse.xtext.common.Terminals.STRING");
 				}
 			)
@@ -1474,12 +1571,12 @@ ruleElseBlock returns [EObject current=null]
 		(
 			(
 				{
-					newCompositeNode(grammarAccess.getElseBlockAccess().getBlockBlockParserRuleCall_2_0());
+					newCompositeNode(grammarAccess.getOperandAccess().getBlockBlockParserRuleCall_2_0());
 				}
 				lv_block_2_0=ruleBlock
 				{
 					if ($current==null) {
-						$current = createModelElementForParent(grammarAccess.getElseBlockRule());
+						$current = createModelElementForParent(grammarAccess.getOperandRule());
 					}
 					set(
 						$current,

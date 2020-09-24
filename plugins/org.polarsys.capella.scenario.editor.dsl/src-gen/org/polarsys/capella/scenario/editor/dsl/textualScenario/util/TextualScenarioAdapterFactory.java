@@ -188,14 +188,9 @@ public class TextualScenarioAdapterFactory extends AdapterFactoryImpl
         return createCombinedFragmentAdapter();
       }
       @Override
-      public Adapter caseAlt(Alt object)
+      public Adapter caseOperand(Operand object)
       {
-        return createAltAdapter();
-      }
-      @Override
-      public Adapter caseElseBlock(ElseBlock object)
-      {
-        return createElseBlockAdapter();
+        return createOperandAdapter();
       }
       @Override
       public Adapter caseBlock(Block object)
@@ -530,31 +525,16 @@ public class TextualScenarioAdapterFactory extends AdapterFactoryImpl
   }
 
   /**
-   * Creates a new adapter for an object of class '{@link org.polarsys.capella.scenario.editor.dsl.textualScenario.Alt <em>Alt</em>}'.
+   * Creates a new adapter for an object of class '{@link org.polarsys.capella.scenario.editor.dsl.textualScenario.Operand <em>Operand</em>}'.
    * <!-- begin-user-doc -->
    * This default implementation returns null so that we can easily ignore cases;
    * it's useful to ignore a case when inheritance will catch all the cases anyway.
    * <!-- end-user-doc -->
    * @return the new adapter.
-   * @see org.polarsys.capella.scenario.editor.dsl.textualScenario.Alt
+   * @see org.polarsys.capella.scenario.editor.dsl.textualScenario.Operand
    * @generated
    */
-  public Adapter createAltAdapter()
-  {
-    return null;
-  }
-
-  /**
-   * Creates a new adapter for an object of class '{@link org.polarsys.capella.scenario.editor.dsl.textualScenario.ElseBlock <em>Else Block</em>}'.
-   * <!-- begin-user-doc -->
-   * This default implementation returns null so that we can easily ignore cases;
-   * it's useful to ignore a case when inheritance will catch all the cases anyway.
-   * <!-- end-user-doc -->
-   * @return the new adapter.
-   * @see org.polarsys.capella.scenario.editor.dsl.textualScenario.ElseBlock
-   * @generated
-   */
-  public Adapter createElseBlockAdapter()
+  public Adapter createOperandAdapter()
   {
     return null;
   }

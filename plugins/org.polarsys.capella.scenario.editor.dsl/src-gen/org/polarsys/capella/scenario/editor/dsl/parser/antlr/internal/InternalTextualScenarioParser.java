@@ -33,32 +33,18 @@ import java.util.ArrayList;
 @SuppressWarnings("all")
 public class InternalTextualScenarioParser extends AbstractInternalAntlrParser {
     public static final String[] tokenNames = new String[] {
-        "<invalid>", "<EOR>", "<DOWN>", "<UP>", "RULE_STRING", "RULE_ID", "RULE_INT", "RULE_ML_COMMENT", "RULE_SL_COMMENT", "RULE_WS", "RULE_ANY_OTHER", "'scenario'", "'{'", "'}'", "'actor'", "'component'", "'unset'", "'behavior'", "'node'", "'configuration_item'", "'function'", "'activity'", "'entity'", "'role'", "'->'", "'withExecution'", "'withReturn'", "':'", "'->+'", "'->x'", "'->>'", "'deactivate'", "'ref'", "'over'", "'alt'", "'else'", "'on'", "'state'", "'mode'"
+        "<invalid>", "<EOR>", "<DOWN>", "<UP>", "RULE_STRING", "RULE_ID", "RULE_INT", "RULE_ML_COMMENT", "RULE_SL_COMMENT", "RULE_WS", "RULE_ANY_OTHER", "'scenario'", "'{'", "'}'", "'actor'", "'component'", "'unset'", "'behavior'", "'node'", "'configuration_item'", "'function'", "'activity'", "'entity'", "'role'", "'->'", "'withExecution'", "'withReturn'", "':'", "'->+'", "'->x'", "'->>'", "'deactivate'", "'ref'", "'over'", "'alt'", "'loop'", "'par'", "'assert'", "'critical'", "'ignore'", "'neg'", "'opt'", "'seq'", "'strict'", "'else'", "'on'", "'state'", "'mode'"
     };
-    public static final int RULE_STRING=4;
-    public static final int RULE_SL_COMMENT=8;
     public static final int T__19=19;
     public static final int T__15=15;
-    public static final int T__37=37;
     public static final int T__16=16;
-    public static final int T__38=38;
     public static final int T__17=17;
     public static final int T__18=18;
     public static final int T__11=11;
-    public static final int T__33=33;
     public static final int T__12=12;
-    public static final int T__34=34;
     public static final int T__13=13;
-    public static final int T__35=35;
     public static final int T__14=14;
-    public static final int T__36=36;
-    public static final int EOF=-1;
-    public static final int T__30=30;
-    public static final int T__31=31;
-    public static final int T__32=32;
     public static final int RULE_ID=5;
-    public static final int RULE_WS=9;
-    public static final int RULE_ANY_OTHER=10;
     public static final int T__26=26;
     public static final int T__27=27;
     public static final int T__28=28;
@@ -71,6 +57,29 @@ public class InternalTextualScenarioParser extends AbstractInternalAntlrParser {
     public static final int T__25=25;
     public static final int T__20=20;
     public static final int T__21=21;
+    public static final int RULE_STRING=4;
+    public static final int RULE_SL_COMMENT=8;
+    public static final int T__37=37;
+    public static final int T__38=38;
+    public static final int T__39=39;
+    public static final int T__33=33;
+    public static final int T__34=34;
+    public static final int T__35=35;
+    public static final int T__36=36;
+    public static final int EOF=-1;
+    public static final int T__30=30;
+    public static final int T__31=31;
+    public static final int T__32=32;
+    public static final int RULE_WS=9;
+    public static final int RULE_ANY_OTHER=10;
+    public static final int T__44=44;
+    public static final int T__45=45;
+    public static final int T__46=46;
+    public static final int T__47=47;
+    public static final int T__40=40;
+    public static final int T__41=41;
+    public static final int T__42=42;
+    public static final int T__43=43;
 
     // delegates
     // delegators
@@ -257,7 +266,7 @@ public class InternalTextualScenarioParser extends AbstractInternalAntlrParser {
                 int alt3=2;
                 int LA3_0 = input.LA(1);
 
-                if ( (LA3_0==RULE_STRING||(LA3_0>=30 && LA3_0<=32)||LA3_0==34||LA3_0==36) ) {
+                if ( (LA3_0==RULE_STRING||LA3_0==16||(LA3_0>=30 && LA3_0<=32)||(LA3_0>=34 && LA3_0<=43)||LA3_0==45) ) {
                     alt3=1;
                 }
 
@@ -284,12 +293,22 @@ public class InternalTextualScenarioParser extends AbstractInternalAntlrParser {
             	        alt2=2;
             	        }
             	        break;
+            	    case 16:
             	    case 34:
+            	    case 35:
+            	    case 36:
+            	    case 37:
+            	    case 38:
+            	    case 39:
+            	    case 40:
+            	    case 41:
+            	    case 42:
+            	    case 43:
             	        {
             	        alt2=3;
             	        }
             	        break;
-            	    case 36:
+            	    case 45:
             	        {
             	        alt2=4;
             	        }
@@ -1157,7 +1176,21 @@ public class InternalTextualScenarioParser extends AbstractInternalAntlrParser {
             int alt8=2;
             int LA8_0 = input.LA(1);
 
-            if ( ((LA8_0>=16 && LA8_0<=18)) ) {
+            if ( (LA8_0==16) ) {
+                int LA8_1 = input.LA(2);
+
+                if ( (LA8_1==RULE_STRING) ) {
+                    int LA8_4 = input.LA(3);
+
+                    if ( (LA8_4==24||(LA8_4>=28 && LA8_4<=29)) ) {
+                        alt8=1;
+                    }
+                }
+                else if ( (LA8_1==EOF||(LA8_1>=13 && LA8_1<=16)||(LA8_1>=19 && LA8_1<=23)||(LA8_1>=30 && LA8_1<=32)||(LA8_1>=34 && LA8_1<=43)||LA8_1==45) ) {
+                    alt8=1;
+                }
+            }
+            else if ( ((LA8_0>=17 && LA8_0<=18)) ) {
                 alt8=1;
             }
             switch (alt8) {
@@ -2113,11 +2146,6 @@ public class InternalTextualScenarioParser extends AbstractInternalAntlrParser {
 
             if ( (LA10_0==RULE_STRING) ) {
                 switch ( input.LA(2) ) {
-                case 24:
-                    {
-                    alt10=1;
-                    }
-                    break;
                 case 28:
                     {
                     alt10=2;
@@ -2126,6 +2154,11 @@ public class InternalTextualScenarioParser extends AbstractInternalAntlrParser {
                 case 29:
                     {
                     alt10=3;
+                    }
+                    break;
+                case 24:
+                    {
+                    alt10=1;
                     }
                     break;
                 default:
@@ -3155,9 +3188,9 @@ public class InternalTextualScenarioParser extends AbstractInternalAntlrParser {
                     int LA13_1 = input.LA(2);
 
                     if ( (LA13_1==RULE_STRING) ) {
-                        int LA13_2 = input.LA(3);
+                        int LA13_3 = input.LA(3);
 
-                        if ( (LA13_2==EOF||LA13_2==RULE_STRING||LA13_2==13||(LA13_2>=30 && LA13_2<=32)||LA13_2==34||LA13_2==36) ) {
+                        if ( (LA13_3==EOF||LA13_3==RULE_STRING||LA13_3==13||LA13_3==16||(LA13_3>=30 && LA13_3<=32)||(LA13_3>=34 && LA13_3<=43)||LA13_3==45) ) {
                             alt13=1;
                         }
 
@@ -3290,32 +3323,485 @@ public class InternalTextualScenarioParser extends AbstractInternalAntlrParser {
 
 
     // $ANTLR start "ruleCombinedFragment"
-    // InternalTextualScenario.g:1298:1: ruleCombinedFragment returns [EObject current=null] : this_Alt_0= ruleAlt ;
+    // InternalTextualScenario.g:1298:1: ruleCombinedFragment returns [EObject current=null] : ( ( ( (lv_keyword_0_1= 'alt' | lv_keyword_0_2= 'loop' | lv_keyword_0_3= 'par' | lv_keyword_0_4= 'assert' | lv_keyword_0_5= 'critical' | lv_keyword_0_6= 'ignore' | lv_keyword_0_7= 'neg' | lv_keyword_0_8= 'opt' | lv_keyword_0_9= 'seq' | lv_keyword_0_10= 'strict' | lv_keyword_0_11= 'unset' ) ) ) ( (lv_expression_1_0= RULE_STRING ) ) ( (lv_over_2_0= 'over' ) ) ( (lv_timelines_3_0= RULE_STRING ) )+ ( (lv_block_4_0= ruleBlock ) ) ( (lv_operands_5_0= ruleOperand ) )* ) ;
     public final EObject ruleCombinedFragment() throws RecognitionException {
         EObject current = null;
 
-        EObject this_Alt_0 = null;
+        Token lv_keyword_0_1=null;
+        Token lv_keyword_0_2=null;
+        Token lv_keyword_0_3=null;
+        Token lv_keyword_0_4=null;
+        Token lv_keyword_0_5=null;
+        Token lv_keyword_0_6=null;
+        Token lv_keyword_0_7=null;
+        Token lv_keyword_0_8=null;
+        Token lv_keyword_0_9=null;
+        Token lv_keyword_0_10=null;
+        Token lv_keyword_0_11=null;
+        Token lv_expression_1_0=null;
+        Token lv_over_2_0=null;
+        Token lv_timelines_3_0=null;
+        EObject lv_block_4_0 = null;
+
+        EObject lv_operands_5_0 = null;
 
 
 
         	enterRule();
 
         try {
-            // InternalTextualScenario.g:1304:2: (this_Alt_0= ruleAlt )
-            // InternalTextualScenario.g:1305:2: this_Alt_0= ruleAlt
+            // InternalTextualScenario.g:1304:2: ( ( ( ( (lv_keyword_0_1= 'alt' | lv_keyword_0_2= 'loop' | lv_keyword_0_3= 'par' | lv_keyword_0_4= 'assert' | lv_keyword_0_5= 'critical' | lv_keyword_0_6= 'ignore' | lv_keyword_0_7= 'neg' | lv_keyword_0_8= 'opt' | lv_keyword_0_9= 'seq' | lv_keyword_0_10= 'strict' | lv_keyword_0_11= 'unset' ) ) ) ( (lv_expression_1_0= RULE_STRING ) ) ( (lv_over_2_0= 'over' ) ) ( (lv_timelines_3_0= RULE_STRING ) )+ ( (lv_block_4_0= ruleBlock ) ) ( (lv_operands_5_0= ruleOperand ) )* ) )
+            // InternalTextualScenario.g:1305:2: ( ( ( (lv_keyword_0_1= 'alt' | lv_keyword_0_2= 'loop' | lv_keyword_0_3= 'par' | lv_keyword_0_4= 'assert' | lv_keyword_0_5= 'critical' | lv_keyword_0_6= 'ignore' | lv_keyword_0_7= 'neg' | lv_keyword_0_8= 'opt' | lv_keyword_0_9= 'seq' | lv_keyword_0_10= 'strict' | lv_keyword_0_11= 'unset' ) ) ) ( (lv_expression_1_0= RULE_STRING ) ) ( (lv_over_2_0= 'over' ) ) ( (lv_timelines_3_0= RULE_STRING ) )+ ( (lv_block_4_0= ruleBlock ) ) ( (lv_operands_5_0= ruleOperand ) )* )
+            {
+            // InternalTextualScenario.g:1305:2: ( ( ( (lv_keyword_0_1= 'alt' | lv_keyword_0_2= 'loop' | lv_keyword_0_3= 'par' | lv_keyword_0_4= 'assert' | lv_keyword_0_5= 'critical' | lv_keyword_0_6= 'ignore' | lv_keyword_0_7= 'neg' | lv_keyword_0_8= 'opt' | lv_keyword_0_9= 'seq' | lv_keyword_0_10= 'strict' | lv_keyword_0_11= 'unset' ) ) ) ( (lv_expression_1_0= RULE_STRING ) ) ( (lv_over_2_0= 'over' ) ) ( (lv_timelines_3_0= RULE_STRING ) )+ ( (lv_block_4_0= ruleBlock ) ) ( (lv_operands_5_0= ruleOperand ) )* )
+            // InternalTextualScenario.g:1306:3: ( ( (lv_keyword_0_1= 'alt' | lv_keyword_0_2= 'loop' | lv_keyword_0_3= 'par' | lv_keyword_0_4= 'assert' | lv_keyword_0_5= 'critical' | lv_keyword_0_6= 'ignore' | lv_keyword_0_7= 'neg' | lv_keyword_0_8= 'opt' | lv_keyword_0_9= 'seq' | lv_keyword_0_10= 'strict' | lv_keyword_0_11= 'unset' ) ) ) ( (lv_expression_1_0= RULE_STRING ) ) ( (lv_over_2_0= 'over' ) ) ( (lv_timelines_3_0= RULE_STRING ) )+ ( (lv_block_4_0= ruleBlock ) ) ( (lv_operands_5_0= ruleOperand ) )*
+            {
+            // InternalTextualScenario.g:1306:3: ( ( (lv_keyword_0_1= 'alt' | lv_keyword_0_2= 'loop' | lv_keyword_0_3= 'par' | lv_keyword_0_4= 'assert' | lv_keyword_0_5= 'critical' | lv_keyword_0_6= 'ignore' | lv_keyword_0_7= 'neg' | lv_keyword_0_8= 'opt' | lv_keyword_0_9= 'seq' | lv_keyword_0_10= 'strict' | lv_keyword_0_11= 'unset' ) ) )
+            // InternalTextualScenario.g:1307:4: ( (lv_keyword_0_1= 'alt' | lv_keyword_0_2= 'loop' | lv_keyword_0_3= 'par' | lv_keyword_0_4= 'assert' | lv_keyword_0_5= 'critical' | lv_keyword_0_6= 'ignore' | lv_keyword_0_7= 'neg' | lv_keyword_0_8= 'opt' | lv_keyword_0_9= 'seq' | lv_keyword_0_10= 'strict' | lv_keyword_0_11= 'unset' ) )
+            {
+            // InternalTextualScenario.g:1307:4: ( (lv_keyword_0_1= 'alt' | lv_keyword_0_2= 'loop' | lv_keyword_0_3= 'par' | lv_keyword_0_4= 'assert' | lv_keyword_0_5= 'critical' | lv_keyword_0_6= 'ignore' | lv_keyword_0_7= 'neg' | lv_keyword_0_8= 'opt' | lv_keyword_0_9= 'seq' | lv_keyword_0_10= 'strict' | lv_keyword_0_11= 'unset' ) )
+            // InternalTextualScenario.g:1308:5: (lv_keyword_0_1= 'alt' | lv_keyword_0_2= 'loop' | lv_keyword_0_3= 'par' | lv_keyword_0_4= 'assert' | lv_keyword_0_5= 'critical' | lv_keyword_0_6= 'ignore' | lv_keyword_0_7= 'neg' | lv_keyword_0_8= 'opt' | lv_keyword_0_9= 'seq' | lv_keyword_0_10= 'strict' | lv_keyword_0_11= 'unset' )
+            {
+            // InternalTextualScenario.g:1308:5: (lv_keyword_0_1= 'alt' | lv_keyword_0_2= 'loop' | lv_keyword_0_3= 'par' | lv_keyword_0_4= 'assert' | lv_keyword_0_5= 'critical' | lv_keyword_0_6= 'ignore' | lv_keyword_0_7= 'neg' | lv_keyword_0_8= 'opt' | lv_keyword_0_9= 'seq' | lv_keyword_0_10= 'strict' | lv_keyword_0_11= 'unset' )
+            int alt14=11;
+            switch ( input.LA(1) ) {
+            case 34:
+                {
+                alt14=1;
+                }
+                break;
+            case 35:
+                {
+                alt14=2;
+                }
+                break;
+            case 36:
+                {
+                alt14=3;
+                }
+                break;
+            case 37:
+                {
+                alt14=4;
+                }
+                break;
+            case 38:
+                {
+                alt14=5;
+                }
+                break;
+            case 39:
+                {
+                alt14=6;
+                }
+                break;
+            case 40:
+                {
+                alt14=7;
+                }
+                break;
+            case 41:
+                {
+                alt14=8;
+                }
+                break;
+            case 42:
+                {
+                alt14=9;
+                }
+                break;
+            case 43:
+                {
+                alt14=10;
+                }
+                break;
+            case 16:
+                {
+                alt14=11;
+                }
+                break;
+            default:
+                NoViableAltException nvae =
+                    new NoViableAltException("", 14, 0, input);
+
+                throw nvae;
+            }
+
+            switch (alt14) {
+                case 1 :
+                    // InternalTextualScenario.g:1309:6: lv_keyword_0_1= 'alt'
+                    {
+                    lv_keyword_0_1=(Token)match(input,34,FOLLOW_6); 
+
+                    						newLeafNode(lv_keyword_0_1, grammarAccess.getCombinedFragmentAccess().getKeywordAltKeyword_0_0_0());
+                    					
+
+                    						if (current==null) {
+                    							current = createModelElement(grammarAccess.getCombinedFragmentRule());
+                    						}
+                    						setWithLastConsumed(current, "keyword", lv_keyword_0_1, null);
+                    					
+
+                    }
+                    break;
+                case 2 :
+                    // InternalTextualScenario.g:1320:6: lv_keyword_0_2= 'loop'
+                    {
+                    lv_keyword_0_2=(Token)match(input,35,FOLLOW_6); 
+
+                    						newLeafNode(lv_keyword_0_2, grammarAccess.getCombinedFragmentAccess().getKeywordLoopKeyword_0_0_1());
+                    					
+
+                    						if (current==null) {
+                    							current = createModelElement(grammarAccess.getCombinedFragmentRule());
+                    						}
+                    						setWithLastConsumed(current, "keyword", lv_keyword_0_2, null);
+                    					
+
+                    }
+                    break;
+                case 3 :
+                    // InternalTextualScenario.g:1331:6: lv_keyword_0_3= 'par'
+                    {
+                    lv_keyword_0_3=(Token)match(input,36,FOLLOW_6); 
+
+                    						newLeafNode(lv_keyword_0_3, grammarAccess.getCombinedFragmentAccess().getKeywordParKeyword_0_0_2());
+                    					
+
+                    						if (current==null) {
+                    							current = createModelElement(grammarAccess.getCombinedFragmentRule());
+                    						}
+                    						setWithLastConsumed(current, "keyword", lv_keyword_0_3, null);
+                    					
+
+                    }
+                    break;
+                case 4 :
+                    // InternalTextualScenario.g:1342:6: lv_keyword_0_4= 'assert'
+                    {
+                    lv_keyword_0_4=(Token)match(input,37,FOLLOW_6); 
+
+                    						newLeafNode(lv_keyword_0_4, grammarAccess.getCombinedFragmentAccess().getKeywordAssertKeyword_0_0_3());
+                    					
+
+                    						if (current==null) {
+                    							current = createModelElement(grammarAccess.getCombinedFragmentRule());
+                    						}
+                    						setWithLastConsumed(current, "keyword", lv_keyword_0_4, null);
+                    					
+
+                    }
+                    break;
+                case 5 :
+                    // InternalTextualScenario.g:1353:6: lv_keyword_0_5= 'critical'
+                    {
+                    lv_keyword_0_5=(Token)match(input,38,FOLLOW_6); 
+
+                    						newLeafNode(lv_keyword_0_5, grammarAccess.getCombinedFragmentAccess().getKeywordCriticalKeyword_0_0_4());
+                    					
+
+                    						if (current==null) {
+                    							current = createModelElement(grammarAccess.getCombinedFragmentRule());
+                    						}
+                    						setWithLastConsumed(current, "keyword", lv_keyword_0_5, null);
+                    					
+
+                    }
+                    break;
+                case 6 :
+                    // InternalTextualScenario.g:1364:6: lv_keyword_0_6= 'ignore'
+                    {
+                    lv_keyword_0_6=(Token)match(input,39,FOLLOW_6); 
+
+                    						newLeafNode(lv_keyword_0_6, grammarAccess.getCombinedFragmentAccess().getKeywordIgnoreKeyword_0_0_5());
+                    					
+
+                    						if (current==null) {
+                    							current = createModelElement(grammarAccess.getCombinedFragmentRule());
+                    						}
+                    						setWithLastConsumed(current, "keyword", lv_keyword_0_6, null);
+                    					
+
+                    }
+                    break;
+                case 7 :
+                    // InternalTextualScenario.g:1375:6: lv_keyword_0_7= 'neg'
+                    {
+                    lv_keyword_0_7=(Token)match(input,40,FOLLOW_6); 
+
+                    						newLeafNode(lv_keyword_0_7, grammarAccess.getCombinedFragmentAccess().getKeywordNegKeyword_0_0_6());
+                    					
+
+                    						if (current==null) {
+                    							current = createModelElement(grammarAccess.getCombinedFragmentRule());
+                    						}
+                    						setWithLastConsumed(current, "keyword", lv_keyword_0_7, null);
+                    					
+
+                    }
+                    break;
+                case 8 :
+                    // InternalTextualScenario.g:1386:6: lv_keyword_0_8= 'opt'
+                    {
+                    lv_keyword_0_8=(Token)match(input,41,FOLLOW_6); 
+
+                    						newLeafNode(lv_keyword_0_8, grammarAccess.getCombinedFragmentAccess().getKeywordOptKeyword_0_0_7());
+                    					
+
+                    						if (current==null) {
+                    							current = createModelElement(grammarAccess.getCombinedFragmentRule());
+                    						}
+                    						setWithLastConsumed(current, "keyword", lv_keyword_0_8, null);
+                    					
+
+                    }
+                    break;
+                case 9 :
+                    // InternalTextualScenario.g:1397:6: lv_keyword_0_9= 'seq'
+                    {
+                    lv_keyword_0_9=(Token)match(input,42,FOLLOW_6); 
+
+                    						newLeafNode(lv_keyword_0_9, grammarAccess.getCombinedFragmentAccess().getKeywordSeqKeyword_0_0_8());
+                    					
+
+                    						if (current==null) {
+                    							current = createModelElement(grammarAccess.getCombinedFragmentRule());
+                    						}
+                    						setWithLastConsumed(current, "keyword", lv_keyword_0_9, null);
+                    					
+
+                    }
+                    break;
+                case 10 :
+                    // InternalTextualScenario.g:1408:6: lv_keyword_0_10= 'strict'
+                    {
+                    lv_keyword_0_10=(Token)match(input,43,FOLLOW_6); 
+
+                    						newLeafNode(lv_keyword_0_10, grammarAccess.getCombinedFragmentAccess().getKeywordStrictKeyword_0_0_9());
+                    					
+
+                    						if (current==null) {
+                    							current = createModelElement(grammarAccess.getCombinedFragmentRule());
+                    						}
+                    						setWithLastConsumed(current, "keyword", lv_keyword_0_10, null);
+                    					
+
+                    }
+                    break;
+                case 11 :
+                    // InternalTextualScenario.g:1419:6: lv_keyword_0_11= 'unset'
+                    {
+                    lv_keyword_0_11=(Token)match(input,16,FOLLOW_6); 
+
+                    						newLeafNode(lv_keyword_0_11, grammarAccess.getCombinedFragmentAccess().getKeywordUnsetKeyword_0_0_10());
+                    					
+
+                    						if (current==null) {
+                    							current = createModelElement(grammarAccess.getCombinedFragmentRule());
+                    						}
+                    						setWithLastConsumed(current, "keyword", lv_keyword_0_11, null);
+                    					
+
+                    }
+                    break;
+
+            }
+
+
+            }
+
+
+            }
+
+            // InternalTextualScenario.g:1432:3: ( (lv_expression_1_0= RULE_STRING ) )
+            // InternalTextualScenario.g:1433:4: (lv_expression_1_0= RULE_STRING )
+            {
+            // InternalTextualScenario.g:1433:4: (lv_expression_1_0= RULE_STRING )
+            // InternalTextualScenario.g:1434:5: lv_expression_1_0= RULE_STRING
+            {
+            lv_expression_1_0=(Token)match(input,RULE_STRING,FOLLOW_14); 
+
+            					newLeafNode(lv_expression_1_0, grammarAccess.getCombinedFragmentAccess().getExpressionSTRINGTerminalRuleCall_1_0());
+            				
+
+            					if (current==null) {
+            						current = createModelElement(grammarAccess.getCombinedFragmentRule());
+            					}
+            					setWithLastConsumed(
+            						current,
+            						"expression",
+            						lv_expression_1_0,
+            						"org.eclipse.xtext.common.Terminals.STRING");
+            				
+
+            }
+
+
+            }
+
+            // InternalTextualScenario.g:1450:3: ( (lv_over_2_0= 'over' ) )
+            // InternalTextualScenario.g:1451:4: (lv_over_2_0= 'over' )
+            {
+            // InternalTextualScenario.g:1451:4: (lv_over_2_0= 'over' )
+            // InternalTextualScenario.g:1452:5: lv_over_2_0= 'over'
+            {
+            lv_over_2_0=(Token)match(input,33,FOLLOW_6); 
+
+            					newLeafNode(lv_over_2_0, grammarAccess.getCombinedFragmentAccess().getOverOverKeyword_2_0());
+            				
+
+            					if (current==null) {
+            						current = createModelElement(grammarAccess.getCombinedFragmentRule());
+            					}
+            					setWithLastConsumed(current, "over", lv_over_2_0, "over");
+            				
+
+            }
+
+
+            }
+
+            // InternalTextualScenario.g:1464:3: ( (lv_timelines_3_0= RULE_STRING ) )+
+            int cnt15=0;
+            loop15:
+            do {
+                int alt15=2;
+                int LA15_0 = input.LA(1);
+
+                if ( (LA15_0==RULE_STRING) ) {
+                    alt15=1;
+                }
+
+
+                switch (alt15) {
+            	case 1 :
+            	    // InternalTextualScenario.g:1465:4: (lv_timelines_3_0= RULE_STRING )
+            	    {
+            	    // InternalTextualScenario.g:1465:4: (lv_timelines_3_0= RULE_STRING )
+            	    // InternalTextualScenario.g:1466:5: lv_timelines_3_0= RULE_STRING
+            	    {
+            	    lv_timelines_3_0=(Token)match(input,RULE_STRING,FOLLOW_15); 
+
+            	    					newLeafNode(lv_timelines_3_0, grammarAccess.getCombinedFragmentAccess().getTimelinesSTRINGTerminalRuleCall_3_0());
+            	    				
+
+            	    					if (current==null) {
+            	    						current = createModelElement(grammarAccess.getCombinedFragmentRule());
+            	    					}
+            	    					addWithLastConsumed(
+            	    						current,
+            	    						"timelines",
+            	    						lv_timelines_3_0,
+            	    						"org.eclipse.xtext.common.Terminals.STRING");
+            	    				
+
+            	    }
+
+
+            	    }
+            	    break;
+
+            	default :
+            	    if ( cnt15 >= 1 ) break loop15;
+                        EarlyExitException eee =
+                            new EarlyExitException(15, input);
+                        throw eee;
+                }
+                cnt15++;
+            } while (true);
+
+            // InternalTextualScenario.g:1482:3: ( (lv_block_4_0= ruleBlock ) )
+            // InternalTextualScenario.g:1483:4: (lv_block_4_0= ruleBlock )
+            {
+            // InternalTextualScenario.g:1483:4: (lv_block_4_0= ruleBlock )
+            // InternalTextualScenario.g:1484:5: lv_block_4_0= ruleBlock
             {
 
-            		newCompositeNode(grammarAccess.getCombinedFragmentAccess().getAltParserRuleCall());
-            	
-            pushFollow(FOLLOW_2);
-            this_Alt_0=ruleAlt();
+            					newCompositeNode(grammarAccess.getCombinedFragmentAccess().getBlockBlockParserRuleCall_4_0());
+            				
+            pushFollow(FOLLOW_16);
+            lv_block_4_0=ruleBlock();
 
             state._fsp--;
 
 
-            		current = this_Alt_0;
-            		afterParserOrEnumRuleCall();
-            	
+            					if (current==null) {
+            						current = createModelElementForParent(grammarAccess.getCombinedFragmentRule());
+            					}
+            					set(
+            						current,
+            						"block",
+            						lv_block_4_0,
+            						"org.polarsys.capella.scenario.editor.dsl.TextualScenario.Block");
+            					afterParserOrEnumRuleCall();
+            				
+
+            }
+
+
+            }
+
+            // InternalTextualScenario.g:1501:3: ( (lv_operands_5_0= ruleOperand ) )*
+            loop16:
+            do {
+                int alt16=2;
+                int LA16_0 = input.LA(1);
+
+                if ( (LA16_0==RULE_STRING) ) {
+                    int LA16_2 = input.LA(2);
+
+                    if ( (LA16_2==12) ) {
+                        alt16=1;
+                    }
+
+
+                }
+                else if ( (LA16_0==44) ) {
+                    alt16=1;
+                }
+
+
+                switch (alt16) {
+            	case 1 :
+            	    // InternalTextualScenario.g:1502:4: (lv_operands_5_0= ruleOperand )
+            	    {
+            	    // InternalTextualScenario.g:1502:4: (lv_operands_5_0= ruleOperand )
+            	    // InternalTextualScenario.g:1503:5: lv_operands_5_0= ruleOperand
+            	    {
+
+            	    					newCompositeNode(grammarAccess.getCombinedFragmentAccess().getOperandsOperandParserRuleCall_5_0());
+            	    				
+            	    pushFollow(FOLLOW_16);
+            	    lv_operands_5_0=ruleOperand();
+
+            	    state._fsp--;
+
+
+            	    					if (current==null) {
+            	    						current = createModelElementForParent(grammarAccess.getCombinedFragmentRule());
+            	    					}
+            	    					add(
+            	    						current,
+            	    						"operands",
+            	    						lv_operands_5_0,
+            	    						"org.polarsys.capella.scenario.editor.dsl.TextualScenario.Operand");
+            	    					afterParserOrEnumRuleCall();
+            	    				
+
+            	    }
+
+
+            	    }
+            	    break;
+
+            	default :
+            	    break loop16;
+                }
+            } while (true);
+
+
+            }
+
 
             }
 
@@ -3335,25 +3821,25 @@ public class InternalTextualScenarioParser extends AbstractInternalAntlrParser {
     // $ANTLR end "ruleCombinedFragment"
 
 
-    // $ANTLR start "entryRuleAlt"
-    // InternalTextualScenario.g:1316:1: entryRuleAlt returns [EObject current=null] : iv_ruleAlt= ruleAlt EOF ;
-    public final EObject entryRuleAlt() throws RecognitionException {
+    // $ANTLR start "entryRuleOperand"
+    // InternalTextualScenario.g:1524:1: entryRuleOperand returns [EObject current=null] : iv_ruleOperand= ruleOperand EOF ;
+    public final EObject entryRuleOperand() throws RecognitionException {
         EObject current = null;
 
-        EObject iv_ruleAlt = null;
+        EObject iv_ruleOperand = null;
 
 
         try {
-            // InternalTextualScenario.g:1316:44: (iv_ruleAlt= ruleAlt EOF )
-            // InternalTextualScenario.g:1317:2: iv_ruleAlt= ruleAlt EOF
+            // InternalTextualScenario.g:1524:48: (iv_ruleOperand= ruleOperand EOF )
+            // InternalTextualScenario.g:1525:2: iv_ruleOperand= ruleOperand EOF
             {
-             newCompositeNode(grammarAccess.getAltRule()); 
+             newCompositeNode(grammarAccess.getOperandRule()); 
             pushFollow(FOLLOW_1);
-            iv_ruleAlt=ruleAlt();
+            iv_ruleOperand=ruleOperand();
 
             state._fsp--;
 
-             current =iv_ruleAlt; 
+             current =iv_ruleOperand; 
             match(input,EOF,FOLLOW_2); 
 
             }
@@ -3368,297 +3854,16 @@ public class InternalTextualScenarioParser extends AbstractInternalAntlrParser {
         }
         return current;
     }
-    // $ANTLR end "entryRuleAlt"
+    // $ANTLR end "entryRuleOperand"
 
 
-    // $ANTLR start "ruleAlt"
-    // InternalTextualScenario.g:1323:1: ruleAlt returns [EObject current=null] : ( ( (lv_keyword_0_0= 'alt' ) ) ( (lv_condition_1_0= RULE_STRING ) ) ( (lv_over_2_0= 'over' ) ) ( (lv_timelines_3_0= RULE_STRING ) )+ ( (lv_block_4_0= ruleBlock ) ) ( (lv_elseBlocks_5_0= ruleElseBlock ) )* ) ;
-    public final EObject ruleAlt() throws RecognitionException {
+    // $ANTLR start "ruleOperand"
+    // InternalTextualScenario.g:1531:1: ruleOperand returns [EObject current=null] : ( ( (lv_keyword_0_0= 'else' ) )? ( (lv_expression_1_0= RULE_STRING ) ) ( (lv_block_2_0= ruleBlock ) ) ) ;
+    public final EObject ruleOperand() throws RecognitionException {
         EObject current = null;
 
         Token lv_keyword_0_0=null;
-        Token lv_condition_1_0=null;
-        Token lv_over_2_0=null;
-        Token lv_timelines_3_0=null;
-        EObject lv_block_4_0 = null;
-
-        EObject lv_elseBlocks_5_0 = null;
-
-
-
-        	enterRule();
-
-        try {
-            // InternalTextualScenario.g:1329:2: ( ( ( (lv_keyword_0_0= 'alt' ) ) ( (lv_condition_1_0= RULE_STRING ) ) ( (lv_over_2_0= 'over' ) ) ( (lv_timelines_3_0= RULE_STRING ) )+ ( (lv_block_4_0= ruleBlock ) ) ( (lv_elseBlocks_5_0= ruleElseBlock ) )* ) )
-            // InternalTextualScenario.g:1330:2: ( ( (lv_keyword_0_0= 'alt' ) ) ( (lv_condition_1_0= RULE_STRING ) ) ( (lv_over_2_0= 'over' ) ) ( (lv_timelines_3_0= RULE_STRING ) )+ ( (lv_block_4_0= ruleBlock ) ) ( (lv_elseBlocks_5_0= ruleElseBlock ) )* )
-            {
-            // InternalTextualScenario.g:1330:2: ( ( (lv_keyword_0_0= 'alt' ) ) ( (lv_condition_1_0= RULE_STRING ) ) ( (lv_over_2_0= 'over' ) ) ( (lv_timelines_3_0= RULE_STRING ) )+ ( (lv_block_4_0= ruleBlock ) ) ( (lv_elseBlocks_5_0= ruleElseBlock ) )* )
-            // InternalTextualScenario.g:1331:3: ( (lv_keyword_0_0= 'alt' ) ) ( (lv_condition_1_0= RULE_STRING ) ) ( (lv_over_2_0= 'over' ) ) ( (lv_timelines_3_0= RULE_STRING ) )+ ( (lv_block_4_0= ruleBlock ) ) ( (lv_elseBlocks_5_0= ruleElseBlock ) )*
-            {
-            // InternalTextualScenario.g:1331:3: ( (lv_keyword_0_0= 'alt' ) )
-            // InternalTextualScenario.g:1332:4: (lv_keyword_0_0= 'alt' )
-            {
-            // InternalTextualScenario.g:1332:4: (lv_keyword_0_0= 'alt' )
-            // InternalTextualScenario.g:1333:5: lv_keyword_0_0= 'alt'
-            {
-            lv_keyword_0_0=(Token)match(input,34,FOLLOW_6); 
-
-            					newLeafNode(lv_keyword_0_0, grammarAccess.getAltAccess().getKeywordAltKeyword_0_0());
-            				
-
-            					if (current==null) {
-            						current = createModelElement(grammarAccess.getAltRule());
-            					}
-            					setWithLastConsumed(current, "keyword", lv_keyword_0_0, "alt");
-            				
-
-            }
-
-
-            }
-
-            // InternalTextualScenario.g:1345:3: ( (lv_condition_1_0= RULE_STRING ) )
-            // InternalTextualScenario.g:1346:4: (lv_condition_1_0= RULE_STRING )
-            {
-            // InternalTextualScenario.g:1346:4: (lv_condition_1_0= RULE_STRING )
-            // InternalTextualScenario.g:1347:5: lv_condition_1_0= RULE_STRING
-            {
-            lv_condition_1_0=(Token)match(input,RULE_STRING,FOLLOW_14); 
-
-            					newLeafNode(lv_condition_1_0, grammarAccess.getAltAccess().getConditionSTRINGTerminalRuleCall_1_0());
-            				
-
-            					if (current==null) {
-            						current = createModelElement(grammarAccess.getAltRule());
-            					}
-            					setWithLastConsumed(
-            						current,
-            						"condition",
-            						lv_condition_1_0,
-            						"org.eclipse.xtext.common.Terminals.STRING");
-            				
-
-            }
-
-
-            }
-
-            // InternalTextualScenario.g:1363:3: ( (lv_over_2_0= 'over' ) )
-            // InternalTextualScenario.g:1364:4: (lv_over_2_0= 'over' )
-            {
-            // InternalTextualScenario.g:1364:4: (lv_over_2_0= 'over' )
-            // InternalTextualScenario.g:1365:5: lv_over_2_0= 'over'
-            {
-            lv_over_2_0=(Token)match(input,33,FOLLOW_6); 
-
-            					newLeafNode(lv_over_2_0, grammarAccess.getAltAccess().getOverOverKeyword_2_0());
-            				
-
-            					if (current==null) {
-            						current = createModelElement(grammarAccess.getAltRule());
-            					}
-            					setWithLastConsumed(current, "over", lv_over_2_0, "over");
-            				
-
-            }
-
-
-            }
-
-            // InternalTextualScenario.g:1377:3: ( (lv_timelines_3_0= RULE_STRING ) )+
-            int cnt14=0;
-            loop14:
-            do {
-                int alt14=2;
-                int LA14_0 = input.LA(1);
-
-                if ( (LA14_0==RULE_STRING) ) {
-                    alt14=1;
-                }
-
-
-                switch (alt14) {
-            	case 1 :
-            	    // InternalTextualScenario.g:1378:4: (lv_timelines_3_0= RULE_STRING )
-            	    {
-            	    // InternalTextualScenario.g:1378:4: (lv_timelines_3_0= RULE_STRING )
-            	    // InternalTextualScenario.g:1379:5: lv_timelines_3_0= RULE_STRING
-            	    {
-            	    lv_timelines_3_0=(Token)match(input,RULE_STRING,FOLLOW_15); 
-
-            	    					newLeafNode(lv_timelines_3_0, grammarAccess.getAltAccess().getTimelinesSTRINGTerminalRuleCall_3_0());
-            	    				
-
-            	    					if (current==null) {
-            	    						current = createModelElement(grammarAccess.getAltRule());
-            	    					}
-            	    					addWithLastConsumed(
-            	    						current,
-            	    						"timelines",
-            	    						lv_timelines_3_0,
-            	    						"org.eclipse.xtext.common.Terminals.STRING");
-            	    				
-
-            	    }
-
-
-            	    }
-            	    break;
-
-            	default :
-            	    if ( cnt14 >= 1 ) break loop14;
-                        EarlyExitException eee =
-                            new EarlyExitException(14, input);
-                        throw eee;
-                }
-                cnt14++;
-            } while (true);
-
-            // InternalTextualScenario.g:1395:3: ( (lv_block_4_0= ruleBlock ) )
-            // InternalTextualScenario.g:1396:4: (lv_block_4_0= ruleBlock )
-            {
-            // InternalTextualScenario.g:1396:4: (lv_block_4_0= ruleBlock )
-            // InternalTextualScenario.g:1397:5: lv_block_4_0= ruleBlock
-            {
-
-            					newCompositeNode(grammarAccess.getAltAccess().getBlockBlockParserRuleCall_4_0());
-            				
-            pushFollow(FOLLOW_16);
-            lv_block_4_0=ruleBlock();
-
-            state._fsp--;
-
-
-            					if (current==null) {
-            						current = createModelElementForParent(grammarAccess.getAltRule());
-            					}
-            					set(
-            						current,
-            						"block",
-            						lv_block_4_0,
-            						"org.polarsys.capella.scenario.editor.dsl.TextualScenario.Block");
-            					afterParserOrEnumRuleCall();
-            				
-
-            }
-
-
-            }
-
-            // InternalTextualScenario.g:1414:3: ( (lv_elseBlocks_5_0= ruleElseBlock ) )*
-            loop15:
-            do {
-                int alt15=2;
-                int LA15_0 = input.LA(1);
-
-                if ( (LA15_0==35) ) {
-                    alt15=1;
-                }
-
-
-                switch (alt15) {
-            	case 1 :
-            	    // InternalTextualScenario.g:1415:4: (lv_elseBlocks_5_0= ruleElseBlock )
-            	    {
-            	    // InternalTextualScenario.g:1415:4: (lv_elseBlocks_5_0= ruleElseBlock )
-            	    // InternalTextualScenario.g:1416:5: lv_elseBlocks_5_0= ruleElseBlock
-            	    {
-
-            	    					newCompositeNode(grammarAccess.getAltAccess().getElseBlocksElseBlockParserRuleCall_5_0());
-            	    				
-            	    pushFollow(FOLLOW_16);
-            	    lv_elseBlocks_5_0=ruleElseBlock();
-
-            	    state._fsp--;
-
-
-            	    					if (current==null) {
-            	    						current = createModelElementForParent(grammarAccess.getAltRule());
-            	    					}
-            	    					add(
-            	    						current,
-            	    						"elseBlocks",
-            	    						lv_elseBlocks_5_0,
-            	    						"org.polarsys.capella.scenario.editor.dsl.TextualScenario.ElseBlock");
-            	    					afterParserOrEnumRuleCall();
-            	    				
-
-            	    }
-
-
-            	    }
-            	    break;
-
-            	default :
-            	    break loop15;
-                }
-            } while (true);
-
-
-            }
-
-
-            }
-
-
-            	leaveRule();
-
-        }
-
-            catch (RecognitionException re) {
-                recover(input,re);
-                appendSkippedTokens();
-            }
-        finally {
-        }
-        return current;
-    }
-    // $ANTLR end "ruleAlt"
-
-
-    // $ANTLR start "entryRuleElseBlock"
-    // InternalTextualScenario.g:1437:1: entryRuleElseBlock returns [EObject current=null] : iv_ruleElseBlock= ruleElseBlock EOF ;
-    public final EObject entryRuleElseBlock() throws RecognitionException {
-        EObject current = null;
-
-        EObject iv_ruleElseBlock = null;
-
-
-        try {
-            // InternalTextualScenario.g:1437:50: (iv_ruleElseBlock= ruleElseBlock EOF )
-            // InternalTextualScenario.g:1438:2: iv_ruleElseBlock= ruleElseBlock EOF
-            {
-             newCompositeNode(grammarAccess.getElseBlockRule()); 
-            pushFollow(FOLLOW_1);
-            iv_ruleElseBlock=ruleElseBlock();
-
-            state._fsp--;
-
-             current =iv_ruleElseBlock; 
-            match(input,EOF,FOLLOW_2); 
-
-            }
-
-        }
-
-            catch (RecognitionException re) {
-                recover(input,re);
-                appendSkippedTokens();
-            }
-        finally {
-        }
-        return current;
-    }
-    // $ANTLR end "entryRuleElseBlock"
-
-
-    // $ANTLR start "ruleElseBlock"
-    // InternalTextualScenario.g:1444:1: ruleElseBlock returns [EObject current=null] : (otherlv_0= 'else' ( (lv_condition_1_0= RULE_STRING ) ) ( (lv_block_2_0= ruleBlock ) ) ) ;
-    public final EObject ruleElseBlock() throws RecognitionException {
-        EObject current = null;
-
-        Token otherlv_0=null;
-        Token lv_condition_1_0=null;
+        Token lv_expression_1_0=null;
         EObject lv_block_2_0 = null;
 
 
@@ -3666,34 +3871,63 @@ public class InternalTextualScenarioParser extends AbstractInternalAntlrParser {
         	enterRule();
 
         try {
-            // InternalTextualScenario.g:1450:2: ( (otherlv_0= 'else' ( (lv_condition_1_0= RULE_STRING ) ) ( (lv_block_2_0= ruleBlock ) ) ) )
-            // InternalTextualScenario.g:1451:2: (otherlv_0= 'else' ( (lv_condition_1_0= RULE_STRING ) ) ( (lv_block_2_0= ruleBlock ) ) )
+            // InternalTextualScenario.g:1537:2: ( ( ( (lv_keyword_0_0= 'else' ) )? ( (lv_expression_1_0= RULE_STRING ) ) ( (lv_block_2_0= ruleBlock ) ) ) )
+            // InternalTextualScenario.g:1538:2: ( ( (lv_keyword_0_0= 'else' ) )? ( (lv_expression_1_0= RULE_STRING ) ) ( (lv_block_2_0= ruleBlock ) ) )
             {
-            // InternalTextualScenario.g:1451:2: (otherlv_0= 'else' ( (lv_condition_1_0= RULE_STRING ) ) ( (lv_block_2_0= ruleBlock ) ) )
-            // InternalTextualScenario.g:1452:3: otherlv_0= 'else' ( (lv_condition_1_0= RULE_STRING ) ) ( (lv_block_2_0= ruleBlock ) )
+            // InternalTextualScenario.g:1538:2: ( ( (lv_keyword_0_0= 'else' ) )? ( (lv_expression_1_0= RULE_STRING ) ) ( (lv_block_2_0= ruleBlock ) ) )
+            // InternalTextualScenario.g:1539:3: ( (lv_keyword_0_0= 'else' ) )? ( (lv_expression_1_0= RULE_STRING ) ) ( (lv_block_2_0= ruleBlock ) )
             {
-            otherlv_0=(Token)match(input,35,FOLLOW_6); 
+            // InternalTextualScenario.g:1539:3: ( (lv_keyword_0_0= 'else' ) )?
+            int alt17=2;
+            int LA17_0 = input.LA(1);
 
-            			newLeafNode(otherlv_0, grammarAccess.getElseBlockAccess().getElseKeyword_0());
-            		
-            // InternalTextualScenario.g:1456:3: ( (lv_condition_1_0= RULE_STRING ) )
-            // InternalTextualScenario.g:1457:4: (lv_condition_1_0= RULE_STRING )
-            {
-            // InternalTextualScenario.g:1457:4: (lv_condition_1_0= RULE_STRING )
-            // InternalTextualScenario.g:1458:5: lv_condition_1_0= RULE_STRING
-            {
-            lv_condition_1_0=(Token)match(input,RULE_STRING,FOLLOW_3); 
+            if ( (LA17_0==44) ) {
+                alt17=1;
+            }
+            switch (alt17) {
+                case 1 :
+                    // InternalTextualScenario.g:1540:4: (lv_keyword_0_0= 'else' )
+                    {
+                    // InternalTextualScenario.g:1540:4: (lv_keyword_0_0= 'else' )
+                    // InternalTextualScenario.g:1541:5: lv_keyword_0_0= 'else'
+                    {
+                    lv_keyword_0_0=(Token)match(input,44,FOLLOW_6); 
 
-            					newLeafNode(lv_condition_1_0, grammarAccess.getElseBlockAccess().getConditionSTRINGTerminalRuleCall_1_0());
+                    					newLeafNode(lv_keyword_0_0, grammarAccess.getOperandAccess().getKeywordElseKeyword_0_0());
+                    				
+
+                    					if (current==null) {
+                    						current = createModelElement(grammarAccess.getOperandRule());
+                    					}
+                    					setWithLastConsumed(current, "keyword", lv_keyword_0_0, "else");
+                    				
+
+                    }
+
+
+                    }
+                    break;
+
+            }
+
+            // InternalTextualScenario.g:1553:3: ( (lv_expression_1_0= RULE_STRING ) )
+            // InternalTextualScenario.g:1554:4: (lv_expression_1_0= RULE_STRING )
+            {
+            // InternalTextualScenario.g:1554:4: (lv_expression_1_0= RULE_STRING )
+            // InternalTextualScenario.g:1555:5: lv_expression_1_0= RULE_STRING
+            {
+            lv_expression_1_0=(Token)match(input,RULE_STRING,FOLLOW_3); 
+
+            					newLeafNode(lv_expression_1_0, grammarAccess.getOperandAccess().getExpressionSTRINGTerminalRuleCall_1_0());
             				
 
             					if (current==null) {
-            						current = createModelElement(grammarAccess.getElseBlockRule());
+            						current = createModelElement(grammarAccess.getOperandRule());
             					}
             					setWithLastConsumed(
             						current,
-            						"condition",
-            						lv_condition_1_0,
+            						"expression",
+            						lv_expression_1_0,
             						"org.eclipse.xtext.common.Terminals.STRING");
             				
 
@@ -3702,14 +3936,14 @@ public class InternalTextualScenarioParser extends AbstractInternalAntlrParser {
 
             }
 
-            // InternalTextualScenario.g:1474:3: ( (lv_block_2_0= ruleBlock ) )
-            // InternalTextualScenario.g:1475:4: (lv_block_2_0= ruleBlock )
+            // InternalTextualScenario.g:1571:3: ( (lv_block_2_0= ruleBlock ) )
+            // InternalTextualScenario.g:1572:4: (lv_block_2_0= ruleBlock )
             {
-            // InternalTextualScenario.g:1475:4: (lv_block_2_0= ruleBlock )
-            // InternalTextualScenario.g:1476:5: lv_block_2_0= ruleBlock
+            // InternalTextualScenario.g:1572:4: (lv_block_2_0= ruleBlock )
+            // InternalTextualScenario.g:1573:5: lv_block_2_0= ruleBlock
             {
 
-            					newCompositeNode(grammarAccess.getElseBlockAccess().getBlockBlockParserRuleCall_2_0());
+            					newCompositeNode(grammarAccess.getOperandAccess().getBlockBlockParserRuleCall_2_0());
             				
             pushFollow(FOLLOW_2);
             lv_block_2_0=ruleBlock();
@@ -3718,7 +3952,7 @@ public class InternalTextualScenarioParser extends AbstractInternalAntlrParser {
 
 
             					if (current==null) {
-            						current = createModelElementForParent(grammarAccess.getElseBlockRule());
+            						current = createModelElementForParent(grammarAccess.getOperandRule());
             					}
             					set(
             						current,
@@ -3752,11 +3986,11 @@ public class InternalTextualScenarioParser extends AbstractInternalAntlrParser {
         }
         return current;
     }
-    // $ANTLR end "ruleElseBlock"
+    // $ANTLR end "ruleOperand"
 
 
     // $ANTLR start "entryRuleBlock"
-    // InternalTextualScenario.g:1497:1: entryRuleBlock returns [EObject current=null] : iv_ruleBlock= ruleBlock EOF ;
+    // InternalTextualScenario.g:1594:1: entryRuleBlock returns [EObject current=null] : iv_ruleBlock= ruleBlock EOF ;
     public final EObject entryRuleBlock() throws RecognitionException {
         EObject current = null;
 
@@ -3764,8 +3998,8 @@ public class InternalTextualScenarioParser extends AbstractInternalAntlrParser {
 
 
         try {
-            // InternalTextualScenario.g:1497:46: (iv_ruleBlock= ruleBlock EOF )
-            // InternalTextualScenario.g:1498:2: iv_ruleBlock= ruleBlock EOF
+            // InternalTextualScenario.g:1594:46: (iv_ruleBlock= ruleBlock EOF )
+            // InternalTextualScenario.g:1595:2: iv_ruleBlock= ruleBlock EOF
             {
              newCompositeNode(grammarAccess.getBlockRule()); 
             pushFollow(FOLLOW_1);
@@ -3792,7 +4026,7 @@ public class InternalTextualScenarioParser extends AbstractInternalAntlrParser {
 
 
     // $ANTLR start "ruleBlock"
-    // InternalTextualScenario.g:1504:1: ruleBlock returns [EObject current=null] : ( ( (lv_begin_0_0= '{' ) ) ( ( (lv_blockElements_1_1= ruleMessage | lv_blockElements_1_2= ruleReference | lv_blockElements_1_3= ruleCombinedFragment | lv_blockElements_1_4= ruleStateFragment ) ) )* ( (lv_end_2_0= '}' ) ) ) ;
+    // InternalTextualScenario.g:1601:1: ruleBlock returns [EObject current=null] : ( ( (lv_begin_0_0= '{' ) ) ( ( (lv_blockElements_1_1= ruleMessage | lv_blockElements_1_2= ruleReference | lv_blockElements_1_3= ruleCombinedFragment | lv_blockElements_1_4= ruleStateFragment ) ) )* ( (lv_end_2_0= '}' ) ) ) ;
     public final EObject ruleBlock() throws RecognitionException {
         EObject current = null;
 
@@ -3811,17 +4045,17 @@ public class InternalTextualScenarioParser extends AbstractInternalAntlrParser {
         	enterRule();
 
         try {
-            // InternalTextualScenario.g:1510:2: ( ( ( (lv_begin_0_0= '{' ) ) ( ( (lv_blockElements_1_1= ruleMessage | lv_blockElements_1_2= ruleReference | lv_blockElements_1_3= ruleCombinedFragment | lv_blockElements_1_4= ruleStateFragment ) ) )* ( (lv_end_2_0= '}' ) ) ) )
-            // InternalTextualScenario.g:1511:2: ( ( (lv_begin_0_0= '{' ) ) ( ( (lv_blockElements_1_1= ruleMessage | lv_blockElements_1_2= ruleReference | lv_blockElements_1_3= ruleCombinedFragment | lv_blockElements_1_4= ruleStateFragment ) ) )* ( (lv_end_2_0= '}' ) ) )
+            // InternalTextualScenario.g:1607:2: ( ( ( (lv_begin_0_0= '{' ) ) ( ( (lv_blockElements_1_1= ruleMessage | lv_blockElements_1_2= ruleReference | lv_blockElements_1_3= ruleCombinedFragment | lv_blockElements_1_4= ruleStateFragment ) ) )* ( (lv_end_2_0= '}' ) ) ) )
+            // InternalTextualScenario.g:1608:2: ( ( (lv_begin_0_0= '{' ) ) ( ( (lv_blockElements_1_1= ruleMessage | lv_blockElements_1_2= ruleReference | lv_blockElements_1_3= ruleCombinedFragment | lv_blockElements_1_4= ruleStateFragment ) ) )* ( (lv_end_2_0= '}' ) ) )
             {
-            // InternalTextualScenario.g:1511:2: ( ( (lv_begin_0_0= '{' ) ) ( ( (lv_blockElements_1_1= ruleMessage | lv_blockElements_1_2= ruleReference | lv_blockElements_1_3= ruleCombinedFragment | lv_blockElements_1_4= ruleStateFragment ) ) )* ( (lv_end_2_0= '}' ) ) )
-            // InternalTextualScenario.g:1512:3: ( (lv_begin_0_0= '{' ) ) ( ( (lv_blockElements_1_1= ruleMessage | lv_blockElements_1_2= ruleReference | lv_blockElements_1_3= ruleCombinedFragment | lv_blockElements_1_4= ruleStateFragment ) ) )* ( (lv_end_2_0= '}' ) )
+            // InternalTextualScenario.g:1608:2: ( ( (lv_begin_0_0= '{' ) ) ( ( (lv_blockElements_1_1= ruleMessage | lv_blockElements_1_2= ruleReference | lv_blockElements_1_3= ruleCombinedFragment | lv_blockElements_1_4= ruleStateFragment ) ) )* ( (lv_end_2_0= '}' ) ) )
+            // InternalTextualScenario.g:1609:3: ( (lv_begin_0_0= '{' ) ) ( ( (lv_blockElements_1_1= ruleMessage | lv_blockElements_1_2= ruleReference | lv_blockElements_1_3= ruleCombinedFragment | lv_blockElements_1_4= ruleStateFragment ) ) )* ( (lv_end_2_0= '}' ) )
             {
-            // InternalTextualScenario.g:1512:3: ( (lv_begin_0_0= '{' ) )
-            // InternalTextualScenario.g:1513:4: (lv_begin_0_0= '{' )
+            // InternalTextualScenario.g:1609:3: ( (lv_begin_0_0= '{' ) )
+            // InternalTextualScenario.g:1610:4: (lv_begin_0_0= '{' )
             {
-            // InternalTextualScenario.g:1513:4: (lv_begin_0_0= '{' )
-            // InternalTextualScenario.g:1514:5: lv_begin_0_0= '{'
+            // InternalTextualScenario.g:1610:4: (lv_begin_0_0= '{' )
+            // InternalTextualScenario.g:1611:5: lv_begin_0_0= '{'
             {
             lv_begin_0_0=(Token)match(input,12,FOLLOW_5); 
 
@@ -3839,59 +4073,69 @@ public class InternalTextualScenarioParser extends AbstractInternalAntlrParser {
 
             }
 
-            // InternalTextualScenario.g:1526:3: ( ( (lv_blockElements_1_1= ruleMessage | lv_blockElements_1_2= ruleReference | lv_blockElements_1_3= ruleCombinedFragment | lv_blockElements_1_4= ruleStateFragment ) ) )*
-            loop17:
+            // InternalTextualScenario.g:1623:3: ( ( (lv_blockElements_1_1= ruleMessage | lv_blockElements_1_2= ruleReference | lv_blockElements_1_3= ruleCombinedFragment | lv_blockElements_1_4= ruleStateFragment ) ) )*
+            loop19:
             do {
-                int alt17=2;
-                int LA17_0 = input.LA(1);
+                int alt19=2;
+                int LA19_0 = input.LA(1);
 
-                if ( (LA17_0==RULE_STRING||(LA17_0>=30 && LA17_0<=32)||LA17_0==34||LA17_0==36) ) {
-                    alt17=1;
+                if ( (LA19_0==RULE_STRING||LA19_0==16||(LA19_0>=30 && LA19_0<=32)||(LA19_0>=34 && LA19_0<=43)||LA19_0==45) ) {
+                    alt19=1;
                 }
 
 
-                switch (alt17) {
+                switch (alt19) {
             	case 1 :
-            	    // InternalTextualScenario.g:1527:4: ( (lv_blockElements_1_1= ruleMessage | lv_blockElements_1_2= ruleReference | lv_blockElements_1_3= ruleCombinedFragment | lv_blockElements_1_4= ruleStateFragment ) )
+            	    // InternalTextualScenario.g:1624:4: ( (lv_blockElements_1_1= ruleMessage | lv_blockElements_1_2= ruleReference | lv_blockElements_1_3= ruleCombinedFragment | lv_blockElements_1_4= ruleStateFragment ) )
             	    {
-            	    // InternalTextualScenario.g:1527:4: ( (lv_blockElements_1_1= ruleMessage | lv_blockElements_1_2= ruleReference | lv_blockElements_1_3= ruleCombinedFragment | lv_blockElements_1_4= ruleStateFragment ) )
-            	    // InternalTextualScenario.g:1528:5: (lv_blockElements_1_1= ruleMessage | lv_blockElements_1_2= ruleReference | lv_blockElements_1_3= ruleCombinedFragment | lv_blockElements_1_4= ruleStateFragment )
+            	    // InternalTextualScenario.g:1624:4: ( (lv_blockElements_1_1= ruleMessage | lv_blockElements_1_2= ruleReference | lv_blockElements_1_3= ruleCombinedFragment | lv_blockElements_1_4= ruleStateFragment ) )
+            	    // InternalTextualScenario.g:1625:5: (lv_blockElements_1_1= ruleMessage | lv_blockElements_1_2= ruleReference | lv_blockElements_1_3= ruleCombinedFragment | lv_blockElements_1_4= ruleStateFragment )
             	    {
-            	    // InternalTextualScenario.g:1528:5: (lv_blockElements_1_1= ruleMessage | lv_blockElements_1_2= ruleReference | lv_blockElements_1_3= ruleCombinedFragment | lv_blockElements_1_4= ruleStateFragment )
-            	    int alt16=4;
+            	    // InternalTextualScenario.g:1625:5: (lv_blockElements_1_1= ruleMessage | lv_blockElements_1_2= ruleReference | lv_blockElements_1_3= ruleCombinedFragment | lv_blockElements_1_4= ruleStateFragment )
+            	    int alt18=4;
             	    switch ( input.LA(1) ) {
             	    case RULE_STRING:
             	    case 30:
             	    case 31:
             	        {
-            	        alt16=1;
+            	        alt18=1;
             	        }
             	        break;
             	    case 32:
             	        {
-            	        alt16=2;
+            	        alt18=2;
             	        }
             	        break;
+            	    case 16:
             	    case 34:
+            	    case 35:
+            	    case 36:
+            	    case 37:
+            	    case 38:
+            	    case 39:
+            	    case 40:
+            	    case 41:
+            	    case 42:
+            	    case 43:
             	        {
-            	        alt16=3;
+            	        alt18=3;
             	        }
             	        break;
-            	    case 36:
+            	    case 45:
             	        {
-            	        alt16=4;
+            	        alt18=4;
             	        }
             	        break;
             	    default:
             	        NoViableAltException nvae =
-            	            new NoViableAltException("", 16, 0, input);
+            	            new NoViableAltException("", 18, 0, input);
 
             	        throw nvae;
             	    }
 
-            	    switch (alt16) {
+            	    switch (alt18) {
             	        case 1 :
-            	            // InternalTextualScenario.g:1529:6: lv_blockElements_1_1= ruleMessage
+            	            // InternalTextualScenario.g:1626:6: lv_blockElements_1_1= ruleMessage
             	            {
 
             	            						newCompositeNode(grammarAccess.getBlockAccess().getBlockElementsMessageParserRuleCall_1_0_0());
@@ -3916,7 +4160,7 @@ public class InternalTextualScenarioParser extends AbstractInternalAntlrParser {
             	            }
             	            break;
             	        case 2 :
-            	            // InternalTextualScenario.g:1545:6: lv_blockElements_1_2= ruleReference
+            	            // InternalTextualScenario.g:1642:6: lv_blockElements_1_2= ruleReference
             	            {
 
             	            						newCompositeNode(grammarAccess.getBlockAccess().getBlockElementsReferenceParserRuleCall_1_0_1());
@@ -3941,7 +4185,7 @@ public class InternalTextualScenarioParser extends AbstractInternalAntlrParser {
             	            }
             	            break;
             	        case 3 :
-            	            // InternalTextualScenario.g:1561:6: lv_blockElements_1_3= ruleCombinedFragment
+            	            // InternalTextualScenario.g:1658:6: lv_blockElements_1_3= ruleCombinedFragment
             	            {
 
             	            						newCompositeNode(grammarAccess.getBlockAccess().getBlockElementsCombinedFragmentParserRuleCall_1_0_2());
@@ -3966,7 +4210,7 @@ public class InternalTextualScenarioParser extends AbstractInternalAntlrParser {
             	            }
             	            break;
             	        case 4 :
-            	            // InternalTextualScenario.g:1577:6: lv_blockElements_1_4= ruleStateFragment
+            	            // InternalTextualScenario.g:1674:6: lv_blockElements_1_4= ruleStateFragment
             	            {
 
             	            						newCompositeNode(grammarAccess.getBlockAccess().getBlockElementsStateFragmentParserRuleCall_1_0_3());
@@ -4001,15 +4245,15 @@ public class InternalTextualScenarioParser extends AbstractInternalAntlrParser {
             	    break;
 
             	default :
-            	    break loop17;
+            	    break loop19;
                 }
             } while (true);
 
-            // InternalTextualScenario.g:1595:3: ( (lv_end_2_0= '}' ) )
-            // InternalTextualScenario.g:1596:4: (lv_end_2_0= '}' )
+            // InternalTextualScenario.g:1692:3: ( (lv_end_2_0= '}' ) )
+            // InternalTextualScenario.g:1693:4: (lv_end_2_0= '}' )
             {
-            // InternalTextualScenario.g:1596:4: (lv_end_2_0= '}' )
-            // InternalTextualScenario.g:1597:5: lv_end_2_0= '}'
+            // InternalTextualScenario.g:1693:4: (lv_end_2_0= '}' )
+            // InternalTextualScenario.g:1694:5: lv_end_2_0= '}'
             {
             lv_end_2_0=(Token)match(input,13,FOLLOW_2); 
 
@@ -4050,7 +4294,7 @@ public class InternalTextualScenarioParser extends AbstractInternalAntlrParser {
 
 
     // $ANTLR start "entryRuleStateFragment"
-    // InternalTextualScenario.g:1613:1: entryRuleStateFragment returns [EObject current=null] : iv_ruleStateFragment= ruleStateFragment EOF ;
+    // InternalTextualScenario.g:1710:1: entryRuleStateFragment returns [EObject current=null] : iv_ruleStateFragment= ruleStateFragment EOF ;
     public final EObject entryRuleStateFragment() throws RecognitionException {
         EObject current = null;
 
@@ -4058,8 +4302,8 @@ public class InternalTextualScenarioParser extends AbstractInternalAntlrParser {
 
 
         try {
-            // InternalTextualScenario.g:1613:54: (iv_ruleStateFragment= ruleStateFragment EOF )
-            // InternalTextualScenario.g:1614:2: iv_ruleStateFragment= ruleStateFragment EOF
+            // InternalTextualScenario.g:1710:54: (iv_ruleStateFragment= ruleStateFragment EOF )
+            // InternalTextualScenario.g:1711:2: iv_ruleStateFragment= ruleStateFragment EOF
             {
              newCompositeNode(grammarAccess.getStateFragmentRule()); 
             pushFollow(FOLLOW_1);
@@ -4086,7 +4330,7 @@ public class InternalTextualScenarioParser extends AbstractInternalAntlrParser {
 
 
     // $ANTLR start "ruleStateFragment"
-    // InternalTextualScenario.g:1620:1: ruleStateFragment returns [EObject current=null] : ( ( (lv_on_0_0= 'on' ) ) ( (lv_timeline_1_0= RULE_STRING ) ) ( ( (lv_keyword_2_1= 'state' | lv_keyword_2_2= 'mode' | lv_keyword_2_3= 'function' ) ) ) ( (lv_name_3_0= RULE_STRING ) ) ) ;
+    // InternalTextualScenario.g:1717:1: ruleStateFragment returns [EObject current=null] : ( ( (lv_on_0_0= 'on' ) ) ( (lv_timeline_1_0= RULE_STRING ) ) ( ( (lv_keyword_2_1= 'state' | lv_keyword_2_2= 'mode' | lv_keyword_2_3= 'function' ) ) ) ( (lv_name_3_0= RULE_STRING ) ) ) ;
     public final EObject ruleStateFragment() throws RecognitionException {
         EObject current = null;
 
@@ -4101,19 +4345,19 @@ public class InternalTextualScenarioParser extends AbstractInternalAntlrParser {
         	enterRule();
 
         try {
-            // InternalTextualScenario.g:1626:2: ( ( ( (lv_on_0_0= 'on' ) ) ( (lv_timeline_1_0= RULE_STRING ) ) ( ( (lv_keyword_2_1= 'state' | lv_keyword_2_2= 'mode' | lv_keyword_2_3= 'function' ) ) ) ( (lv_name_3_0= RULE_STRING ) ) ) )
-            // InternalTextualScenario.g:1627:2: ( ( (lv_on_0_0= 'on' ) ) ( (lv_timeline_1_0= RULE_STRING ) ) ( ( (lv_keyword_2_1= 'state' | lv_keyword_2_2= 'mode' | lv_keyword_2_3= 'function' ) ) ) ( (lv_name_3_0= RULE_STRING ) ) )
+            // InternalTextualScenario.g:1723:2: ( ( ( (lv_on_0_0= 'on' ) ) ( (lv_timeline_1_0= RULE_STRING ) ) ( ( (lv_keyword_2_1= 'state' | lv_keyword_2_2= 'mode' | lv_keyword_2_3= 'function' ) ) ) ( (lv_name_3_0= RULE_STRING ) ) ) )
+            // InternalTextualScenario.g:1724:2: ( ( (lv_on_0_0= 'on' ) ) ( (lv_timeline_1_0= RULE_STRING ) ) ( ( (lv_keyword_2_1= 'state' | lv_keyword_2_2= 'mode' | lv_keyword_2_3= 'function' ) ) ) ( (lv_name_3_0= RULE_STRING ) ) )
             {
-            // InternalTextualScenario.g:1627:2: ( ( (lv_on_0_0= 'on' ) ) ( (lv_timeline_1_0= RULE_STRING ) ) ( ( (lv_keyword_2_1= 'state' | lv_keyword_2_2= 'mode' | lv_keyword_2_3= 'function' ) ) ) ( (lv_name_3_0= RULE_STRING ) ) )
-            // InternalTextualScenario.g:1628:3: ( (lv_on_0_0= 'on' ) ) ( (lv_timeline_1_0= RULE_STRING ) ) ( ( (lv_keyword_2_1= 'state' | lv_keyword_2_2= 'mode' | lv_keyword_2_3= 'function' ) ) ) ( (lv_name_3_0= RULE_STRING ) )
+            // InternalTextualScenario.g:1724:2: ( ( (lv_on_0_0= 'on' ) ) ( (lv_timeline_1_0= RULE_STRING ) ) ( ( (lv_keyword_2_1= 'state' | lv_keyword_2_2= 'mode' | lv_keyword_2_3= 'function' ) ) ) ( (lv_name_3_0= RULE_STRING ) ) )
+            // InternalTextualScenario.g:1725:3: ( (lv_on_0_0= 'on' ) ) ( (lv_timeline_1_0= RULE_STRING ) ) ( ( (lv_keyword_2_1= 'state' | lv_keyword_2_2= 'mode' | lv_keyword_2_3= 'function' ) ) ) ( (lv_name_3_0= RULE_STRING ) )
             {
-            // InternalTextualScenario.g:1628:3: ( (lv_on_0_0= 'on' ) )
-            // InternalTextualScenario.g:1629:4: (lv_on_0_0= 'on' )
+            // InternalTextualScenario.g:1725:3: ( (lv_on_0_0= 'on' ) )
+            // InternalTextualScenario.g:1726:4: (lv_on_0_0= 'on' )
             {
-            // InternalTextualScenario.g:1629:4: (lv_on_0_0= 'on' )
-            // InternalTextualScenario.g:1630:5: lv_on_0_0= 'on'
+            // InternalTextualScenario.g:1726:4: (lv_on_0_0= 'on' )
+            // InternalTextualScenario.g:1727:5: lv_on_0_0= 'on'
             {
-            lv_on_0_0=(Token)match(input,36,FOLLOW_6); 
+            lv_on_0_0=(Token)match(input,45,FOLLOW_6); 
 
             					newLeafNode(lv_on_0_0, grammarAccess.getStateFragmentAccess().getOnOnKeyword_0_0());
             				
@@ -4129,11 +4373,11 @@ public class InternalTextualScenarioParser extends AbstractInternalAntlrParser {
 
             }
 
-            // InternalTextualScenario.g:1642:3: ( (lv_timeline_1_0= RULE_STRING ) )
-            // InternalTextualScenario.g:1643:4: (lv_timeline_1_0= RULE_STRING )
+            // InternalTextualScenario.g:1739:3: ( (lv_timeline_1_0= RULE_STRING ) )
+            // InternalTextualScenario.g:1740:4: (lv_timeline_1_0= RULE_STRING )
             {
-            // InternalTextualScenario.g:1643:4: (lv_timeline_1_0= RULE_STRING )
-            // InternalTextualScenario.g:1644:5: lv_timeline_1_0= RULE_STRING
+            // InternalTextualScenario.g:1740:4: (lv_timeline_1_0= RULE_STRING )
+            // InternalTextualScenario.g:1741:5: lv_timeline_1_0= RULE_STRING
             {
             lv_timeline_1_0=(Token)match(input,RULE_STRING,FOLLOW_17); 
 
@@ -4155,42 +4399,42 @@ public class InternalTextualScenarioParser extends AbstractInternalAntlrParser {
 
             }
 
-            // InternalTextualScenario.g:1660:3: ( ( (lv_keyword_2_1= 'state' | lv_keyword_2_2= 'mode' | lv_keyword_2_3= 'function' ) ) )
-            // InternalTextualScenario.g:1661:4: ( (lv_keyword_2_1= 'state' | lv_keyword_2_2= 'mode' | lv_keyword_2_3= 'function' ) )
+            // InternalTextualScenario.g:1757:3: ( ( (lv_keyword_2_1= 'state' | lv_keyword_2_2= 'mode' | lv_keyword_2_3= 'function' ) ) )
+            // InternalTextualScenario.g:1758:4: ( (lv_keyword_2_1= 'state' | lv_keyword_2_2= 'mode' | lv_keyword_2_3= 'function' ) )
             {
-            // InternalTextualScenario.g:1661:4: ( (lv_keyword_2_1= 'state' | lv_keyword_2_2= 'mode' | lv_keyword_2_3= 'function' ) )
-            // InternalTextualScenario.g:1662:5: (lv_keyword_2_1= 'state' | lv_keyword_2_2= 'mode' | lv_keyword_2_3= 'function' )
+            // InternalTextualScenario.g:1758:4: ( (lv_keyword_2_1= 'state' | lv_keyword_2_2= 'mode' | lv_keyword_2_3= 'function' ) )
+            // InternalTextualScenario.g:1759:5: (lv_keyword_2_1= 'state' | lv_keyword_2_2= 'mode' | lv_keyword_2_3= 'function' )
             {
-            // InternalTextualScenario.g:1662:5: (lv_keyword_2_1= 'state' | lv_keyword_2_2= 'mode' | lv_keyword_2_3= 'function' )
-            int alt18=3;
+            // InternalTextualScenario.g:1759:5: (lv_keyword_2_1= 'state' | lv_keyword_2_2= 'mode' | lv_keyword_2_3= 'function' )
+            int alt20=3;
             switch ( input.LA(1) ) {
-            case 37:
+            case 46:
                 {
-                alt18=1;
+                alt20=1;
                 }
                 break;
-            case 38:
+            case 47:
                 {
-                alt18=2;
+                alt20=2;
                 }
                 break;
             case 20:
                 {
-                alt18=3;
+                alt20=3;
                 }
                 break;
             default:
                 NoViableAltException nvae =
-                    new NoViableAltException("", 18, 0, input);
+                    new NoViableAltException("", 20, 0, input);
 
                 throw nvae;
             }
 
-            switch (alt18) {
+            switch (alt20) {
                 case 1 :
-                    // InternalTextualScenario.g:1663:6: lv_keyword_2_1= 'state'
+                    // InternalTextualScenario.g:1760:6: lv_keyword_2_1= 'state'
                     {
-                    lv_keyword_2_1=(Token)match(input,37,FOLLOW_6); 
+                    lv_keyword_2_1=(Token)match(input,46,FOLLOW_6); 
 
                     						newLeafNode(lv_keyword_2_1, grammarAccess.getStateFragmentAccess().getKeywordStateKeyword_2_0_0());
                     					
@@ -4204,9 +4448,9 @@ public class InternalTextualScenarioParser extends AbstractInternalAntlrParser {
                     }
                     break;
                 case 2 :
-                    // InternalTextualScenario.g:1674:6: lv_keyword_2_2= 'mode'
+                    // InternalTextualScenario.g:1771:6: lv_keyword_2_2= 'mode'
                     {
-                    lv_keyword_2_2=(Token)match(input,38,FOLLOW_6); 
+                    lv_keyword_2_2=(Token)match(input,47,FOLLOW_6); 
 
                     						newLeafNode(lv_keyword_2_2, grammarAccess.getStateFragmentAccess().getKeywordModeKeyword_2_0_1());
                     					
@@ -4220,7 +4464,7 @@ public class InternalTextualScenarioParser extends AbstractInternalAntlrParser {
                     }
                     break;
                 case 3 :
-                    // InternalTextualScenario.g:1685:6: lv_keyword_2_3= 'function'
+                    // InternalTextualScenario.g:1782:6: lv_keyword_2_3= 'function'
                     {
                     lv_keyword_2_3=(Token)match(input,20,FOLLOW_6); 
 
@@ -4244,11 +4488,11 @@ public class InternalTextualScenarioParser extends AbstractInternalAntlrParser {
 
             }
 
-            // InternalTextualScenario.g:1698:3: ( (lv_name_3_0= RULE_STRING ) )
-            // InternalTextualScenario.g:1699:4: (lv_name_3_0= RULE_STRING )
+            // InternalTextualScenario.g:1795:3: ( (lv_name_3_0= RULE_STRING ) )
+            // InternalTextualScenario.g:1796:4: (lv_name_3_0= RULE_STRING )
             {
-            // InternalTextualScenario.g:1699:4: (lv_name_3_0= RULE_STRING )
-            // InternalTextualScenario.g:1700:5: lv_name_3_0= RULE_STRING
+            // InternalTextualScenario.g:1796:4: (lv_name_3_0= RULE_STRING )
+            // InternalTextualScenario.g:1797:5: lv_name_3_0= RULE_STRING
             {
             lv_name_3_0=(Token)match(input,RULE_STRING,FOLLOW_2); 
 
@@ -4299,8 +4543,8 @@ public class InternalTextualScenarioParser extends AbstractInternalAntlrParser {
     public static final BitSet FOLLOW_1 = new BitSet(new long[]{0x0000000000000000L});
     public static final BitSet FOLLOW_2 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_3 = new BitSet(new long[]{0x0000000000001000L});
-    public static final BitSet FOLLOW_4 = new BitSet(new long[]{0x00000015C0F8E010L});
-    public static final BitSet FOLLOW_5 = new BitSet(new long[]{0x00000015C0002010L});
+    public static final BitSet FOLLOW_4 = new BitSet(new long[]{0x00002FFDC0F9E010L});
+    public static final BitSet FOLLOW_5 = new BitSet(new long[]{0x00002FFDC0012010L});
     public static final BitSet FOLLOW_6 = new BitSet(new long[]{0x0000000000000010L});
     public static final BitSet FOLLOW_7 = new BitSet(new long[]{0x0000000000070002L});
     public static final BitSet FOLLOW_8 = new BitSet(new long[]{0x0000000001000000L});
@@ -4311,7 +4555,7 @@ public class InternalTextualScenarioParser extends AbstractInternalAntlrParser {
     public static final BitSet FOLLOW_13 = new BitSet(new long[]{0x0000000020000000L});
     public static final BitSet FOLLOW_14 = new BitSet(new long[]{0x0000000200000000L});
     public static final BitSet FOLLOW_15 = new BitSet(new long[]{0x0000000000001010L});
-    public static final BitSet FOLLOW_16 = new BitSet(new long[]{0x0000000800000002L});
-    public static final BitSet FOLLOW_17 = new BitSet(new long[]{0x0000006000100000L});
+    public static final BitSet FOLLOW_16 = new BitSet(new long[]{0x0000100000000012L});
+    public static final BitSet FOLLOW_17 = new BitSet(new long[]{0x0000C00000100000L});
 
 }

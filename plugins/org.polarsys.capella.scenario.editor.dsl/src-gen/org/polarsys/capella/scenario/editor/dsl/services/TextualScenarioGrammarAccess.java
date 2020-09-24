@@ -676,49 +676,84 @@ public class TextualScenarioGrammarAccess extends AbstractGrammarElementFinder {
 	}
 	public class CombinedFragmentElements extends AbstractParserRuleElementFinder {
 		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "org.polarsys.capella.scenario.editor.dsl.TextualScenario.CombinedFragment");
-		private final RuleCall cAltParserRuleCall = (RuleCall)rule.eContents().get(1);
-		
-		//CombinedFragment:
-		//	Alt;
-		@Override public ParserRule getRule() { return rule; }
-		
-		//Alt
-		public RuleCall getAltParserRuleCall() { return cAltParserRuleCall; }
-	}
-	public class AltElements extends AbstractParserRuleElementFinder {
-		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "org.polarsys.capella.scenario.editor.dsl.TextualScenario.Alt");
 		private final Group cGroup = (Group)rule.eContents().get(1);
 		private final Assignment cKeywordAssignment_0 = (Assignment)cGroup.eContents().get(0);
-		private final Keyword cKeywordAltKeyword_0_0 = (Keyword)cKeywordAssignment_0.eContents().get(0);
-		private final Assignment cConditionAssignment_1 = (Assignment)cGroup.eContents().get(1);
-		private final RuleCall cConditionSTRINGTerminalRuleCall_1_0 = (RuleCall)cConditionAssignment_1.eContents().get(0);
+		private final Alternatives cKeywordAlternatives_0_0 = (Alternatives)cKeywordAssignment_0.eContents().get(0);
+		private final Keyword cKeywordAltKeyword_0_0_0 = (Keyword)cKeywordAlternatives_0_0.eContents().get(0);
+		private final Keyword cKeywordLoopKeyword_0_0_1 = (Keyword)cKeywordAlternatives_0_0.eContents().get(1);
+		private final Keyword cKeywordParKeyword_0_0_2 = (Keyword)cKeywordAlternatives_0_0.eContents().get(2);
+		private final Keyword cKeywordAssertKeyword_0_0_3 = (Keyword)cKeywordAlternatives_0_0.eContents().get(3);
+		private final Keyword cKeywordCriticalKeyword_0_0_4 = (Keyword)cKeywordAlternatives_0_0.eContents().get(4);
+		private final Keyword cKeywordIgnoreKeyword_0_0_5 = (Keyword)cKeywordAlternatives_0_0.eContents().get(5);
+		private final Keyword cKeywordNegKeyword_0_0_6 = (Keyword)cKeywordAlternatives_0_0.eContents().get(6);
+		private final Keyword cKeywordOptKeyword_0_0_7 = (Keyword)cKeywordAlternatives_0_0.eContents().get(7);
+		private final Keyword cKeywordSeqKeyword_0_0_8 = (Keyword)cKeywordAlternatives_0_0.eContents().get(8);
+		private final Keyword cKeywordStrictKeyword_0_0_9 = (Keyword)cKeywordAlternatives_0_0.eContents().get(9);
+		private final Keyword cKeywordUnsetKeyword_0_0_10 = (Keyword)cKeywordAlternatives_0_0.eContents().get(10);
+		private final Assignment cExpressionAssignment_1 = (Assignment)cGroup.eContents().get(1);
+		private final RuleCall cExpressionSTRINGTerminalRuleCall_1_0 = (RuleCall)cExpressionAssignment_1.eContents().get(0);
 		private final Assignment cOverAssignment_2 = (Assignment)cGroup.eContents().get(2);
 		private final Keyword cOverOverKeyword_2_0 = (Keyword)cOverAssignment_2.eContents().get(0);
 		private final Assignment cTimelinesAssignment_3 = (Assignment)cGroup.eContents().get(3);
 		private final RuleCall cTimelinesSTRINGTerminalRuleCall_3_0 = (RuleCall)cTimelinesAssignment_3.eContents().get(0);
 		private final Assignment cBlockAssignment_4 = (Assignment)cGroup.eContents().get(4);
 		private final RuleCall cBlockBlockParserRuleCall_4_0 = (RuleCall)cBlockAssignment_4.eContents().get(0);
-		private final Assignment cElseBlocksAssignment_5 = (Assignment)cGroup.eContents().get(5);
-		private final RuleCall cElseBlocksElseBlockParserRuleCall_5_0 = (RuleCall)cElseBlocksAssignment_5.eContents().get(0);
+		private final Assignment cOperandsAssignment_5 = (Assignment)cGroup.eContents().get(5);
+		private final RuleCall cOperandsOperandParserRuleCall_5_0 = (RuleCall)cOperandsAssignment_5.eContents().get(0);
 		
-		//Alt:
-		//	keyword='alt' condition=STRING over='over' timelines+=STRING+ block=Block elseBlocks+=ElseBlock*;
+		//CombinedFragment:
+		//	keyword=('alt' | 'loop' | 'par' | 'assert' | 'critical' | 'ignore' | 'neg' | 'opt' | 'seq' | 'strict' | 'unset')
+		//	expression=STRING over='over' timelines+=STRING+ block=Block operands+=Operand*;
 		@Override public ParserRule getRule() { return rule; }
 		
-		//keyword='alt' condition=STRING over='over' timelines+=STRING+ block=Block elseBlocks+=ElseBlock*
+		//keyword=('alt' | 'loop' | 'par' | 'assert' | 'critical' | 'ignore' | 'neg' | 'opt' | 'seq' | 'strict' | 'unset')
+		//expression=STRING over='over' timelines+=STRING+ block=Block operands+=Operand*
 		public Group getGroup() { return cGroup; }
 		
-		//keyword='alt'
+		//keyword=('alt' | 'loop' | 'par' | 'assert' | 'critical' | 'ignore' | 'neg' | 'opt' | 'seq' | 'strict' | 'unset')
 		public Assignment getKeywordAssignment_0() { return cKeywordAssignment_0; }
 		
-		//'alt'
-		public Keyword getKeywordAltKeyword_0_0() { return cKeywordAltKeyword_0_0; }
+		//('alt' | 'loop' | 'par' | 'assert' | 'critical' | 'ignore' | 'neg' | 'opt' | 'seq' | 'strict' | 'unset')
+		public Alternatives getKeywordAlternatives_0_0() { return cKeywordAlternatives_0_0; }
 		
-		//condition=STRING
-		public Assignment getConditionAssignment_1() { return cConditionAssignment_1; }
+		//'alt'
+		public Keyword getKeywordAltKeyword_0_0_0() { return cKeywordAltKeyword_0_0_0; }
+		
+		//'loop'
+		public Keyword getKeywordLoopKeyword_0_0_1() { return cKeywordLoopKeyword_0_0_1; }
+		
+		//'par'
+		public Keyword getKeywordParKeyword_0_0_2() { return cKeywordParKeyword_0_0_2; }
+		
+		//'assert'
+		public Keyword getKeywordAssertKeyword_0_0_3() { return cKeywordAssertKeyword_0_0_3; }
+		
+		//'critical'
+		public Keyword getKeywordCriticalKeyword_0_0_4() { return cKeywordCriticalKeyword_0_0_4; }
+		
+		//'ignore'
+		public Keyword getKeywordIgnoreKeyword_0_0_5() { return cKeywordIgnoreKeyword_0_0_5; }
+		
+		//'neg'
+		public Keyword getKeywordNegKeyword_0_0_6() { return cKeywordNegKeyword_0_0_6; }
+		
+		//'opt'
+		public Keyword getKeywordOptKeyword_0_0_7() { return cKeywordOptKeyword_0_0_7; }
+		
+		//'seq'
+		public Keyword getKeywordSeqKeyword_0_0_8() { return cKeywordSeqKeyword_0_0_8; }
+		
+		//'strict'
+		public Keyword getKeywordStrictKeyword_0_0_9() { return cKeywordStrictKeyword_0_0_9; }
+		
+		//'unset'
+		public Keyword getKeywordUnsetKeyword_0_0_10() { return cKeywordUnsetKeyword_0_0_10; }
+		
+		//expression=STRING
+		public Assignment getExpressionAssignment_1() { return cExpressionAssignment_1; }
 		
 		//STRING
-		public RuleCall getConditionSTRINGTerminalRuleCall_1_0() { return cConditionSTRINGTerminalRuleCall_1_0; }
+		public RuleCall getExpressionSTRINGTerminalRuleCall_1_0() { return cExpressionSTRINGTerminalRuleCall_1_0; }
 		
 		//over='over'
 		public Assignment getOverAssignment_2() { return cOverAssignment_2; }
@@ -738,36 +773,40 @@ public class TextualScenarioGrammarAccess extends AbstractGrammarElementFinder {
 		//Block
 		public RuleCall getBlockBlockParserRuleCall_4_0() { return cBlockBlockParserRuleCall_4_0; }
 		
-		//elseBlocks+=ElseBlock*
-		public Assignment getElseBlocksAssignment_5() { return cElseBlocksAssignment_5; }
+		//operands+=Operand*
+		public Assignment getOperandsAssignment_5() { return cOperandsAssignment_5; }
 		
-		//ElseBlock
-		public RuleCall getElseBlocksElseBlockParserRuleCall_5_0() { return cElseBlocksElseBlockParserRuleCall_5_0; }
+		//Operand
+		public RuleCall getOperandsOperandParserRuleCall_5_0() { return cOperandsOperandParserRuleCall_5_0; }
 	}
-	public class ElseBlockElements extends AbstractParserRuleElementFinder {
-		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "org.polarsys.capella.scenario.editor.dsl.TextualScenario.ElseBlock");
+	public class OperandElements extends AbstractParserRuleElementFinder {
+		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "org.polarsys.capella.scenario.editor.dsl.TextualScenario.Operand");
 		private final Group cGroup = (Group)rule.eContents().get(1);
-		private final Keyword cElseKeyword_0 = (Keyword)cGroup.eContents().get(0);
-		private final Assignment cConditionAssignment_1 = (Assignment)cGroup.eContents().get(1);
-		private final RuleCall cConditionSTRINGTerminalRuleCall_1_0 = (RuleCall)cConditionAssignment_1.eContents().get(0);
+		private final Assignment cKeywordAssignment_0 = (Assignment)cGroup.eContents().get(0);
+		private final Keyword cKeywordElseKeyword_0_0 = (Keyword)cKeywordAssignment_0.eContents().get(0);
+		private final Assignment cExpressionAssignment_1 = (Assignment)cGroup.eContents().get(1);
+		private final RuleCall cExpressionSTRINGTerminalRuleCall_1_0 = (RuleCall)cExpressionAssignment_1.eContents().get(0);
 		private final Assignment cBlockAssignment_2 = (Assignment)cGroup.eContents().get(2);
 		private final RuleCall cBlockBlockParserRuleCall_2_0 = (RuleCall)cBlockAssignment_2.eContents().get(0);
 		
-		//ElseBlock:
-		//	'else' condition=STRING block=Block;
+		//Operand:
+		//	keyword='else'? expression=STRING block=Block;
 		@Override public ParserRule getRule() { return rule; }
 		
-		//'else' condition=STRING block=Block
+		//keyword='else'? expression=STRING block=Block
 		public Group getGroup() { return cGroup; }
 		
-		//'else'
-		public Keyword getElseKeyword_0() { return cElseKeyword_0; }
+		//keyword='else'?
+		public Assignment getKeywordAssignment_0() { return cKeywordAssignment_0; }
 		
-		//condition=STRING
-		public Assignment getConditionAssignment_1() { return cConditionAssignment_1; }
+		//'else'
+		public Keyword getKeywordElseKeyword_0_0() { return cKeywordElseKeyword_0_0; }
+		
+		//expression=STRING
+		public Assignment getExpressionAssignment_1() { return cExpressionAssignment_1; }
 		
 		//STRING
-		public RuleCall getConditionSTRINGTerminalRuleCall_1_0() { return cConditionSTRINGTerminalRuleCall_1_0; }
+		public RuleCall getExpressionSTRINGTerminalRuleCall_1_0() { return cExpressionSTRINGTerminalRuleCall_1_0; }
 		
 		//block=Block
 		public Assignment getBlockAssignment_2() { return cBlockAssignment_2; }
@@ -903,8 +942,7 @@ public class TextualScenarioGrammarAccess extends AbstractGrammarElementFinder {
 	private final ParticipantDeactivationElements pParticipantDeactivation;
 	private final ReferenceElements pReference;
 	private final CombinedFragmentElements pCombinedFragment;
-	private final AltElements pAlt;
-	private final ElseBlockElements pElseBlock;
+	private final OperandElements pOperand;
 	private final BlockElements pBlock;
 	private final StateFragmentElements pStateFragment;
 	
@@ -937,8 +975,7 @@ public class TextualScenarioGrammarAccess extends AbstractGrammarElementFinder {
 		this.pParticipantDeactivation = new ParticipantDeactivationElements();
 		this.pReference = new ReferenceElements();
 		this.pCombinedFragment = new CombinedFragmentElements();
-		this.pAlt = new AltElements();
-		this.pElseBlock = new ElseBlockElements();
+		this.pOperand = new OperandElements();
 		this.pBlock = new BlockElements();
 		this.pStateFragment = new StateFragmentElements();
 	}
@@ -1163,7 +1200,8 @@ public class TextualScenarioGrammarAccess extends AbstractGrammarElementFinder {
 	}
 	
 	//CombinedFragment:
-	//	Alt;
+	//	keyword=('alt' | 'loop' | 'par' | 'assert' | 'critical' | 'ignore' | 'neg' | 'opt' | 'seq' | 'strict' | 'unset')
+	//	expression=STRING over='over' timelines+=STRING+ block=Block operands+=Operand*;
 	public CombinedFragmentElements getCombinedFragmentAccess() {
 		return pCombinedFragment;
 	}
@@ -1172,24 +1210,14 @@ public class TextualScenarioGrammarAccess extends AbstractGrammarElementFinder {
 		return getCombinedFragmentAccess().getRule();
 	}
 	
-	//Alt:
-	//	keyword='alt' condition=STRING over='over' timelines+=STRING+ block=Block elseBlocks+=ElseBlock*;
-	public AltElements getAltAccess() {
-		return pAlt;
+	//Operand:
+	//	keyword='else'? expression=STRING block=Block;
+	public OperandElements getOperandAccess() {
+		return pOperand;
 	}
 	
-	public ParserRule getAltRule() {
-		return getAltAccess().getRule();
-	}
-	
-	//ElseBlock:
-	//	'else' condition=STRING block=Block;
-	public ElseBlockElements getElseBlockAccess() {
-		return pElseBlock;
-	}
-	
-	public ParserRule getElseBlockRule() {
-		return getElseBlockAccess().getRule();
+	public ParserRule getOperandRule() {
+		return getOperandAccess().getRule();
 	}
 	
 	//Block:
