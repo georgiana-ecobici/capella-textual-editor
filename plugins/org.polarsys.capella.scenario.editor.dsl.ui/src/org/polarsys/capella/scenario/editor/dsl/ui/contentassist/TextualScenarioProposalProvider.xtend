@@ -143,6 +143,13 @@ class TextualScenarioProposalProvider extends AbstractTextualScenarioProposalPro
 		}
 	}
 	
+	override completeStateFragment_Keyword(EObject model, Assignment assignment, ContentAssistContext context, ICompletionProposalAcceptor acceptor) {
+		var keywords = newArrayList("state", "mode", "function")
+		for (String keyword: keywords) {
+			acceptor.accept(createCompletionProposal(keyword, keyword, null, context))
+		}
+		
+	}
 	/*
 	 * check if a message is already used in the text
 	 */

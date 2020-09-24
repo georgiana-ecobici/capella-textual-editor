@@ -14,6 +14,7 @@ package org.polarsys.capella.scenario.editor.dsl.validation;
 
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.xtext.validation.Check;
@@ -24,6 +25,7 @@ import org.polarsys.capella.scenario.editor.dsl.textualScenario.Participant;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.ParticipantDeactivation;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.SequenceMessage;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.SequenceMessageType;
+import org.polarsys.capella.scenario.editor.dsl.textualScenario.StateFragment;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.TextualScenarioPackage;
 import org.polarsys.capella.scenario.editor.dsl.validation.AbstractTextualScenarioValidator;
 import org.polarsys.capella.scenario.editor.helper.EmbeddedEditorInstanceHelper;
@@ -154,6 +156,50 @@ public class TextualScenarioValidator extends AbstractTextualScenarioValidator {
         }
         index++;
       }
+    }
+  }
+  
+  /**
+   * Check that the state fragment exists
+   */
+  @Check
+  public void checkStateFragment(final StateFragment fragment) {
+    String _timeline = fragment.getTimeline();
+    boolean _tripleEquals = (_timeline == null);
+    if (_tripleEquals) {
+      this.error(String.format("Insert timeline"), TextualScenarioPackage.Literals.STATE_FRAGMENT__TIMELINE);
+      return;
+    }
+    String _keyword = fragment.getKeyword();
+    boolean _tripleEquals_1 = (_keyword == null);
+    if (_tripleEquals_1) {
+      this.error(String.format("Insert \"state\", \"mode\" or \"function\""), TextualScenarioPackage.Literals.STATE_FRAGMENT__KEYWORD);
+      return;
+    }
+    String _name = fragment.getName();
+    boolean _tripleEquals_2 = (_name == null);
+    if (_tripleEquals_2) {
+      String _keyword_1 = fragment.getKeyword();
+      String _plus = ("Insert the " + _keyword_1);
+      String _plus_1 = (_plus + " name");
+      this.error(String.format(_plus_1), TextualScenarioPackage.Literals.STATE_FRAGMENT__NAME);
+      return;
+    }
+    List<String> availableStateFragments = EmbeddedEditorInstanceHelper.getAvailableStateFragments(fragment.getKeyword(), fragment.getTimeline());
+    boolean _contains = availableStateFragments.contains(fragment.getName());
+    boolean _not = (!_contains);
+    if (_not) {
+      String _keyword_2 = fragment.getKeyword();
+      String _plus_2 = ("This " + _keyword_2);
+      String _plus_3 = (_plus_2 + " does not exist or it\'s not available for ");
+      String _timeline_1 = fragment.getTimeline();
+      String _plus_4 = (_plus_3 + _timeline_1);
+      this.error(String.format(_plus_4), TextualScenarioPackage.Literals.STATE_FRAGMENT__NAME);
+    }
+    boolean _checkValidTimeline = EmbeddedEditorInstanceHelper.checkValidTimeline(fragment.getTimeline());
+    boolean _not_1 = (!_checkValidTimeline);
+    if (_not_1) {
+      this.error(String.format("This timeline does not exist", fragment.getKeyword()), TextualScenarioPackage.Literals.STATE_FRAGMENT__TIMELINE);
     }
   }
   

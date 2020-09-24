@@ -21,6 +21,8 @@ import org.eclipse.xtext.validation.Check
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.Model
 import org.polarsys.capella.scenario.editor.helper.EmbeddedEditorInstanceHelper
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.Function
+import org.polarsys.capella.scenario.editor.dsl.textualScenario.StateFragment
+import org.polarsys.capella.scenario.editor.EmbeddedEditorInstance
 
 /**
  * This class contains custom validation rules. 
@@ -139,6 +141,34 @@ class TextualScenarioValidator extends AbstractTextualScenarioValidator {
 				}
 			}
 			index++
+		}
+	}
+	/*
+	 * Check that the state fragment exists
+	 */
+	@Check
+	def checkStateFragment(StateFragment fragment) {
+		if (fragment.timeline === null) {
+			error(String.format("Insert timeline"), TextualScenarioPackage.Literals.STATE_FRAGMENT__TIMELINE)
+			return
+		}
+		if (fragment.keyword === null) {
+			error(String.format("Insert \"state\", \"mode\" or \"function\""), TextualScenarioPackage.Literals.STATE_FRAGMENT__KEYWORD)
+			return
+		}
+		
+		if (fragment.name === null ) {
+			error(String.format("Insert the " + fragment.keyword + " name"), TextualScenarioPackage.Literals.STATE_FRAGMENT__NAME)
+			return
+		}
+		
+		var availableStateFragments = EmbeddedEditorInstanceHelper.getAvailableStateFragments(fragment.keyword, fragment.timeline)
+		if (!availableStateFragments.contains(fragment.name) ) {
+			error(String.format("This " + fragment.keyword + " does not exist or it's not available for " + fragment.timeline), TextualScenarioPackage.Literals.STATE_FRAGMENT__NAME)
+		}
+		
+		if (!EmbeddedEditorInstanceHelper.checkValidTimeline(fragment.timeline)){
+			error(String.format("This timeline does not exist", fragment.keyword), TextualScenarioPackage.Literals.STATE_FRAGMENT__TIMELINE)
 		}
 	}
 

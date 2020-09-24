@@ -13,6 +13,7 @@
 package org.polarsys.capella.scenario.editor.helper;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -25,14 +26,16 @@ import org.eclipse.xtext.ui.editor.model.XtextDocument;
 import org.eclipse.xtext.util.concurrent.IUnitOfWork;
 import org.polarsys.capella.common.data.behavior.AbstractEvent;
 import org.polarsys.capella.common.data.modellingcore.AbstractNamedElement;
+import org.polarsys.capella.core.data.capellacommon.AbstractState;
+import org.polarsys.capella.core.data.capellacommon.Mode;
+import org.polarsys.capella.core.data.capellacommon.State;
 import org.polarsys.capella.core.data.capellacore.CapellaElement;
 import org.polarsys.capella.core.data.cs.BlockArchitecture;
-import org.polarsys.capella.core.data.cs.Component;
 import org.polarsys.capella.core.data.cs.ExchangeItemAllocation;
-import org.polarsys.capella.core.data.cs.Part;
 import org.polarsys.capella.core.data.ctx.SystemAnalysis;
 import org.polarsys.capella.core.data.epbs.EPBSArchitecture;
 import org.polarsys.capella.core.data.fa.AbstractFunction;
+import org.polarsys.capella.core.data.information.AbstractInstance;
 import org.polarsys.capella.core.data.information.ExchangeItem;
 import org.polarsys.capella.core.data.interaction.InstanceRole;
 import org.polarsys.capella.core.data.interaction.Scenario;
@@ -297,7 +300,66 @@ public class EmbeddedEditorInstanceHelper {
     }
     return false;
   }
-  
+
+  public static boolean checkValidTimeline(String timelineName) {
+    if (timelineName == null || getInstanceRole(timelineName) == null)
+      return false;
+    return true;
+  }
+
+  /**
+   * Get all available state fragments (mode, state or allocated function) for a specific instance role
+   * 
+   * @param type
+   *          - the type of state fragment: mode, state or allocated function
+   * @param timelineName
+   *          - the timeline name
+   * @return List<String> - return the list with all available state fragments
+   */
+  public static List<String> getAvailableStateFragments(String type, String timelineName) {
+    if (timelineName == null || type == null) {
+      return new ArrayList<String>();
+    }
+
+    EObject element = getInstanceRole(timelineName);
+    if (element == null)
+      return new ArrayList<String>();
+    
+    if (type.equals(DslConstants.FUNCTION)) 
+      return getAllocatedFunctionsName(element);
+    
+    Collection<AbstractState> modesAndStates = ScenarioExt
+        .getAvailableStateModeStateFragment(((InstanceRole) element).getRepresentedInstance());
+    if (modesAndStates.isEmpty())
+      return new ArrayList<String>();
+    
+    if (type.equals(DslConstants.MODE))
+      return getModesNames(modesAndStates);
+    return getStatesNames(modesAndStates);
+  }
+
+  private static List<String> getModesNames(Collection<AbstractState> modesAndStates) {
+    List<String> modesNames = modesAndStates.stream().filter(x -> x instanceof Mode).map(x -> x.getName())
+        .collect(Collectors.toList());
+    return modesNames;
+  }
+
+  private static List<String> getStatesNames(Collection<AbstractState> modesAndStates) {
+    List<String> statesNames = modesAndStates.stream().filter(x -> x instanceof State && !(x instanceof Mode))
+        .map(x -> x.getName()).collect(Collectors.toList());
+    return statesNames;
+  }
+
+  private static List<String> getAllocatedFunctionsName(EObject element) {
+    Collection<AbstractFunction> allocFunctions = ScenarioExt
+        .getAvailableFunctionsStateFragment((AbstractInstance) element);
+
+    if (!allocFunctions.isEmpty()) {
+      return allocFunctions.stream().map(x -> x.getName()).collect(Collectors.toList());
+    }
+    return new ArrayList<String>();
+  }
+
   public static void updateModel(String content) {
     XtextDocument document = EmbeddedEditorInstance.getEmbeddedEditor().getDocument();
     document.set(content);
@@ -307,7 +369,7 @@ public class EmbeddedEditorInstanceHelper {
       }
     });
   }
-  
+
   public static String getModelContent() {
     XtextDocument document = EmbeddedEditorInstance.getEmbeddedEditor().getDocument();
     return document.get();
