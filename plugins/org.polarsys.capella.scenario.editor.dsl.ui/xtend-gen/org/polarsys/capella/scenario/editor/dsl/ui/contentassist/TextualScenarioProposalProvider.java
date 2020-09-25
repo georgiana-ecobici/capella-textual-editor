@@ -13,6 +13,7 @@
 package org.polarsys.capella.scenario.editor.dsl.ui.contentassist;
 
 import com.google.common.base.Objects;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import org.eclipse.emf.common.util.EList;
@@ -23,6 +24,7 @@ import org.eclipse.xtext.Keyword;
 import org.eclipse.xtext.ui.editor.contentassist.ConfigurableCompletionProposal;
 import org.eclipse.xtext.ui.editor.contentassist.ContentAssistContext;
 import org.eclipse.xtext.ui.editor.contentassist.ICompletionProposalAcceptor;
+import org.eclipse.xtext.xbase.lib.CollectionLiterals;
 import org.polarsys.capella.core.model.helpers.CapellaElementExt;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.Model;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.Participant;
@@ -156,6 +158,14 @@ public class TextualScenarioProposalProvider extends AbstractTextualScenarioProp
           acceptor.accept(this.createCompletionProposal((("\"" + el) + "\""), (("\"" + el) + "\""), null, context));
         }
       }
+    }
+  }
+  
+  @Override
+  public void completeStateFragment_Keyword(final EObject model, final Assignment assignment, final ContentAssistContext context, final ICompletionProposalAcceptor acceptor) {
+    ArrayList<String> keywords = CollectionLiterals.<String>newArrayList("state", "mode", "function");
+    for (final String keyword : keywords) {
+      acceptor.accept(this.createCompletionProposal(keyword, keyword, null, context));
     }
   }
   
