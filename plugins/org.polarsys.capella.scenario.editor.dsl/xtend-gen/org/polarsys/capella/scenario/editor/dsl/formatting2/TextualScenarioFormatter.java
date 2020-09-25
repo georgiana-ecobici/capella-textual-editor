@@ -24,11 +24,11 @@ import org.eclipse.xtext.resource.XtextResource;
 import org.eclipse.xtext.xbase.lib.Extension;
 import org.eclipse.xtext.xbase.lib.Procedures.Procedure1;
 import org.polarsys.capella.scenario.editor.dsl.services.TextualScenarioGrammarAccess;
-import org.polarsys.capella.scenario.editor.dsl.textualScenario.Alt;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.Block;
-import org.polarsys.capella.scenario.editor.dsl.textualScenario.ElseBlock;
+import org.polarsys.capella.scenario.editor.dsl.textualScenario.CombinedFragment;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.Message;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.Model;
+import org.polarsys.capella.scenario.editor.dsl.textualScenario.Operand;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.Participant;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.StateFragment;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.TextualScenarioPackage;
@@ -79,20 +79,20 @@ public class TextualScenarioFormatter extends AbstractFormatter2 {
     document.append(this.textRegionExtensions.regionFor(participant).feature(TextualScenarioPackage.Literals.PARTICIPANT__NAME), _function);
   }
   
-  protected void _format(final Alt condition, @Extension final IFormattableDocument document) {
-    this.format(condition.getBlock(), document);
-    final Consumer<ElseBlock> _function = (ElseBlock element) -> {
-      document.<ElseBlock>format(element);
+  protected void _format(final CombinedFragment fragment, @Extension final IFormattableDocument document) {
+    this.format(fragment.getBlock(), document);
+    final Consumer<Operand> _function = (Operand element) -> {
+      document.<Operand>format(element);
     };
-    condition.getElseBlocks().forEach(_function);
+    fragment.getOperands().forEach(_function);
     final Procedure1<IHiddenRegionFormatter> _function_1 = (IHiddenRegionFormatter it) -> {
       it.newLine();
     };
-    document.<Alt>append(condition, _function_1);
+    document.<CombinedFragment>append(fragment, _function_1);
   }
   
-  protected void _format(final ElseBlock elseBlock, @Extension final IFormattableDocument document) {
-    this.format(elseBlock.getBlock(), document);
+  protected void _format(final Operand operand, @Extension final IFormattableDocument document) {
+    this.format(operand.getBlock(), document);
   }
   
   protected void _format(final Block block, @Extension final IFormattableDocument document) {
@@ -119,43 +119,43 @@ public class TextualScenarioFormatter extends AbstractFormatter2 {
     document.append(this.textRegionExtensions.regionFor(stateFragment).feature(TextualScenarioPackage.Literals.STATE_FRAGMENT__NAME), _function);
   }
   
-  public void format(final Object condition, final IFormattableDocument document) {
-    if (condition instanceof XtextResource) {
-      _format((XtextResource)condition, document);
+  public void format(final Object block, final IFormattableDocument document) {
+    if (block instanceof XtextResource) {
+      _format((XtextResource)block, document);
       return;
-    } else if (condition instanceof Alt) {
-      _format((Alt)condition, document);
+    } else if (block instanceof Block) {
+      _format((Block)block, document);
       return;
-    } else if (condition instanceof Block) {
-      _format((Block)condition, document);
+    } else if (block instanceof CombinedFragment) {
+      _format((CombinedFragment)block, document);
       return;
-    } else if (condition instanceof ElseBlock) {
-      _format((ElseBlock)condition, document);
+    } else if (block instanceof Message) {
+      _format((Message)block, document);
       return;
-    } else if (condition instanceof Message) {
-      _format((Message)condition, document);
+    } else if (block instanceof Model) {
+      _format((Model)block, document);
       return;
-    } else if (condition instanceof Model) {
-      _format((Model)condition, document);
+    } else if (block instanceof Operand) {
+      _format((Operand)block, document);
       return;
-    } else if (condition instanceof Participant) {
-      _format((Participant)condition, document);
+    } else if (block instanceof Participant) {
+      _format((Participant)block, document);
       return;
-    } else if (condition instanceof StateFragment) {
-      _format((StateFragment)condition, document);
+    } else if (block instanceof StateFragment) {
+      _format((StateFragment)block, document);
       return;
-    } else if (condition instanceof EObject) {
-      _format((EObject)condition, document);
+    } else if (block instanceof EObject) {
+      _format((EObject)block, document);
       return;
-    } else if (condition == null) {
+    } else if (block == null) {
       _format((Void)null, document);
       return;
-    } else if (condition != null) {
-      _format(condition, document);
+    } else if (block != null) {
+      _format(block, document);
       return;
     } else {
       throw new IllegalArgumentException("Unhandled parameter types: " +
-        Arrays.<Object>asList(condition, document).toString());
+        Arrays.<Object>asList(block, document).toString());
     }
   }
 }

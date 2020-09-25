@@ -216,22 +216,13 @@ public interface TextualScenarioFactory extends EFactory
   CombinedFragment createCombinedFragment();
 
   /**
-   * Returns a new object of class '<em>Alt</em>'.
+   * Returns a new object of class '<em>Operand</em>'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @return a new object of class '<em>Alt</em>'.
+   * @return a new object of class '<em>Operand</em>'.
    * @generated
    */
-  Alt createAlt();
-
-  /**
-   * Returns a new object of class '<em>Else Block</em>'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return a new object of class '<em>Else Block</em>'.
-   * @generated
-   */
-  ElseBlock createElseBlock();
+  Operand createOperand();
 
   /**
    * Returns a new object of class '<em>Block</em>'.

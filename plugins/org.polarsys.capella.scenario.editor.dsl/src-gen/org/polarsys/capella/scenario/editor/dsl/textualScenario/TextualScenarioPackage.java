@@ -873,41 +873,22 @@ public interface TextualScenarioPackage extends EPackage
   int COMBINED_FRAGMENT = 19;
 
   /**
-   * The number of structural features of the '<em>Combined Fragment</em>' class.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @generated
-   * @ordered
-   */
-  int COMBINED_FRAGMENT_FEATURE_COUNT = 0;
-
-  /**
-   * The meta object id for the '{@link org.polarsys.capella.scenario.editor.dsl.textualScenario.impl.AltImpl <em>Alt</em>}' class.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @see org.polarsys.capella.scenario.editor.dsl.textualScenario.impl.AltImpl
-   * @see org.polarsys.capella.scenario.editor.dsl.textualScenario.impl.TextualScenarioPackageImpl#getAlt()
-   * @generated
-   */
-  int ALT = 20;
-
-  /**
    * The feature id for the '<em><b>Keyword</b></em>' attribute.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int ALT__KEYWORD = COMBINED_FRAGMENT_FEATURE_COUNT + 0;
+  int COMBINED_FRAGMENT__KEYWORD = 0;
 
   /**
-   * The feature id for the '<em><b>Condition</b></em>' attribute.
+   * The feature id for the '<em><b>Expression</b></em>' attribute.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int ALT__CONDITION = COMBINED_FRAGMENT_FEATURE_COUNT + 1;
+  int COMBINED_FRAGMENT__EXPRESSION = 1;
 
   /**
    * The feature id for the '<em><b>Over</b></em>' attribute.
@@ -916,7 +897,7 @@ public interface TextualScenarioPackage extends EPackage
    * @generated
    * @ordered
    */
-  int ALT__OVER = COMBINED_FRAGMENT_FEATURE_COUNT + 2;
+  int COMBINED_FRAGMENT__OVER = 2;
 
   /**
    * The feature id for the '<em><b>Timelines</b></em>' attribute list.
@@ -925,7 +906,7 @@ public interface TextualScenarioPackage extends EPackage
    * @generated
    * @ordered
    */
-  int ALT__TIMELINES = COMBINED_FRAGMENT_FEATURE_COUNT + 3;
+  int COMBINED_FRAGMENT__TIMELINES = 3;
 
   /**
    * The feature id for the '<em><b>Block</b></em>' containment reference.
@@ -934,44 +915,53 @@ public interface TextualScenarioPackage extends EPackage
    * @generated
    * @ordered
    */
-  int ALT__BLOCK = COMBINED_FRAGMENT_FEATURE_COUNT + 4;
+  int COMBINED_FRAGMENT__BLOCK = 4;
 
   /**
-   * The feature id for the '<em><b>Else Blocks</b></em>' containment reference list.
+   * The feature id for the '<em><b>Operands</b></em>' containment reference list.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int ALT__ELSE_BLOCKS = COMBINED_FRAGMENT_FEATURE_COUNT + 5;
+  int COMBINED_FRAGMENT__OPERANDS = 5;
 
   /**
-   * The number of structural features of the '<em>Alt</em>' class.
+   * The number of structural features of the '<em>Combined Fragment</em>' class.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int ALT_FEATURE_COUNT = COMBINED_FRAGMENT_FEATURE_COUNT + 6;
+  int COMBINED_FRAGMENT_FEATURE_COUNT = 6;
 
   /**
-   * The meta object id for the '{@link org.polarsys.capella.scenario.editor.dsl.textualScenario.impl.ElseBlockImpl <em>Else Block</em>}' class.
+   * The meta object id for the '{@link org.polarsys.capella.scenario.editor.dsl.textualScenario.impl.OperandImpl <em>Operand</em>}' class.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @see org.polarsys.capella.scenario.editor.dsl.textualScenario.impl.ElseBlockImpl
-   * @see org.polarsys.capella.scenario.editor.dsl.textualScenario.impl.TextualScenarioPackageImpl#getElseBlock()
+   * @see org.polarsys.capella.scenario.editor.dsl.textualScenario.impl.OperandImpl
+   * @see org.polarsys.capella.scenario.editor.dsl.textualScenario.impl.TextualScenarioPackageImpl#getOperand()
    * @generated
    */
-  int ELSE_BLOCK = 21;
+  int OPERAND = 20;
 
   /**
-   * The feature id for the '<em><b>Condition</b></em>' attribute.
+   * The feature id for the '<em><b>Keyword</b></em>' attribute.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int ELSE_BLOCK__CONDITION = 0;
+  int OPERAND__KEYWORD = 0;
+
+  /**
+   * The feature id for the '<em><b>Expression</b></em>' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int OPERAND__EXPRESSION = 1;
 
   /**
    * The feature id for the '<em><b>Block</b></em>' containment reference.
@@ -980,16 +970,16 @@ public interface TextualScenarioPackage extends EPackage
    * @generated
    * @ordered
    */
-  int ELSE_BLOCK__BLOCK = 1;
+  int OPERAND__BLOCK = 2;
 
   /**
-   * The number of structural features of the '<em>Else Block</em>' class.
+   * The number of structural features of the '<em>Operand</em>' class.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int ELSE_BLOCK_FEATURE_COUNT = 2;
+  int OPERAND_FEATURE_COUNT = 3;
 
   /**
    * The meta object id for the '{@link org.polarsys.capella.scenario.editor.dsl.textualScenario.impl.BlockImpl <em>Block</em>}' class.
@@ -999,7 +989,7 @@ public interface TextualScenarioPackage extends EPackage
    * @see org.polarsys.capella.scenario.editor.dsl.textualScenario.impl.TextualScenarioPackageImpl#getBlock()
    * @generated
    */
-  int BLOCK = 22;
+  int BLOCK = 21;
 
   /**
    * The feature id for the '<em><b>Begin</b></em>' attribute.
@@ -1045,7 +1035,7 @@ public interface TextualScenarioPackage extends EPackage
    * @see org.polarsys.capella.scenario.editor.dsl.textualScenario.impl.TextualScenarioPackageImpl#getStateFragment()
    * @generated
    */
-  int STATE_FRAGMENT = 23;
+  int STATE_FRAGMENT = 22;
 
   /**
    * The feature id for the '<em><b>On</b></em>' attribute.
@@ -1492,112 +1482,113 @@ public interface TextualScenarioPackage extends EPackage
   EClass getCombinedFragment();
 
   /**
-   * Returns the meta object for class '{@link org.polarsys.capella.scenario.editor.dsl.textualScenario.Alt <em>Alt</em>}'.
-   * <!-- begin-user-doc -->
-   * <!-- end-user-doc -->
-   * @return the meta object for class '<em>Alt</em>'.
-   * @see org.polarsys.capella.scenario.editor.dsl.textualScenario.Alt
-   * @generated
-   */
-  EClass getAlt();
-
-  /**
-   * Returns the meta object for the attribute '{@link org.polarsys.capella.scenario.editor.dsl.textualScenario.Alt#getKeyword <em>Keyword</em>}'.
+   * Returns the meta object for the attribute '{@link org.polarsys.capella.scenario.editor.dsl.textualScenario.CombinedFragment#getKeyword <em>Keyword</em>}'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @return the meta object for the attribute '<em>Keyword</em>'.
-   * @see org.polarsys.capella.scenario.editor.dsl.textualScenario.Alt#getKeyword()
-   * @see #getAlt()
+   * @see org.polarsys.capella.scenario.editor.dsl.textualScenario.CombinedFragment#getKeyword()
+   * @see #getCombinedFragment()
    * @generated
    */
-  EAttribute getAlt_Keyword();
+  EAttribute getCombinedFragment_Keyword();
 
   /**
-   * Returns the meta object for the attribute '{@link org.polarsys.capella.scenario.editor.dsl.textualScenario.Alt#getCondition <em>Condition</em>}'.
+   * Returns the meta object for the attribute '{@link org.polarsys.capella.scenario.editor.dsl.textualScenario.CombinedFragment#getExpression <em>Expression</em>}'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @return the meta object for the attribute '<em>Condition</em>'.
-   * @see org.polarsys.capella.scenario.editor.dsl.textualScenario.Alt#getCondition()
-   * @see #getAlt()
+   * @return the meta object for the attribute '<em>Expression</em>'.
+   * @see org.polarsys.capella.scenario.editor.dsl.textualScenario.CombinedFragment#getExpression()
+   * @see #getCombinedFragment()
    * @generated
    */
-  EAttribute getAlt_Condition();
+  EAttribute getCombinedFragment_Expression();
 
   /**
-   * Returns the meta object for the attribute '{@link org.polarsys.capella.scenario.editor.dsl.textualScenario.Alt#getOver <em>Over</em>}'.
+   * Returns the meta object for the attribute '{@link org.polarsys.capella.scenario.editor.dsl.textualScenario.CombinedFragment#getOver <em>Over</em>}'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @return the meta object for the attribute '<em>Over</em>'.
-   * @see org.polarsys.capella.scenario.editor.dsl.textualScenario.Alt#getOver()
-   * @see #getAlt()
+   * @see org.polarsys.capella.scenario.editor.dsl.textualScenario.CombinedFragment#getOver()
+   * @see #getCombinedFragment()
    * @generated
    */
-  EAttribute getAlt_Over();
+  EAttribute getCombinedFragment_Over();
 
   /**
-   * Returns the meta object for the attribute list '{@link org.polarsys.capella.scenario.editor.dsl.textualScenario.Alt#getTimelines <em>Timelines</em>}'.
+   * Returns the meta object for the attribute list '{@link org.polarsys.capella.scenario.editor.dsl.textualScenario.CombinedFragment#getTimelines <em>Timelines</em>}'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @return the meta object for the attribute list '<em>Timelines</em>'.
-   * @see org.polarsys.capella.scenario.editor.dsl.textualScenario.Alt#getTimelines()
-   * @see #getAlt()
+   * @see org.polarsys.capella.scenario.editor.dsl.textualScenario.CombinedFragment#getTimelines()
+   * @see #getCombinedFragment()
    * @generated
    */
-  EAttribute getAlt_Timelines();
+  EAttribute getCombinedFragment_Timelines();
 
   /**
-   * Returns the meta object for the containment reference '{@link org.polarsys.capella.scenario.editor.dsl.textualScenario.Alt#getBlock <em>Block</em>}'.
+   * Returns the meta object for the containment reference '{@link org.polarsys.capella.scenario.editor.dsl.textualScenario.CombinedFragment#getBlock <em>Block</em>}'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @return the meta object for the containment reference '<em>Block</em>'.
-   * @see org.polarsys.capella.scenario.editor.dsl.textualScenario.Alt#getBlock()
-   * @see #getAlt()
+   * @see org.polarsys.capella.scenario.editor.dsl.textualScenario.CombinedFragment#getBlock()
+   * @see #getCombinedFragment()
    * @generated
    */
-  EReference getAlt_Block();
+  EReference getCombinedFragment_Block();
 
   /**
-   * Returns the meta object for the containment reference list '{@link org.polarsys.capella.scenario.editor.dsl.textualScenario.Alt#getElseBlocks <em>Else Blocks</em>}'.
+   * Returns the meta object for the containment reference list '{@link org.polarsys.capella.scenario.editor.dsl.textualScenario.CombinedFragment#getOperands <em>Operands</em>}'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @return the meta object for the containment reference list '<em>Else Blocks</em>'.
-   * @see org.polarsys.capella.scenario.editor.dsl.textualScenario.Alt#getElseBlocks()
-   * @see #getAlt()
+   * @return the meta object for the containment reference list '<em>Operands</em>'.
+   * @see org.polarsys.capella.scenario.editor.dsl.textualScenario.CombinedFragment#getOperands()
+   * @see #getCombinedFragment()
    * @generated
    */
-  EReference getAlt_ElseBlocks();
+  EReference getCombinedFragment_Operands();
 
   /**
-   * Returns the meta object for class '{@link org.polarsys.capella.scenario.editor.dsl.textualScenario.ElseBlock <em>Else Block</em>}'.
+   * Returns the meta object for class '{@link org.polarsys.capella.scenario.editor.dsl.textualScenario.Operand <em>Operand</em>}'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @return the meta object for class '<em>Else Block</em>'.
-   * @see org.polarsys.capella.scenario.editor.dsl.textualScenario.ElseBlock
+   * @return the meta object for class '<em>Operand</em>'.
+   * @see org.polarsys.capella.scenario.editor.dsl.textualScenario.Operand
    * @generated
    */
-  EClass getElseBlock();
+  EClass getOperand();
 
   /**
-   * Returns the meta object for the attribute '{@link org.polarsys.capella.scenario.editor.dsl.textualScenario.ElseBlock#getCondition <em>Condition</em>}'.
+   * Returns the meta object for the attribute '{@link org.polarsys.capella.scenario.editor.dsl.textualScenario.Operand#getKeyword <em>Keyword</em>}'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @return the meta object for the attribute '<em>Condition</em>'.
-   * @see org.polarsys.capella.scenario.editor.dsl.textualScenario.ElseBlock#getCondition()
-   * @see #getElseBlock()
+   * @return the meta object for the attribute '<em>Keyword</em>'.
+   * @see org.polarsys.capella.scenario.editor.dsl.textualScenario.Operand#getKeyword()
+   * @see #getOperand()
    * @generated
    */
-  EAttribute getElseBlock_Condition();
+  EAttribute getOperand_Keyword();
 
   /**
-   * Returns the meta object for the containment reference '{@link org.polarsys.capella.scenario.editor.dsl.textualScenario.ElseBlock#getBlock <em>Block</em>}'.
+   * Returns the meta object for the attribute '{@link org.polarsys.capella.scenario.editor.dsl.textualScenario.Operand#getExpression <em>Expression</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the attribute '<em>Expression</em>'.
+   * @see org.polarsys.capella.scenario.editor.dsl.textualScenario.Operand#getExpression()
+   * @see #getOperand()
+   * @generated
+   */
+  EAttribute getOperand_Expression();
+
+  /**
+   * Returns the meta object for the containment reference '{@link org.polarsys.capella.scenario.editor.dsl.textualScenario.Operand#getBlock <em>Block</em>}'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @return the meta object for the containment reference '<em>Block</em>'.
-   * @see org.polarsys.capella.scenario.editor.dsl.textualScenario.ElseBlock#getBlock()
-   * @see #getElseBlock()
+   * @see org.polarsys.capella.scenario.editor.dsl.textualScenario.Operand#getBlock()
+   * @see #getOperand()
    * @generated
    */
-  EReference getElseBlock_Block();
+  EReference getOperand_Block();
 
   /**
    * Returns the meta object for class '{@link org.polarsys.capella.scenario.editor.dsl.textualScenario.Block <em>Block</em>}'.
@@ -2064,30 +2055,20 @@ public interface TextualScenarioPackage extends EPackage
     EClass COMBINED_FRAGMENT = eINSTANCE.getCombinedFragment();
 
     /**
-     * The meta object literal for the '{@link org.polarsys.capella.scenario.editor.dsl.textualScenario.impl.AltImpl <em>Alt</em>}' class.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @see org.polarsys.capella.scenario.editor.dsl.textualScenario.impl.AltImpl
-     * @see org.polarsys.capella.scenario.editor.dsl.textualScenario.impl.TextualScenarioPackageImpl#getAlt()
-     * @generated
-     */
-    EClass ALT = eINSTANCE.getAlt();
-
-    /**
      * The meta object literal for the '<em><b>Keyword</b></em>' attribute feature.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      */
-    EAttribute ALT__KEYWORD = eINSTANCE.getAlt_Keyword();
+    EAttribute COMBINED_FRAGMENT__KEYWORD = eINSTANCE.getCombinedFragment_Keyword();
 
     /**
-     * The meta object literal for the '<em><b>Condition</b></em>' attribute feature.
+     * The meta object literal for the '<em><b>Expression</b></em>' attribute feature.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      */
-    EAttribute ALT__CONDITION = eINSTANCE.getAlt_Condition();
+    EAttribute COMBINED_FRAGMENT__EXPRESSION = eINSTANCE.getCombinedFragment_Expression();
 
     /**
      * The meta object literal for the '<em><b>Over</b></em>' attribute feature.
@@ -2095,7 +2076,7 @@ public interface TextualScenarioPackage extends EPackage
      * <!-- end-user-doc -->
      * @generated
      */
-    EAttribute ALT__OVER = eINSTANCE.getAlt_Over();
+    EAttribute COMBINED_FRAGMENT__OVER = eINSTANCE.getCombinedFragment_Over();
 
     /**
      * The meta object literal for the '<em><b>Timelines</b></em>' attribute list feature.
@@ -2103,7 +2084,7 @@ public interface TextualScenarioPackage extends EPackage
      * <!-- end-user-doc -->
      * @generated
      */
-    EAttribute ALT__TIMELINES = eINSTANCE.getAlt_Timelines();
+    EAttribute COMBINED_FRAGMENT__TIMELINES = eINSTANCE.getCombinedFragment_Timelines();
 
     /**
      * The meta object literal for the '<em><b>Block</b></em>' containment reference feature.
@@ -2111,33 +2092,41 @@ public interface TextualScenarioPackage extends EPackage
      * <!-- end-user-doc -->
      * @generated
      */
-    EReference ALT__BLOCK = eINSTANCE.getAlt_Block();
+    EReference COMBINED_FRAGMENT__BLOCK = eINSTANCE.getCombinedFragment_Block();
 
     /**
-     * The meta object literal for the '<em><b>Else Blocks</b></em>' containment reference list feature.
+     * The meta object literal for the '<em><b>Operands</b></em>' containment reference list feature.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      */
-    EReference ALT__ELSE_BLOCKS = eINSTANCE.getAlt_ElseBlocks();
+    EReference COMBINED_FRAGMENT__OPERANDS = eINSTANCE.getCombinedFragment_Operands();
 
     /**
-     * The meta object literal for the '{@link org.polarsys.capella.scenario.editor.dsl.textualScenario.impl.ElseBlockImpl <em>Else Block</em>}' class.
+     * The meta object literal for the '{@link org.polarsys.capella.scenario.editor.dsl.textualScenario.impl.OperandImpl <em>Operand</em>}' class.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * @see org.polarsys.capella.scenario.editor.dsl.textualScenario.impl.ElseBlockImpl
-     * @see org.polarsys.capella.scenario.editor.dsl.textualScenario.impl.TextualScenarioPackageImpl#getElseBlock()
+     * @see org.polarsys.capella.scenario.editor.dsl.textualScenario.impl.OperandImpl
+     * @see org.polarsys.capella.scenario.editor.dsl.textualScenario.impl.TextualScenarioPackageImpl#getOperand()
      * @generated
      */
-    EClass ELSE_BLOCK = eINSTANCE.getElseBlock();
+    EClass OPERAND = eINSTANCE.getOperand();
 
     /**
-     * The meta object literal for the '<em><b>Condition</b></em>' attribute feature.
+     * The meta object literal for the '<em><b>Keyword</b></em>' attribute feature.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      */
-    EAttribute ELSE_BLOCK__CONDITION = eINSTANCE.getElseBlock_Condition();
+    EAttribute OPERAND__KEYWORD = eINSTANCE.getOperand_Keyword();
+
+    /**
+     * The meta object literal for the '<em><b>Expression</b></em>' attribute feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EAttribute OPERAND__EXPRESSION = eINSTANCE.getOperand_Expression();
 
     /**
      * The meta object literal for the '<em><b>Block</b></em>' containment reference feature.
@@ -2145,7 +2134,7 @@ public interface TextualScenarioPackage extends EPackage
      * <!-- end-user-doc -->
      * @generated
      */
-    EReference ELSE_BLOCK__BLOCK = eINSTANCE.getElseBlock_Block();
+    EReference OPERAND__BLOCK = eINSTANCE.getOperand_Block();
 
     /**
      * The meta object literal for the '{@link org.polarsys.capella.scenario.editor.dsl.textualScenario.impl.BlockImpl <em>Block</em>}' class.

@@ -250,18 +250,10 @@ public class TextualScenarioSwitch<T> extends Switch<T>
         if (result == null) result = defaultCase(theEObject);
         return result;
       }
-      case TextualScenarioPackage.ALT:
+      case TextualScenarioPackage.OPERAND:
       {
-        Alt alt = (Alt)theEObject;
-        T result = caseAlt(alt);
-        if (result == null) result = caseCombinedFragment(alt);
-        if (result == null) result = defaultCase(theEObject);
-        return result;
-      }
-      case TextualScenarioPackage.ELSE_BLOCK:
-      {
-        ElseBlock elseBlock = (ElseBlock)theEObject;
-        T result = caseElseBlock(elseBlock);
+        Operand operand = (Operand)theEObject;
+        T result = caseOperand(operand);
         if (result == null) result = defaultCase(theEObject);
         return result;
       }
@@ -604,33 +596,17 @@ public class TextualScenarioSwitch<T> extends Switch<T>
   }
 
   /**
-   * Returns the result of interpreting the object as an instance of '<em>Alt</em>'.
+   * Returns the result of interpreting the object as an instance of '<em>Operand</em>'.
    * <!-- begin-user-doc -->
    * This implementation returns null;
    * returning a non-null result will terminate the switch.
    * <!-- end-user-doc -->
    * @param object the target of the switch.
-   * @return the result of interpreting the object as an instance of '<em>Alt</em>'.
+   * @return the result of interpreting the object as an instance of '<em>Operand</em>'.
    * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
    * @generated
    */
-  public T caseAlt(Alt object)
-  {
-    return null;
-  }
-
-  /**
-   * Returns the result of interpreting the object as an instance of '<em>Else Block</em>'.
-   * <!-- begin-user-doc -->
-   * This implementation returns null;
-   * returning a non-null result will terminate the switch.
-   * <!-- end-user-doc -->
-   * @param object the target of the switch.
-   * @return the result of interpreting the object as an instance of '<em>Else Block</em>'.
-   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
-   * @generated
-   */
-  public T caseElseBlock(ElseBlock object)
+  public T caseOperand(Operand object)
   {
     return null;
   }
