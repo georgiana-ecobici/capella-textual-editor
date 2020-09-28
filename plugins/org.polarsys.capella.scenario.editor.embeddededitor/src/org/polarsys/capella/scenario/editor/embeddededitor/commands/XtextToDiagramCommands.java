@@ -523,8 +523,7 @@ public class XtextToDiagramCommands {
         CombinedFragment candidateCombinedFragment = (CombinedFragment) ((FragmentEnd) element).getAbstractFragment();
         if (candidateCombinedFragment.getOperator().toString().toLowerCase()
             .equals(textCombinedFragment.getKeyword())) {
-          List<InteractionOperand> ownedOperands = AbstractFragmentExt.getOwnedOperands(candidateCombinedFragment,
-              scenario);
+          List<InteractionOperand> ownedOperands = candidateCombinedFragment.getReferencedOperands();
           if (ownedOperands.size() == textCombinedFragment.getOperands().size() + 1) {
             // todo check each thing
             return candidateCombinedFragment;
