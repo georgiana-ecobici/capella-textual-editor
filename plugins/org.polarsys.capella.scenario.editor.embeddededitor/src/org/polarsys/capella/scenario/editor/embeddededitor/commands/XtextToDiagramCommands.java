@@ -15,6 +15,7 @@ package org.polarsys.capella.scenario.editor.embeddededitor.commands;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Stack;
 import java.util.stream.Collectors;
 
 import org.eclipse.emf.common.util.EList;
@@ -437,11 +438,17 @@ public class XtextToDiagramCommands {
           createCapellaCombinedFragmentBlock(scenario,
               (org.polarsys.capella.scenario.editor.dsl.textualScenario.CombinedFragment) xtextElement,
               lastInteractionFragment);
+        } else {
+          // combined fragment found, check its contents
+          editElements(scenario, ((org.polarsys.capella.scenario.editor.dsl.textualScenario.CombinedFragment) xtextElement).getBlock().getBlockElements());
+          for (Operand operand : ((org.polarsys.capella.scenario.editor.dsl.textualScenario.CombinedFragment) xtextElement).getOperands()) {
+            editElements(scenario, operand.getBlock().getBlockElements());
+          }
         }
       }
     }
   }
-
+  
   private static Execution getExecutionForSequenceMessage(Scenario scenario, SequenceMessage sequenceMessage) {
     Execution execution = null;
     MessageEnd receivingEnd = sequenceMessage.getReceivingEnd();
@@ -733,7 +740,7 @@ public class XtextToDiagramCommands {
         sequenceMessage = ExecutionEndExt.getMessage((ExecutionEnd) executionEnd);
       } else {
         sequenceMessage = ((MessageEnd) executionEnd).getMessage();
-        oppositeSequenceMessage = SequenceMessageExt.getOppositeSequenceMessage(sequenceMessage);
+        oppositeSequenceMessage = getOppositeSequenceMessage(sequenceMessage, fragments);
       }
 
       if (oppositeSequenceMessage != null) {
@@ -766,11 +773,6 @@ public class XtextToDiagramCommands {
       org.polarsys.capella.scenario.editor.dsl.textualScenario.CombinedFragment condition,
       InteractionFragment lastInteractionFragment) {
 
-    TransactionalEditingDomain domain = TransactionUtil.getEditingDomain(scenario);
-    domain.getCommandStack().execute(new RecordingCommand(domain) {
-
-      @Override
-      protected void doExecute() {
         // generate CombinedFragment, FramentEnd, FragmentEnd, IntreationOperands from alt
         FragmentEnd start = InteractionFactory.eINSTANCE.createFragmentEnd();
         FragmentEnd finish = InteractionFactory.eINSTANCE.createFragmentEnd();
@@ -817,8 +819,6 @@ public class XtextToDiagramCommands {
             editElements(scenario, operandBlock.getBlock().getBlockElements());
           }
         }
-      }
-    });
   }
 
   private static InteractionOperand addInteractionOperand(EList<InstanceRole> coveredInstanceRoles, String condition) {
@@ -850,4 +850,117 @@ public class XtextToDiagramCommands {
 
     return combinedFragment;
   }
+  
+  /**
+   * Returns the 'calling' or 'reply' branch related to the given sequence message.
+   * 
+   * @param sequenceMessage
+   * @return
+   */
+  public static SequenceMessage getOppositeSequenceMessage(SequenceMessage sequenceMessage, List<InteractionFragment> fragments) {
+
+    boolean flag = false;
+    List<SequenceMessage> setPortionMessage = new ArrayList<>();
+    Stack<SequenceMessage> stack = new Stack<>();
+
+    if (sequenceMessage != null) {
+      /** On messages of type 'destroy' there is no processing */
+      if (!sequenceMessage.getKind().equals(MessageKind.CREATE) &&
+          !sequenceMessage.getKind().equals(MessageKind.DELETE) &&
+          !sequenceMessage.getKind().equals(MessageKind.ASYNCHRONOUS_CALL))
+      {
+        List<MessageEnd> ownedMsgEnd = new ArrayList<>();
+
+        for (InteractionFragment abs : fragments) {
+          if (abs instanceof MessageEnd) {
+            ownedMsgEnd.add((MessageEnd) abs);
+          }
+        }
+        
+        if (ownedMsgEnd != null) {
+          if (sequenceMessage.getKind().equals(MessageKind.REPLY)) {
+            /** If this is a REPLY message => the CALLING branch is present in the upper portion of the messages */
+            flag = false;
+            for (Iterator<MessageEnd> it = ownedMsgEnd.iterator(); it.hasNext() && !flag;) {
+              MessageEnd msgEnd = it.next();
+              if (msgEnd != null) {
+                SequenceMessage msg = msgEnd.getMessage();
+                if (msg != null) {
+                  if (!msg.equals(sequenceMessage)) {
+                    setPortionMessage.add(msg);
+                  }
+                  else flag = true;
+                }
+              }
+            }
+            /** Invert sequence messages  order */
+            setPortionMessage = SequenceMessageExt.reverse(setPortionMessage);
+          }
+          else {
+            /** If this is a CALLING message =>  The REPLY branch is present in the upper portion of the messages */
+            flag = false;
+            for (Iterator<MessageEnd> it = ownedMsgEnd.iterator(); it.hasNext();) {
+              MessageEnd msgEnd = it.next();
+              if (msgEnd != null) {
+                SequenceMessage msg = msgEnd.getMessage();
+                if (msg != null) {
+                  if (flag) {
+                    setPortionMessage.add(msg);
+                  }
+                  else if (msg.equals(sequenceMessage)) {
+                    flag = true;
+                  }
+                }
+              }
+            }
+          }
+
+          for (SequenceMessage msg : setPortionMessage) {
+            if (!msg.getKind().equals(MessageKind.CREATE) &&
+                !msg.getKind().equals(MessageKind.DELETE) &&
+                !msg.getKind().equals(MessageKind.ASYNCHRONOUS_CALL))
+            {
+              if (sequenceMessage.getKind().equals(MessageKind.REPLY)) {
+                /**
+                 * Treatment: research branch 'toGo'
+                 * If current message type return: Pushes current message
+                 * else if stack empty: branch the found 'toGo'
+                 * else pops the last message and return.
+                 */
+                if (msg.getKind().equals(MessageKind.REPLY)) {
+                  stack.push(msg);
+                }
+                else {
+                  if (stack.isEmpty()) {
+                    return msg;
+                  }
+                  stack.pop();
+                }
+              }
+              else {
+                /**
+                 * Treatment: research branch 'toGo'
+                 * If current message type is return and empty stack: Branch return found. 
+                 * If current message type is return and non-empty stack: Pops last message 'toGo' 
+                 * else the current message is stacked
+                 */
+                if (msg.getKind().equals(MessageKind.REPLY)) {
+                  if (stack.isEmpty()) {
+                    return msg;
+                  }
+                  stack.pop();
+                }
+                else {
+                  stack.push(msg);
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    return null;
+  } 
+  
 }
