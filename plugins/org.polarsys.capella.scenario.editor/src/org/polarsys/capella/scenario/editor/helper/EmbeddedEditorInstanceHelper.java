@@ -373,4 +373,11 @@ public class EmbeddedEditorInstanceHelper {
     XtextDocument document = EmbeddedEditorInstance.getEmbeddedEditor().getDocument();
     return document.get();
   }
+
+  public static List<AbstractState> getStates(InstanceRole element) {
+    Collection<AbstractState> modesAndStates = ScenarioExt
+        .getAvailableStateModeStateFragment(((InstanceRole) element).getRepresentedInstance());
+    return modesAndStates.stream().filter(x -> x instanceof State && !(x instanceof Mode))
+        .collect(Collectors.toList());
+  }
 }

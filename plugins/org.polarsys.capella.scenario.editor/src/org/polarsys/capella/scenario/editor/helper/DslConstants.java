@@ -28,4 +28,6 @@ public class DslConstants {
   public static final String STATE = "state";
   public static final String ON = "on";
   public static final String OVER = "over";
+  public static final String START = "start";
+  public static final String FINISH = "finish";
 }
