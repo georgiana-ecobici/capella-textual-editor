@@ -307,10 +307,12 @@ public class DiagramToXtextCommands {
     if (!blockOperands.empty())
       blockOperands.pop();
 
-    // generate a new branch for combined fragment (else sequence)
-    Block block = addOperandBlock(factory, combinedFragments.peek(), operand);
+    if (!combinedFragments.isEmpty()) {
+      // generate a new branch for combined fragment (else sequence)
+      Block block = addOperandBlock(factory, combinedFragments.peek(), operand);
 
-    blockOperands.push(block);
+      blockOperands.push(block);
+    }
   }
 
   private static void generateDeactivatioOnMessages(ExecutionEnd executionEnd,
@@ -569,6 +571,9 @@ public class DiagramToXtextCommands {
       InteractionOperand operand) {
     Operand operandBlock = factory.createOperand();
     operandBlock.setExpression(HelperCommands.getExpressionText(operand));
+    if(combinedFragment.getKeyword().equals(DslConstants.ALT)) {
+      operandBlock.setKeyword("else");
+    }
     combinedFragment.getOperands().add(operandBlock);
 
     Block block = createBlock(factory);
