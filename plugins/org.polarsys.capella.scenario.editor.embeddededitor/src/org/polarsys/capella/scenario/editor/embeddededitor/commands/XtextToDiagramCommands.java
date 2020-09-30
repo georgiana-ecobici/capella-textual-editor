@@ -31,6 +31,7 @@ import org.eclipse.sirius.diagram.ui.business.internal.operation.AbstractModelCh
 import org.eclipse.sirius.viewpoint.description.AnnotationEntry;
 import org.eclipse.xtext.resource.XtextResource;
 import org.polarsys.capella.common.menu.dynamic.CreationHelper;
+import org.polarsys.capella.core.data.capellacommon.AbstractState;
 import org.polarsys.capella.core.data.capellacore.CapellaElement;
 import org.polarsys.capella.core.data.capellacore.CapellacoreFactory;
 import org.polarsys.capella.core.data.capellacore.Constraint;
@@ -54,10 +55,12 @@ import org.polarsys.capella.core.data.interaction.InteractionFactory;
 import org.polarsys.capella.core.data.interaction.InteractionFragment;
 import org.polarsys.capella.core.data.interaction.InteractionOperand;
 import org.polarsys.capella.core.data.interaction.InteractionOperatorKind;
+import org.polarsys.capella.core.data.interaction.InteractionState;
 import org.polarsys.capella.core.data.interaction.MessageEnd;
 import org.polarsys.capella.core.data.interaction.MessageKind;
 import org.polarsys.capella.core.data.interaction.Scenario;
 import org.polarsys.capella.core.data.interaction.SequenceMessage;
+import org.polarsys.capella.core.data.interaction.StateFragment;
 import org.polarsys.capella.core.data.interaction.TimeLapse;
 import org.polarsys.capella.core.data.interaction.properties.dialogs.sequenceMessage.model.SelectInvokedOperationModelForSharedDataAndEvent;
 import org.polarsys.capella.core.model.helpers.AbstractFragmentExt;
@@ -72,6 +75,7 @@ import org.polarsys.capella.scenario.editor.dsl.textualScenario.ParticipantDeact
 import org.polarsys.capella.scenario.editor.dsl.ui.provider.TextualScenarioProvider;
 import org.polarsys.capella.scenario.editor.embeddededitor.helper.XtextEditorHelper;
 import org.polarsys.capella.scenario.editor.embeddededitor.views.EmbeddedEditorView;
+import org.polarsys.capella.scenario.editor.helper.DslConstants;
 import org.polarsys.capella.scenario.editor.helper.EmbeddedEditorInstanceHelper;
 
 public class XtextToDiagramCommands {
@@ -328,8 +332,18 @@ public class XtextToDiagramCommands {
               // finish the Combined Fragment Block
               interactionFragments.add(capellaCombinedFragment.getFinish());
             }
-          }
+          } else if (elementFromXtext instanceof org.polarsys.capella.scenario.editor.dsl.textualScenario.StateFragment) {
+            if (((org.polarsys.capella.scenario.editor.dsl.textualScenario.StateFragment) elementFromXtext).getKeyword()
+                .equals(DslConstants.STATE)) {
+              StateFragment stateFragment = getCorrespondingCapellaStateFragment(scenario,
+                  (org.polarsys.capella.scenario.editor.dsl.textualScenario.StateFragment) elementFromXtext);
+              if (stateFragment != null) {
+                interactionFragments.add(stateFragment.getStart());
+                interactionFragments.add(stateFragment.getFinish());
+              }
+            }
         }
+      }
       }
 
       private void reorderCapellaDeactivationMessages(Scenario scenario,
@@ -445,9 +459,91 @@ public class XtextToDiagramCommands {
             editElements(scenario, operand.getBlock().getBlockElements());
           }
         }
+      } else if (xtextElement instanceof org.polarsys.capella.scenario.editor.dsl.textualScenario.StateFragment) {
+
+        editStateFragment(scenario,
+            (org.polarsys.capella.scenario.editor.dsl.textualScenario.StateFragment) xtextElement);
       }
     }
   }
+  
+  private static void editStateFragment(Scenario scenario,
+      org.polarsys.capella.scenario.editor.dsl.textualScenario.StateFragment xtextElement) {
+
+    String timeline = ((org.polarsys.capella.scenario.editor.dsl.textualScenario.StateFragment) xtextElement)
+        .getTimeline();
+    String name = ((org.polarsys.capella.scenario.editor.dsl.textualScenario.StateFragment) xtextElement).getName();
+    String keyword = ((org.polarsys.capella.scenario.editor.dsl.textualScenario.StateFragment) xtextElement)
+        .getKeyword();
+
+    InstanceRole instanceRole = EmbeddedEditorInstanceHelper.getInstanceRole(timeline);
+
+    EList<TimeLapse> ownedTimeLapses = scenario.getOwnedTimeLapses();
+
+    switch (keyword) {
+    case DslConstants.STATE:
+      AbstractState abstractState = getCorrespondingCapellaAbstractState(scenario, instanceRole, name);
+      List<TimeLapse> ownedStateFragments = ownedTimeLapses.stream()
+          .filter(x -> x instanceof StateFragment && ((StateFragment) x).getRelatedAbstractState().equals(abstractState)
+              && ((StateFragment) x).getStart().getCoveredInstanceRoles().get(0).equals(instanceRole))
+          .collect(Collectors.toList());
+
+      if (ownedStateFragments.isEmpty()) {
+        InteractionState interactionStateStart = createInteractionState(DslConstants.START, abstractState,
+            instanceRole);
+        InteractionState interactionStateEnd = createInteractionState(DslConstants.FINISH, abstractState, instanceRole);
+
+        scenario.getOwnedInteractionFragments().add(interactionStateStart);
+        scenario.getOwnedInteractionFragments().add(interactionStateEnd);
+
+        StateFragment stateFragment = createStateFragment(interactionStateStart, interactionStateEnd, abstractState,
+            name);
+
+        ownedTimeLapses.add(stateFragment);
+      }
+      break;
+    case DslConstants.MODE:
+      break;
+    case DslConstants.FUNCTION:
+      break;
+    }
+  }
+
+  private static StateFragment createStateFragment(InteractionState interactionStateStart,
+      InteractionState interactionStateEnd, AbstractState abstractState, String name) {
+
+    StateFragment stateFragment = InteractionFactory.eINSTANCE.createStateFragment();
+
+    stateFragment.setStart(interactionStateStart);
+    stateFragment.setFinish(interactionStateEnd);
+    stateFragment.setRelatedAbstractState(abstractState);
+
+    return stateFragment;
+  }
+
+  private static InteractionState createInteractionState(String name, AbstractState abstractState,
+      InstanceRole element) {
+    InteractionState interactionState = InteractionFactory.eINSTANCE.createInteractionState();
+    interactionState.setName(name);
+    interactionState.setRelatedAbstractState(abstractState);
+    interactionState.getCoveredInstanceRoles().add(element);
+
+    return interactionState;
+  }
+
+  private static AbstractState getCorrespondingCapellaAbstractState(Scenario scenario, InstanceRole element,
+      String name) {
+
+    List<AbstractState> availableStates = EmbeddedEditorInstanceHelper.getStates(element);
+
+    for (AbstractState availableState : availableStates) {
+      if (availableState.getName().equals(name)) {
+        return availableState;
+      }
+    }
+    return null;
+  }
+
   
   private static Execution getExecutionForSequenceMessage(Scenario scenario, SequenceMessage sequenceMessage) {
     Execution execution = null;
@@ -518,6 +614,24 @@ public class XtextToDiagramCommands {
     }
 
     return orderedOperands;
+  }
+  
+  private static StateFragment getCorrespondingCapellaStateFragment(Scenario scenario,
+      org.polarsys.capella.scenario.editor.dsl.textualScenario.StateFragment stateFragment) {
+
+    String name = stateFragment.getName();
+    String timeline = stateFragment.getTimeline();
+    InstanceRole instanceRole = EmbeddedEditorInstanceHelper.getInstanceRole(timeline);
+
+    List<TimeLapse> filteredTimeLapses = scenario.getOwnedTimeLapses().stream()
+        .filter(x -> x instanceof StateFragment && ((StateFragment) x).getRelatedAbstractState().getName().equals(name)
+            && x.getStart().getCoveredInstanceRoles().get(0).equals(instanceRole))
+        .collect(Collectors.toList());
+
+    if (!filteredTimeLapses.isEmpty()) {
+      return (StateFragment) filteredTimeLapses.get(0);
+    }
+    return null;
   }
 
   private static CombinedFragment getCorrespondingCapellaCombinedFragment(Scenario scenario,
