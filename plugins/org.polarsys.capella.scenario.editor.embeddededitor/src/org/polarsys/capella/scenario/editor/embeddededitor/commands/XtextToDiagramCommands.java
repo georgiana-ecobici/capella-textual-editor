@@ -311,8 +311,9 @@ public class XtextToDiagramCommands {
               // start the Combined Fragment Block
               interactionFragments.add(capellaCombinedFragment.getStart());
 
-              List<InteractionOperand> orderedCapellaOperands = getOrderedCapellaInteractionOperands(scenario,
-                  textCombinedFragment, capellaCombinedFragment);
+              List<InteractionOperand> orderedCapellaOperands = //capellaCombinedFragment.getReferencedOperands();
+                  getOrderedCapellaInteractionOperands(scenario,
+                  textCombinedFragment, capellaCombinedFragment); // is null - check todo
 
               // add content in the first operand of the Combined Fragment Block
               interactionFragments.add(orderedCapellaOperands.get(0));
