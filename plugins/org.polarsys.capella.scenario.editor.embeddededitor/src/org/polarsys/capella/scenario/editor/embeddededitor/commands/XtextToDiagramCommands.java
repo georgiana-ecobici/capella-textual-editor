@@ -36,6 +36,7 @@ import org.polarsys.capella.core.data.capellacore.CapellaElement;
 import org.polarsys.capella.core.data.capellacore.CapellacoreFactory;
 import org.polarsys.capella.core.data.capellacore.Constraint;
 import org.polarsys.capella.core.data.cs.ExchangeItemAllocation;
+import org.polarsys.capella.core.data.fa.AbstractFunction;
 import org.polarsys.capella.core.data.helpers.interaction.services.ExecutionEndExt;
 import org.polarsys.capella.core.data.helpers.interaction.services.SequenceMessageExt;
 import org.polarsys.capella.core.data.information.AbstractEventOperation;
@@ -311,9 +312,13 @@ public class XtextToDiagramCommands {
               // start the Combined Fragment Block
               interactionFragments.add(capellaCombinedFragment.getStart());
 
-              List<InteractionOperand> orderedCapellaOperands = //capellaCombinedFragment.getReferencedOperands();
-                  getOrderedCapellaInteractionOperands(scenario,
-                  textCombinedFragment, capellaCombinedFragment); // is null - check todo
+              List<InteractionOperand> orderedCapellaOperands = // capellaCombinedFragment.getReferencedOperands();
+                  getOrderedCapellaInteractionOperands(scenario, textCombinedFragment, capellaCombinedFragment); // is
+                                                                                                                 // null
+                                                                                                                 // -
+                                                                                                                 // check
+                                                                                                                 // //
+                                                                                                                 // todo
 
               // add content in the first operand of the Combined Fragment Block
               interactionFragments.add(orderedCapellaOperands.get(0));
@@ -329,22 +334,20 @@ public class XtextToDiagramCommands {
                 reorderCapellaFragments(scenario, textOperands.get(i).getBlock().getBlockElements(),
                     capellaSequenceMessages, interactionFragments, executionEndsToProcess);
               }
-              
+
               // finish the Combined Fragment Block
               interactionFragments.add(capellaCombinedFragment.getFinish());
             }
           } else if (elementFromXtext instanceof org.polarsys.capella.scenario.editor.dsl.textualScenario.StateFragment) {
-            if (((org.polarsys.capella.scenario.editor.dsl.textualScenario.StateFragment) elementFromXtext).getKeyword()
-                .equals(DslConstants.STATE)) {
-              StateFragment stateFragment = getCorrespondingCapellaStateFragment(scenario,
-                  (org.polarsys.capella.scenario.editor.dsl.textualScenario.StateFragment) elementFromXtext);
-              if (stateFragment != null) {
-                interactionFragments.add(stateFragment.getStart());
-                interactionFragments.add(stateFragment.getFinish());
-              }
+
+            StateFragment stateFragment = getCorrespondingCapellaStateFragment(scenario, interactionFragments,
+                (org.polarsys.capella.scenario.editor.dsl.textualScenario.StateFragment) elementFromXtext);
+            if (stateFragment != null) {
+              interactionFragments.add(stateFragment.getStart());
+              interactionFragments.add(stateFragment.getFinish());
             }
+          }
         }
-      }
       }
 
       private void reorderCapellaDeactivationMessages(Scenario scenario,
@@ -408,6 +411,7 @@ public class XtextToDiagramCommands {
 
   private static void editElements(Scenario scenario, EList<EObject> elements) {
     EList<SequenceMessage> sequenceMessages = scenario.getOwnedMessages();
+    List<EObject> previousStateFragments = new ArrayList<EObject>();
     for (Iterator<EObject> iterator = elements.iterator(); iterator.hasNext();) {
       EObject xtextElement = iterator.next();
 
@@ -441,10 +445,10 @@ public class XtextToDiagramCommands {
         }
       } else if (xtextElement instanceof org.polarsys.capella.scenario.editor.dsl.textualScenario.CombinedFragment) {
         // Check if we need to create CombinedFragment
-        
-        CombinedFragment capellaFragment = getCorrespondingCapellaCombinedFragment(scenario, 
-            (org.polarsys.capella.scenario.editor.dsl.textualScenario.CombinedFragment)xtextElement);
-        if (capellaFragment == null) {      
+
+        CombinedFragment capellaFragment = getCorrespondingCapellaCombinedFragment(scenario,
+            (org.polarsys.capella.scenario.editor.dsl.textualScenario.CombinedFragment) xtextElement);
+        if (capellaFragment == null) {
           InteractionFragment lastInteractionFragment = null;
           if (!sequenceMessages.isEmpty()) {
             SequenceMessage lastSequenceMessage = sequenceMessages.get(sequenceMessages.size() - 1);
@@ -455,97 +459,146 @@ public class XtextToDiagramCommands {
               lastInteractionFragment);
         } else {
           // combined fragment found, check its contents
-          editElements(scenario, ((org.polarsys.capella.scenario.editor.dsl.textualScenario.CombinedFragment) xtextElement).getBlock().getBlockElements());
-          for (Operand operand : ((org.polarsys.capella.scenario.editor.dsl.textualScenario.CombinedFragment) xtextElement).getOperands()) {
+          editElements(scenario,
+              ((org.polarsys.capella.scenario.editor.dsl.textualScenario.CombinedFragment) xtextElement).getBlock()
+                  .getBlockElements());
+          for (Operand operand : ((org.polarsys.capella.scenario.editor.dsl.textualScenario.CombinedFragment) xtextElement)
+              .getOperands()) {
             editElements(scenario, operand.getBlock().getBlockElements());
           }
         }
       } else if (xtextElement instanceof org.polarsys.capella.scenario.editor.dsl.textualScenario.StateFragment) {
-
+        previousStateFragments.add(xtextElement);
         editStateFragment(scenario,
-            (org.polarsys.capella.scenario.editor.dsl.textualScenario.StateFragment) xtextElement);
+            (org.polarsys.capella.scenario.editor.dsl.textualScenario.StateFragment) xtextElement,
+            previousStateFragments);
       }
     }
   }
-  
+
   private static void editStateFragment(Scenario scenario,
-      org.polarsys.capella.scenario.editor.dsl.textualScenario.StateFragment xtextElement) {
+      org.polarsys.capella.scenario.editor.dsl.textualScenario.StateFragment xtextElement,
+      List<EObject> previousEditorStateFragments) {
 
-    String timeline = ((org.polarsys.capella.scenario.editor.dsl.textualScenario.StateFragment) xtextElement)
-        .getTimeline();
-    String name = ((org.polarsys.capella.scenario.editor.dsl.textualScenario.StateFragment) xtextElement).getName();
-    String keyword = ((org.polarsys.capella.scenario.editor.dsl.textualScenario.StateFragment) xtextElement)
-        .getKeyword();
-
-    InstanceRole instanceRole = EmbeddedEditorInstanceHelper.getInstanceRole(timeline);
-
+    InstanceRole instanceRole = EmbeddedEditorInstanceHelper.getInstanceRole(xtextElement.getTimeline());
     EList<TimeLapse> ownedTimeLapses = scenario.getOwnedTimeLapses();
 
-    switch (keyword) {
-    case DslConstants.STATE:
-      AbstractState abstractState = getCorrespondingCapellaAbstractState(scenario, instanceRole, name);
-      List<TimeLapse> ownedStateFragments = ownedTimeLapses.stream()
-          .filter(x -> x instanceof StateFragment && ((StateFragment) x).getRelatedAbstractState().equals(abstractState)
-              && ((StateFragment) x).getStart().getCoveredInstanceRoles().get(0).equals(instanceRole))
+    List<EObject> simillarStateFragments = previousEditorStateFragments.stream()
+        .filter(x -> ((org.polarsys.capella.scenario.editor.dsl.textualScenario.StateFragment) x).getTimeline()
+            .equals(xtextElement.getTimeline())
+            && ((org.polarsys.capella.scenario.editor.dsl.textualScenario.StateFragment) x).getName()
+                .equals(xtextElement.getName())
+            && ((org.polarsys.capella.scenario.editor.dsl.textualScenario.StateFragment) x).getKeyword()
+                .equals(xtextElement.getKeyword()))
+        .collect(Collectors.toList());
+
+    EObject relatedElement = getRelatedElement(scenario, instanceRole, xtextElement);
+
+    if (relatedElement == null)
+      return;
+
+    List<TimeLapse> capellaStateFragments = getStateFragmentsWithGivenInstanceRoleAndRelatedElement(scenario,
+        instanceRole, xtextElement, relatedElement);
+
+    if (capellaStateFragments.isEmpty() || capellaStateFragments.size() < simillarStateFragments.size()) {
+      InteractionState interactionStateStart = createInteractionState(DslConstants.START, relatedElement, instanceRole);
+      InteractionState interactionStateEnd = createInteractionState(DslConstants.FINISH, relatedElement, instanceRole);
+
+      scenario.getOwnedInteractionFragments().add(interactionStateStart);
+      scenario.getOwnedInteractionFragments().add(interactionStateEnd);
+
+      StateFragment stateFragment = createStateFragment(interactionStateStart, interactionStateEnd, relatedElement,
+          xtextElement.getName());
+
+      ownedTimeLapses.add(stateFragment);
+    }
+  }
+
+  private static List<TimeLapse> getStateFragmentsWithGivenInstanceRoleAndRelatedElement(Scenario scenario,
+      InstanceRole instanceRole, org.polarsys.capella.scenario.editor.dsl.textualScenario.StateFragment xtextElement,
+      EObject relatedElement) {
+
+    if (xtextElement.getKeyword().equals(DslConstants.FUNCTION))
+      return scenario.getOwnedTimeLapses().stream()
+          .filter(
+              x -> x instanceof StateFragment && ((StateFragment) x).getRelatedAbstractFunction().equals(relatedElement)
+                  && ((StateFragment) x).getStart().getCoveredInstanceRoles().get(0).equals(instanceRole))
           .collect(Collectors.toList());
 
-      if (ownedStateFragments.isEmpty()) {
-        InteractionState interactionStateStart = createInteractionState(DslConstants.START, abstractState,
-            instanceRole);
-        InteractionState interactionStateEnd = createInteractionState(DslConstants.FINISH, abstractState, instanceRole);
+    return scenario.getOwnedTimeLapses().stream()
+        .filter(x -> x instanceof StateFragment && ((StateFragment) x).getRelatedAbstractState().equals(relatedElement)
+            && ((StateFragment) x).getStart().getCoveredInstanceRoles().get(0).equals(instanceRole))
+        .collect(Collectors.toList());
+  }
 
-        scenario.getOwnedInteractionFragments().add(interactionStateStart);
-        scenario.getOwnedInteractionFragments().add(interactionStateEnd);
+  private static EObject getRelatedElement(Scenario scenario, InstanceRole instanceRole,
+      org.polarsys.capella.scenario.editor.dsl.textualScenario.StateFragment stateFragment) {
 
-        StateFragment stateFragment = createStateFragment(interactionStateStart, interactionStateEnd, abstractState,
-            name);
-
-        ownedTimeLapses.add(stateFragment);
-      }
-      break;
-    case DslConstants.MODE:
-      break;
-    case DslConstants.FUNCTION:
-      break;
+    if (stateFragment.getKeyword().equals(DslConstants.FUNCTION)) {
+      return getCorrespondingCapellaAbstractFunction(scenario, instanceRole, stateFragment.getName());
     }
+    return getCorrespondingCapellaAbstractState(scenario, instanceRole, stateFragment.getName(),
+        stateFragment.getKeyword());
   }
 
   private static StateFragment createStateFragment(InteractionState interactionStateStart,
-      InteractionState interactionStateEnd, AbstractState abstractState, String name) {
+      InteractionState interactionStateEnd, EObject relatedElement, String name) {
 
     StateFragment stateFragment = InteractionFactory.eINSTANCE.createStateFragment();
-
     stateFragment.setStart(interactionStateStart);
     stateFragment.setFinish(interactionStateEnd);
-    stateFragment.setRelatedAbstractState(abstractState);
+
+    if (relatedElement instanceof AbstractFunction) {
+      stateFragment.setRelatedAbstractFunction((AbstractFunction) relatedElement);
+    } else
+      stateFragment.setRelatedAbstractState((AbstractState) relatedElement);
 
     return stateFragment;
   }
 
-  private static InteractionState createInteractionState(String name, AbstractState abstractState,
-      InstanceRole element) {
+  private static InteractionState createInteractionState(String name, EObject relatedElement, InstanceRole element) {
+
     InteractionState interactionState = InteractionFactory.eINSTANCE.createInteractionState();
     interactionState.setName(name);
-    interactionState.setRelatedAbstractState(abstractState);
     interactionState.getCoveredInstanceRoles().add(element);
+
+    if (relatedElement instanceof AbstractFunction) {
+      interactionState.setRelatedAbstractFunction((AbstractFunction) relatedElement);
+    } else {
+      interactionState.setRelatedAbstractState((AbstractState) relatedElement);
+    }
 
     return interactionState;
   }
 
-  private static AbstractState getCorrespondingCapellaAbstractState(Scenario scenario, InstanceRole element,
+  private static AbstractFunction getCorrespondingCapellaAbstractFunction(Scenario scenario, InstanceRole element,
       String name) {
+    List<AbstractFunction> availableFunctions = EmbeddedEditorInstanceHelper.getAllocatedFunctions(element);
 
-    List<AbstractState> availableStates = EmbeddedEditorInstanceHelper.getStates(element);
-
-    for (AbstractState availableState : availableStates) {
-      if (availableState.getName().equals(name)) {
-        return availableState;
-      }
+    for (AbstractFunction availableFunction : availableFunctions) {
+      if (availableFunction.getName().equals(name))
+        return availableFunction;
     }
     return null;
   }
 
-  
+  private static AbstractState getCorrespondingCapellaAbstractState(Scenario scenario, InstanceRole element,
+      String name, String keyword) {
+    List<AbstractState> availableStates = new ArrayList<AbstractState>();
+
+    if (keyword.equals(DslConstants.STATE)) {
+      availableStates = EmbeddedEditorInstanceHelper.getStates(element);
+    } else {
+      availableStates = EmbeddedEditorInstanceHelper.getModes(element);
+    }
+
+    for (AbstractState availableState : availableStates) {
+      if (availableState.getName().equals(name))
+        return availableState;
+    }
+    return null;
+  }
+
   private static Execution getExecutionForSequenceMessage(Scenario scenario, SequenceMessage sequenceMessage) {
     Execution execution = null;
     MessageEnd receivingEnd = sequenceMessage.getReceivingEnd();
@@ -616,18 +669,29 @@ public class XtextToDiagramCommands {
 
     return orderedOperands;
   }
-  
+
   private static StateFragment getCorrespondingCapellaStateFragment(Scenario scenario,
+      List<InteractionFragment> interactionFragments,
       org.polarsys.capella.scenario.editor.dsl.textualScenario.StateFragment stateFragment) {
 
-    String name = stateFragment.getName();
-    String timeline = stateFragment.getTimeline();
-    InstanceRole instanceRole = EmbeddedEditorInstanceHelper.getInstanceRole(timeline);
+    InstanceRole instanceRole = EmbeddedEditorInstanceHelper.getInstanceRole(stateFragment.getTimeline());
 
-    List<TimeLapse> filteredTimeLapses = scenario.getOwnedTimeLapses().stream()
-        .filter(x -> x instanceof StateFragment && ((StateFragment) x).getRelatedAbstractState().getName().equals(name)
-            && x.getStart().getCoveredInstanceRoles().get(0).equals(instanceRole))
-        .collect(Collectors.toList());
+    List<TimeLapse> filteredTimeLapses = new ArrayList<TimeLapse>();
+    if (stateFragment.getKeyword().equals(DslConstants.FUNCTION)) {
+      filteredTimeLapses = scenario.getOwnedTimeLapses().stream()
+          .filter(x -> x instanceof StateFragment
+              && ((StateFragment) x).getRelatedAbstractFunction().getName().equals(stateFragment.getName())
+              && x.getStart().getCoveredInstanceRoles().get(0).equals(instanceRole)
+              && !interactionFragments.contains(((StateFragment) x).getStart()))
+          .collect(Collectors.toList());
+    } else {
+      filteredTimeLapses = scenario.getOwnedTimeLapses().stream()
+          .filter(x -> x instanceof StateFragment
+              && ((StateFragment) x).getRelatedAbstractState().getName().equals(stateFragment.getName())
+              && x.getStart().getCoveredInstanceRoles().get(0).equals(instanceRole)
+              && !interactionFragments.contains(((StateFragment) x).getStart()))
+          .collect(Collectors.toList());
+    }
 
     if (!filteredTimeLapses.isEmpty()) {
       return (StateFragment) filteredTimeLapses.get(0);
@@ -662,7 +726,8 @@ public class XtextToDiagramCommands {
     EList<SequenceMessage> sequenceMessages = scenario.getOwnedMessages();
     List<EObject> allXtextSequenceMessages = getAllXtextSequenceMessages(messages);
     List<SequenceMessage> messagesToBeDeleted = sequenceMessages.stream()
-        .filter(capellaSequenceMessage -> capellaSequenceMessage.getKind() != MessageKind.REPLY && !foundCapellaMessageInXText(capellaSequenceMessage, allXtextSequenceMessages))
+        .filter(capellaSequenceMessage -> capellaSequenceMessage.getKind() != MessageKind.REPLY
+            && !foundCapellaMessageInXText(capellaSequenceMessage, allXtextSequenceMessages))
         .collect(Collectors.toList());
 
     for (SequenceMessage sequenceMessage : messagesToBeDeleted) {
@@ -712,7 +777,7 @@ public class XtextToDiagramCommands {
     // Remove sequence message
     scenario.getOwnedMessages().remove(sequenceMessage);
   }
-  
+
   private static boolean foundCapellaMessageInXText(SequenceMessage capellaSequenceMessage,
       List<EObject> allXtextSequenceMessages) {
     for (EObject message : allXtextSequenceMessages) {
@@ -732,19 +797,19 @@ public class XtextToDiagramCommands {
       }
       // CombinedFragment -> go inside and find all sequence messages at all levels
       if (element instanceof org.polarsys.capella.scenario.editor.dsl.textualScenario.CombinedFragment) {
-        org.polarsys.capella.scenario.editor.dsl.textualScenario.CombinedFragment combinedFragmentElement = 
-            (org.polarsys.capella.scenario.editor.dsl.textualScenario.CombinedFragment) element;
-        
-        //get sequence messages from the first operand (first block, actually)
-        xtextSequenceMessages.addAll(getAllXtextSequenceMessages(combinedFragmentElement.getBlock().getBlockElements()));
-  
-        //get sequence messages from the rest of the operands
+        org.polarsys.capella.scenario.editor.dsl.textualScenario.CombinedFragment combinedFragmentElement = (org.polarsys.capella.scenario.editor.dsl.textualScenario.CombinedFragment) element;
+
+        // get sequence messages from the first operand (first block, actually)
+        xtextSequenceMessages
+            .addAll(getAllXtextSequenceMessages(combinedFragmentElement.getBlock().getBlockElements()));
+
+        // get sequence messages from the rest of the operands
         for (EObject operand : combinedFragmentElement.getOperands()) {
           xtextSequenceMessages.addAll(getAllXtextSequenceMessages(((Operand) operand).getBlock().getBlockElements()));
         }
-      }      
+      }
     }
-    
+
     return xtextSequenceMessages;
   }
 
@@ -888,52 +953,51 @@ public class XtextToDiagramCommands {
       org.polarsys.capella.scenario.editor.dsl.textualScenario.CombinedFragment condition,
       InteractionFragment lastInteractionFragment) {
 
-        // generate CombinedFragment, FramentEnd, FragmentEnd, IntreationOperands from alt
-        FragmentEnd start = InteractionFactory.eINSTANCE.createFragmentEnd();
-        FragmentEnd finish = InteractionFactory.eINSTANCE.createFragmentEnd();
+    // generate CombinedFragment, FramentEnd, FragmentEnd, IntreationOperands from alt
+    FragmentEnd start = InteractionFactory.eINSTANCE.createFragmentEnd();
+    FragmentEnd finish = InteractionFactory.eINSTANCE.createFragmentEnd();
 
-        condition.getTimelines().forEach(timeline -> {
-          InstanceRole instanceRole = EmbeddedEditorInstanceHelper.getInstanceRole(timeline);
-          start.getCoveredInstanceRoles().add(instanceRole);
-          finish.getCoveredInstanceRoles().add(instanceRole);
-        });
+    condition.getTimelines().forEach(timeline -> {
+      InstanceRole instanceRole = EmbeddedEditorInstanceHelper.getInstanceRole(timeline);
+      start.getCoveredInstanceRoles().add(instanceRole);
+      finish.getCoveredInstanceRoles().add(instanceRole);
+    });
 
-        start.setName("start");
-        finish.setName("end");
+    start.setName("start");
+    finish.setName("end");
 
-        scenario.getOwnedInteractionFragments().add(start);
-        scenario.getOwnedInteractionFragments().add(finish);
+    scenario.getOwnedInteractionFragments().add(start);
+    scenario.getOwnedInteractionFragments().add(finish);
 
-        if (lastInteractionFragment != null)
-          ScenarioExt.moveEndOnBeginingOfScenario(lastInteractionFragment);
-        else
-          ScenarioExt.moveEndOnBeginingOfScenario(start);
+    if (lastInteractionFragment != null)
+      ScenarioExt.moveEndOnBeginingOfScenario(lastInteractionFragment);
+    else
+      ScenarioExt.moveEndOnBeginingOfScenario(start);
 
-        CombinedFragment combinedFragment = addCombinedFragment(start, finish, InteractionOperatorKind.ALT);
-        scenario.getOwnedTimeLapses().add(combinedFragment);
+    CombinedFragment combinedFragment = addCombinedFragment(start, finish, InteractionOperatorKind.ALT);
+    scenario.getOwnedTimeLapses().add(combinedFragment);
 
-        Block firstBlock = condition.getBlock();
-        if (firstBlock != null) {
-          InteractionOperand operand = addInteractionOperand(start.getCoveredInstanceRoles(),
-              condition.getExpression());
-          combinedFragment.getReferencedOperands().add(operand);
-          scenario.getOwnedInteractionFragments().add(operand);
-          ScenarioExt.moveEndOnScenario(operand, start);
+    Block firstBlock = condition.getBlock();
+    if (firstBlock != null) {
+      InteractionOperand operand = addInteractionOperand(start.getCoveredInstanceRoles(), condition.getExpression());
+      combinedFragment.getReferencedOperands().add(operand);
+      scenario.getOwnedInteractionFragments().add(operand);
+      ScenarioExt.moveEndOnScenario(operand, start);
 
-          editElements(scenario, firstBlock.getBlockElements());
+      editElements(scenario, firstBlock.getBlockElements());
 
-          InteractionOperand prevEnd = operand;
-          for (Operand operandBlock : condition.getOperands()) {
-            InteractionOperand operand2 = addInteractionOperand(start.getCoveredInstanceRoles(),
-                operandBlock.getExpression());
-            combinedFragment.getReferencedOperands().add(operand2);
-            scenario.getOwnedInteractionFragments().add(operand2);
-            ScenarioExt.moveEndOnScenario(operand2, prevEnd);
-            prevEnd = operand2;
+      InteractionOperand prevEnd = operand;
+      for (Operand operandBlock : condition.getOperands()) {
+        InteractionOperand operand2 = addInteractionOperand(start.getCoveredInstanceRoles(),
+            operandBlock.getExpression());
+        combinedFragment.getReferencedOperands().add(operand2);
+        scenario.getOwnedInteractionFragments().add(operand2);
+        ScenarioExt.moveEndOnScenario(operand2, prevEnd);
+        prevEnd = operand2;
 
-            editElements(scenario, operandBlock.getBlock().getBlockElements());
-          }
-        }
+        editElements(scenario, operandBlock.getBlock().getBlockElements());
+      }
+    }
   }
 
   private static InteractionOperand addInteractionOperand(EList<InstanceRole> coveredInstanceRoles, String condition) {
@@ -965,14 +1029,15 @@ public class XtextToDiagramCommands {
 
     return combinedFragment;
   }
-  
+
   /**
    * Returns the 'calling' or 'reply' branch related to the given sequence message.
    * 
    * @param sequenceMessage
    * @return
    */
-  public static SequenceMessage getOppositeSequenceMessage(SequenceMessage sequenceMessage, List<InteractionFragment> fragments) {
+  public static SequenceMessage getOppositeSequenceMessage(SequenceMessage sequenceMessage,
+      List<InteractionFragment> fragments) {
 
     boolean flag = false;
     List<SequenceMessage> setPortionMessage = new ArrayList<>();
@@ -980,10 +1045,8 @@ public class XtextToDiagramCommands {
 
     if (sequenceMessage != null) {
       /** On messages of type 'destroy' there is no processing */
-      if (!sequenceMessage.getKind().equals(MessageKind.CREATE) &&
-          !sequenceMessage.getKind().equals(MessageKind.DELETE) &&
-          !sequenceMessage.getKind().equals(MessageKind.ASYNCHRONOUS_CALL))
-      {
+      if (!sequenceMessage.getKind().equals(MessageKind.CREATE) && !sequenceMessage.getKind().equals(MessageKind.DELETE)
+          && !sequenceMessage.getKind().equals(MessageKind.ASYNCHRONOUS_CALL)) {
         List<MessageEnd> ownedMsgEnd = new ArrayList<>();
 
         for (InteractionFragment abs : fragments) {
@@ -991,7 +1054,7 @@ public class XtextToDiagramCommands {
             ownedMsgEnd.add((MessageEnd) abs);
           }
         }
-        
+
         if (ownedMsgEnd != null) {
           if (sequenceMessage.getKind().equals(MessageKind.REPLY)) {
             /** If this is a REPLY message => the CALLING branch is present in the upper portion of the messages */
@@ -1003,16 +1066,15 @@ public class XtextToDiagramCommands {
                 if (msg != null) {
                   if (!msg.equals(sequenceMessage)) {
                     setPortionMessage.add(msg);
-                  }
-                  else flag = true;
+                  } else
+                    flag = true;
                 }
               }
             }
-            /** Invert sequence messages  order */
+            /** Invert sequence messages order */
             setPortionMessage = SequenceMessageExt.reverse(setPortionMessage);
-          }
-          else {
-            /** If this is a CALLING message =>  The REPLY branch is present in the upper portion of the messages */
+          } else {
+            /** If this is a CALLING message => The REPLY branch is present in the upper portion of the messages */
             flag = false;
             for (Iterator<MessageEnd> it = ownedMsgEnd.iterator(); it.hasNext();) {
               MessageEnd msgEnd = it.next();
@@ -1021,8 +1083,7 @@ public class XtextToDiagramCommands {
                 if (msg != null) {
                   if (flag) {
                     setPortionMessage.add(msg);
-                  }
-                  else if (msg.equals(sequenceMessage)) {
+                  } else if (msg.equals(sequenceMessage)) {
                     flag = true;
                   }
                 }
@@ -1031,41 +1092,33 @@ public class XtextToDiagramCommands {
           }
 
           for (SequenceMessage msg : setPortionMessage) {
-            if (!msg.getKind().equals(MessageKind.CREATE) &&
-                !msg.getKind().equals(MessageKind.DELETE) &&
-                !msg.getKind().equals(MessageKind.ASYNCHRONOUS_CALL))
-            {
+            if (!msg.getKind().equals(MessageKind.CREATE) && !msg.getKind().equals(MessageKind.DELETE)
+                && !msg.getKind().equals(MessageKind.ASYNCHRONOUS_CALL)) {
               if (sequenceMessage.getKind().equals(MessageKind.REPLY)) {
                 /**
-                 * Treatment: research branch 'toGo'
-                 * If current message type return: Pushes current message
-                 * else if stack empty: branch the found 'toGo'
-                 * else pops the last message and return.
+                 * Treatment: research branch 'toGo' If current message type return: Pushes current message else if
+                 * stack empty: branch the found 'toGo' else pops the last message and return.
                  */
                 if (msg.getKind().equals(MessageKind.REPLY)) {
                   stack.push(msg);
-                }
-                else {
+                } else {
                   if (stack.isEmpty()) {
                     return msg;
                   }
                   stack.pop();
                 }
-              }
-              else {
+              } else {
                 /**
-                 * Treatment: research branch 'toGo'
-                 * If current message type is return and empty stack: Branch return found. 
-                 * If current message type is return and non-empty stack: Pops last message 'toGo' 
-                 * else the current message is stacked
+                 * Treatment: research branch 'toGo' If current message type is return and empty stack: Branch return
+                 * found.  * If current message type is return and non-empty stack: Pops last message 'toGo' else the
+                 * current message is stacked
                  */
                 if (msg.getKind().equals(MessageKind.REPLY)) {
                   if (stack.isEmpty()) {
                     return msg;
                   }
                   stack.pop();
-                }
-                else {
+                } else {
                   stack.push(msg);
                 }
               }
@@ -1076,6 +1129,6 @@ public class XtextToDiagramCommands {
     }
 
     return null;
-  } 
-  
+  }
+
 }

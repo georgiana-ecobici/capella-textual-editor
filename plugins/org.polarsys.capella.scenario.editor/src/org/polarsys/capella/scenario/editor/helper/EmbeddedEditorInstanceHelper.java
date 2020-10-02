@@ -323,15 +323,15 @@ public class EmbeddedEditorInstanceHelper {
     EObject element = getInstanceRole(timelineName);
     if (element == null)
       return new ArrayList<String>();
-    
-    if (type.equals(DslConstants.FUNCTION)) 
+
+    if (type.equals(DslConstants.FUNCTION))
       return getAllocatedFunctionsName(element);
-    
+
     Collection<AbstractState> modesAndStates = ScenarioExt
         .getAvailableStateModeStateFragment(((InstanceRole) element).getRepresentedInstance());
     if (modesAndStates.isEmpty())
       return new ArrayList<String>();
-    
+
     if (type.equals(DslConstants.MODE))
       return getModesNames(modesAndStates);
     return getStatesNames(modesAndStates);
@@ -376,8 +376,18 @@ public class EmbeddedEditorInstanceHelper {
 
   public static List<AbstractState> getStates(InstanceRole element) {
     Collection<AbstractState> modesAndStates = ScenarioExt
-        .getAvailableStateModeStateFragment(((InstanceRole) element).getRepresentedInstance());
-    return modesAndStates.stream().filter(x -> x instanceof State && !(x instanceof Mode))
+        .getAvailableStateModeStateFragment(element.getRepresentedInstance());
+    return modesAndStates.stream().filter(x -> x instanceof State && !(x instanceof Mode)).collect(Collectors.toList());
+  }
+
+  public static List<AbstractState> getModes(InstanceRole element) {
+    Collection<AbstractState> modesAndStates = ScenarioExt
+        .getAvailableStateModeStateFragment(element.getRepresentedInstance());
+    return modesAndStates.stream().filter(x -> x instanceof Mode).collect(Collectors.toList());
+  }
+
+  public static List<AbstractFunction> getAllocatedFunctions(InstanceRole element) {
+    return ScenarioExt.getAvailableFunctionsStateFragment(element.getRepresentedInstance()).stream()
         .collect(Collectors.toList());
   }
 }
