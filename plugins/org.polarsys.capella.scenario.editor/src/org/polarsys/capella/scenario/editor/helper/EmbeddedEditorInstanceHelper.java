@@ -356,7 +356,7 @@ public class EmbeddedEditorInstanceHelper {
 
   private static List<String> getAllocatedFunctionsName(EObject element) {
     Collection<AbstractFunction> allocFunctions = ScenarioExt
-        .getAvailableFunctionsStateFragment((AbstractInstance) element);
+        .getAvailableFunctionsStateFragment(((InstanceRole) element).getRepresentedInstance());
 
     if (!allocFunctions.isEmpty()) {
       return allocFunctions.stream().map(x -> x.getName()).collect(Collectors.toList());
