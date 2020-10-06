@@ -15,6 +15,7 @@ package org.polarsys.capella.scenario.editor.dsl.ui.contentassist;
 import com.google.common.base.Objects;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
@@ -25,11 +26,14 @@ import org.eclipse.xtext.ui.editor.contentassist.ConfigurableCompletionProposal;
 import org.eclipse.xtext.ui.editor.contentassist.ContentAssistContext;
 import org.eclipse.xtext.ui.editor.contentassist.ICompletionProposalAcceptor;
 import org.eclipse.xtext.xbase.lib.CollectionLiterals;
+import org.polarsys.capella.core.data.epbs.EPBSArchitecture;
 import org.polarsys.capella.core.model.helpers.CapellaElementExt;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.Model;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.Participant;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.SequenceMessage;
+import org.polarsys.capella.scenario.editor.dsl.textualScenario.StateFragment;
 import org.polarsys.capella.scenario.editor.dsl.ui.contentassist.AbstractTextualScenarioProposalProvider;
+import org.polarsys.capella.scenario.editor.helper.DslConstants;
 import org.polarsys.capella.scenario.editor.helper.EmbeddedEditorInstanceHelper;
 
 /**
@@ -107,6 +111,21 @@ public class TextualScenarioProposalProvider extends AbstractTextualScenarioProp
   }
   
   /**
+   * propose a list with the timelines (for adding states, modes or allocated functions)
+   */
+  public void getExistingTimelines(final String keyword, final ContentAssistContext context, final ICompletionProposalAcceptor acceptor) {
+    Collection<? extends EObject> _availableElements = EmbeddedEditorInstanceHelper.getAvailableElements(keyword);
+    for (final EObject el : _availableElements) {
+      {
+        String elementName = CapellaElementExt.getName(el);
+        ICompletionProposal _createCompletionProposal = this.createCompletionProposal((("\"" + elementName) + "\""), elementName, null, context);
+        ConfigurableCompletionProposal proposal = ((ConfigurableCompletionProposal) _createCompletionProposal);
+        acceptor.accept(proposal);
+      }
+    }
+  }
+  
+  /**
    * check if a participant is already used in the text
    */
   public boolean participantAlreadyInserted(final Model model, final String name, final String keyword) {
@@ -162,10 +181,41 @@ public class TextualScenarioProposalProvider extends AbstractTextualScenarioProp
   }
   
   @Override
+  public void completeStateFragment_On(final EObject model, final Assignment assignment, final ContentAssistContext context, final ICompletionProposalAcceptor acceptor) {
+    acceptor.accept(this.createCompletionProposal(DslConstants.ON, DslConstants.ON, null, context));
+  }
+  
+  @Override
+  public void completeStateFragment_Timeline(final EObject model, final Assignment assignment, final ContentAssistContext context, final ICompletionProposalAcceptor acceptor) {
+    List<String> keywords = Collections.<String>unmodifiableList(CollectionLiterals.<String>newArrayList(DslConstants.ACTOR, DslConstants.ACTIVITY, DslConstants.FUNCTION, DslConstants.ROLE, DslConstants.ENTITY, DslConstants.ROLE, DslConstants.COMPONENT, DslConstants.CONFIGURATION_ITEM));
+    for (final String keyword : keywords) {
+      boolean _checkValidKeyword = EmbeddedEditorInstanceHelper.checkValidKeyword(keyword);
+      if (_checkValidKeyword) {
+        this.getExistingTimelines(keyword, context, acceptor);
+      }
+    }
+  }
+  
+  @Override
   public void completeStateFragment_Keyword(final EObject model, final Assignment assignment, final ContentAssistContext context, final ICompletionProposalAcceptor acceptor) {
-    ArrayList<String> keywords = CollectionLiterals.<String>newArrayList("state", "mode", "function");
+    ArrayList<String> keywords = CollectionLiterals.<String>newArrayList(DslConstants.STATE, DslConstants.MODE);
+    String scenarioType = EmbeddedEditorInstanceHelper.getScenarioType();
+    EObject scenarioLevel = EmbeddedEditorInstanceHelper.getScenarioLevel();
+    if (((!scenarioType.equals(DslConstants.FUNCTIONAL)) && (!(scenarioLevel instanceof EPBSArchitecture)))) {
+      keywords.add(DslConstants.FUNCTION);
+    }
     for (final String keyword : keywords) {
       acceptor.accept(this.createCompletionProposal(keyword, keyword, null, context));
+    }
+  }
+  
+  @Override
+  public void completeStateFragment_Name(final EObject model, final Assignment assignment, final ContentAssistContext context, final ICompletionProposalAcceptor acceptor) {
+    List<String> _availableStateFragments = EmbeddedEditorInstanceHelper.getAvailableStateFragments(
+      ((StateFragment) model).getKeyword(), ((StateFragment) model).getTimeline());
+    for (final String stateFragment : _availableStateFragments) {
+      acceptor.accept(
+        this.createCompletionProposal((("\"" + stateFragment) + "\""), (("\"" + stateFragment) + "\""), null, context));
     }
   }
   

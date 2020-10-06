@@ -28,6 +28,7 @@ import org.polarsys.capella.scenario.editor.dsl.textualScenario.SequenceMessageT
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.StateFragment;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.TextualScenarioPackage;
 import org.polarsys.capella.scenario.editor.dsl.validation.AbstractTextualScenarioValidator;
+import org.polarsys.capella.scenario.editor.helper.DslConstants;
 import org.polarsys.capella.scenario.editor.helper.EmbeddedEditorInstanceHelper;
 
 /**
@@ -64,7 +65,7 @@ public class TextualScenarioValidator extends AbstractTextualScenarioValidator {
     if (_not) {
       String _keyword = participant.getKeyword();
       String _plus = ("\'" + _keyword);
-      String _plus_1 = (_plus + "\' could not be used in this diagram");
+      String _plus_1 = (_plus + "\' can not be used in this diagram");
       this.error(_plus_1, 
         TextualScenarioPackage.Literals.PARTICIPANT__KEYWORD);
     }
@@ -170,10 +171,24 @@ public class TextualScenarioValidator extends AbstractTextualScenarioValidator {
       this.error(String.format("Insert timeline"), TextualScenarioPackage.Literals.STATE_FRAGMENT__TIMELINE);
       return;
     }
+    boolean _checkValidTimeline = EmbeddedEditorInstanceHelper.checkValidTimeline(fragment.getTimeline());
+    boolean _not = (!_checkValidTimeline);
+    if (_not) {
+      this.error(String.format("Timeline is not present in diagram", fragment.getKeyword()), 
+        TextualScenarioPackage.Literals.STATE_FRAGMENT__TIMELINE);
+      return;
+    }
     String _keyword = fragment.getKeyword();
     boolean _tripleEquals_1 = (_keyword == null);
     if (_tripleEquals_1) {
-      this.error(String.format("Insert \"state\", \"mode\" or \"function\""), TextualScenarioPackage.Literals.STATE_FRAGMENT__KEYWORD);
+      this.error(String.format("Insert \'state\', \'mode\' or \'function\'"), 
+        TextualScenarioPackage.Literals.STATE_FRAGMENT__KEYWORD);
+      return;
+    }
+    String scenarioType = EmbeddedEditorInstanceHelper.getScenarioType();
+    if ((fragment.getKeyword().equals(DslConstants.FUNCTION) && scenarioType.equals(DslConstants.FUNCTIONAL))) {
+      this.error(String.format("\'function\' can not be used in this diagram"), 
+        TextualScenarioPackage.Literals.STATE_FRAGMENT__KEYWORD);
       return;
     }
     String _name = fragment.getName();
@@ -182,24 +197,22 @@ public class TextualScenarioValidator extends AbstractTextualScenarioValidator {
       String _keyword_1 = fragment.getKeyword();
       String _plus = ("Insert the " + _keyword_1);
       String _plus_1 = (_plus + " name");
-      this.error(String.format(_plus_1), TextualScenarioPackage.Literals.STATE_FRAGMENT__NAME);
+      this.error(String.format(_plus_1), 
+        TextualScenarioPackage.Literals.STATE_FRAGMENT__NAME);
       return;
     }
-    List<String> availableStateFragments = EmbeddedEditorInstanceHelper.getAvailableStateFragments(fragment.getKeyword(), fragment.getTimeline());
+    List<String> availableStateFragments = EmbeddedEditorInstanceHelper.getAvailableStateFragments(fragment.getKeyword(), 
+      fragment.getTimeline());
     boolean _contains = availableStateFragments.contains(fragment.getName());
-    boolean _not = (!_contains);
-    if (_not) {
+    boolean _not_1 = (!_contains);
+    if (_not_1) {
       String _keyword_2 = fragment.getKeyword();
       String _plus_2 = ("This " + _keyword_2);
       String _plus_3 = (_plus_2 + " does not exist or it\'s not available for ");
       String _timeline_1 = fragment.getTimeline();
       String _plus_4 = (_plus_3 + _timeline_1);
-      this.error(String.format(_plus_4), TextualScenarioPackage.Literals.STATE_FRAGMENT__NAME);
-    }
-    boolean _checkValidTimeline = EmbeddedEditorInstanceHelper.checkValidTimeline(fragment.getTimeline());
-    boolean _not_1 = (!_checkValidTimeline);
-    if (_not_1) {
-      this.error(String.format("This timeline does not exist", fragment.getKeyword()), TextualScenarioPackage.Literals.STATE_FRAGMENT__TIMELINE);
+      this.error(
+        String.format(_plus_4), TextualScenarioPackage.Literals.STATE_FRAGMENT__NAME);
     }
   }
   

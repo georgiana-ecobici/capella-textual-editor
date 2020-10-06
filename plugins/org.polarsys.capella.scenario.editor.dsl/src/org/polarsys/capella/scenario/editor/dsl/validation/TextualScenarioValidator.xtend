@@ -1,15 +1,15 @@
 /*******************************************************************************
-* Copyright (c) 2020 THALES GLOBAL SERVICES.
-*  
-*  This program and the accompanying materials are made available under the
-*  terms of the Eclipse Public License 2.0 which is available at
-*  http://www.eclipse.org/legal/epl-2.0
-*  
-*  SPDX-License-Identifier: EPL-2.0
-*  
-*  Contributors:
-*     Thales - initial API and implementation
-*******************************************************************************/
+ * Copyright (c) 2020 THALES GLOBAL SERVICES.
+ *  
+ *  This program and the accompanying materials are made available under the
+ *  terms of the Eclipse Public License 2.0 which is available at
+ *  http://www.eclipse.org/legal/epl-2.0
+ *  
+ *  SPDX-License-Identifier: EPL-2.0
+ *  
+ *  Contributors:
+ *     Thales - initial API and implementation
+ *******************************************************************************/
 package org.polarsys.capella.scenario.editor.dsl.validation
 
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.Participant
@@ -22,7 +22,7 @@ import org.polarsys.capella.scenario.editor.dsl.textualScenario.Model
 import org.polarsys.capella.scenario.editor.helper.EmbeddedEditorInstanceHelper
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.Function
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.StateFragment
-import org.polarsys.capella.scenario.editor.EmbeddedEditorInstance
+import org.polarsys.capella.scenario.editor.helper.DslConstants
 
 /**
  * This class contains custom validation rules. 
@@ -50,7 +50,7 @@ class TextualScenarioValidator extends AbstractTextualScenarioValidator {
 	@Check
 	def checkParticipantKeywordIsValid(Participant participant) {
 		if (!EmbeddedEditorInstanceHelper.checkValidKeyword(participant.keyword)) {
-			error('\'' + participant.keyword + '\' could not be used in this diagram',
+			error('\'' + participant.keyword + '\' can not be used in this diagram',
 				TextualScenarioPackage.Literals.PARTICIPANT__KEYWORD)
 		}
 	}
@@ -143,6 +143,7 @@ class TextualScenarioValidator extends AbstractTextualScenarioValidator {
 			index++
 		}
 	}
+
 	/*
 	 * Check that the state fragment exists
 	 */
@@ -152,24 +153,40 @@ class TextualScenarioValidator extends AbstractTextualScenarioValidator {
 			error(String.format("Insert timeline"), TextualScenarioPackage.Literals.STATE_FRAGMENT__TIMELINE)
 			return
 		}
+
+		if (!EmbeddedEditorInstanceHelper.checkValidTimeline(fragment.timeline)) {
+			error(String.format("Timeline is not present in diagram", fragment.keyword),
+				TextualScenarioPackage.Literals.STATE_FRAGMENT__TIMELINE)
+			return
+		}
+
 		if (fragment.keyword === null) {
-			error(String.format("Insert \"state\", \"mode\" or \"function\""), TextualScenarioPackage.Literals.STATE_FRAGMENT__KEYWORD)
+			error(String.format("Insert \'state\', \'mode\' or \'function\'"),
+				TextualScenarioPackage.Literals.STATE_FRAGMENT__KEYWORD)
 			return
 		}
-		
-		if (fragment.name === null ) {
-			error(String.format("Insert the " + fragment.keyword + " name"), TextualScenarioPackage.Literals.STATE_FRAGMENT__NAME)
+
+		var scenarioType = EmbeddedEditorInstanceHelper.getScenarioType();
+		if (fragment.keyword.equals(DslConstants.FUNCTION) && scenarioType.equals(DslConstants.FUNCTIONAL)) {
+			error(String.format("\'function\' can not be used in this diagram"),
+				TextualScenarioPackage.Literals.STATE_FRAGMENT__KEYWORD)
 			return
 		}
-		
-		var availableStateFragments = EmbeddedEditorInstanceHelper.getAvailableStateFragments(fragment.keyword, fragment.timeline)
-		if (!availableStateFragments.contains(fragment.name) ) {
-			error(String.format("This " + fragment.keyword + " does not exist or it's not available for " + fragment.timeline), TextualScenarioPackage.Literals.STATE_FRAGMENT__NAME)
+
+		if (fragment.name === null) {
+			error(String.format("Insert the " + fragment.keyword + " name"),
+				TextualScenarioPackage.Literals.STATE_FRAGMENT__NAME)
+			return
 		}
-		
-		if (!EmbeddedEditorInstanceHelper.checkValidTimeline(fragment.timeline)){
-			error(String.format("This timeline does not exist", fragment.keyword), TextualScenarioPackage.Literals.STATE_FRAGMENT__TIMELINE)
+
+		var availableStateFragments = EmbeddedEditorInstanceHelper.getAvailableStateFragments(fragment.keyword,
+			fragment.timeline)
+		if (!availableStateFragments.contains(fragment.name)) {
+			error(
+				String.format("This " + fragment.keyword + " does not exist or it's not available for " +
+					fragment.timeline), TextualScenarioPackage.Literals.STATE_FRAGMENT__NAME)
 		}
+
 	}
 
 	/*

@@ -13,6 +13,7 @@
 package org.polarsys.capella.scenario.editor.helper;
 
 public class DslConstants {
+  public static final String FUNCTIONAL = "FUNCTIONAL";
   public static final String ACTOR = "actor";
   public static final String COMPONENT = "component";
   public static final String ENTITY = "entity";
