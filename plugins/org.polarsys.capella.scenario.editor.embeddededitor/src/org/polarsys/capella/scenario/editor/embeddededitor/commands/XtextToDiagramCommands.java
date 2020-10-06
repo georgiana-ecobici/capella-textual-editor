@@ -13,6 +13,7 @@
 package org.polarsys.capella.scenario.editor.embeddededitor.commands;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Stack;
@@ -32,6 +33,7 @@ import org.eclipse.sirius.viewpoint.description.AnnotationEntry;
 import org.eclipse.xtext.resource.XtextResource;
 import org.polarsys.capella.common.menu.dynamic.CreationHelper;
 import org.polarsys.capella.core.data.capellacommon.AbstractState;
+import org.polarsys.capella.core.data.capellacommon.State;
 import org.polarsys.capella.core.data.capellacore.CapellaElement;
 import org.polarsys.capella.core.data.capellacore.CapellacoreFactory;
 import org.polarsys.capella.core.data.capellacore.Constraint;
@@ -252,8 +254,9 @@ public class XtextToDiagramCommands {
 
       @Override
       protected void doExecute() {
-        // remove messages that appear in diagram and do not appear in text
+        // remove messages and state fragments that appear in diagram and do not appear in text
         cleanUpMessages(scenario, elements);
+        cleanUpStateFragments(scenario, elements);
 
         editElements(scenario, elements);
 
@@ -736,6 +739,38 @@ public class XtextToDiagramCommands {
       removeMessageFromScenario(scenario, sequenceMessage);
     }
   }
+  
+  private static void cleanUpStateFragments(Scenario scenario, EList<EObject> xTextElements) {
+    // Delete all diagram state fragments that don't appear in the xtext scenario
+    List<EObject> allXtextStateFragments =  xTextElements.stream()
+        .filter(element -> element instanceof org.polarsys.capella.scenario.editor.dsl.textualScenario.StateFragment)
+        .collect(Collectors.toList());
+
+    List<TimeLapse> stateFragmentsToBeDeleted = getCapellaStateFragmentsToBeDeleted(scenario, allXtextStateFragments);
+    
+    for (TimeLapse timeLapse : stateFragmentsToBeDeleted) {
+      removeStateFragmentFromScenario(scenario, timeLapse);
+    }
+  }
+
+  private static List<TimeLapse> getCapellaStateFragmentsToBeDeleted(Scenario scenario,
+      List<EObject> allXtextStateFragments) {
+    // We mark for deletion all state fragments in scenario that don't have corresponding xtext fragments
+    List<TimeLapse> capellaStateFragments = scenario.getOwnedTimeLapses().stream()
+        .filter(timelapse -> timelapse instanceof StateFragment).collect(Collectors.toList());
+    
+    List<org.polarsys.capella.scenario.editor.dsl.textualScenario.StateFragment> processedXtextStateFragments = 
+        new ArrayList<org.polarsys.capella.scenario.editor.dsl.textualScenario.StateFragment>();
+    List<TimeLapse> stateFragmentsToBeDeleted = new ArrayList<TimeLapse>();
+    
+    for (TimeLapse timeLapse : capellaStateFragments) {
+      if (!foundCapellaStateFragmentInXText(scenario, timeLapse, allXtextStateFragments, processedXtextStateFragments)) {
+        stateFragmentsToBeDeleted.add(timeLapse);
+      }
+    }
+    
+    return stateFragmentsToBeDeleted;
+  }
 
   private static void removeMessageFromScenario(Scenario scenario, SequenceMessage sequenceMessage) {
     // Remove execution - time lapse
@@ -777,11 +812,34 @@ public class XtextToDiagramCommands {
     // Remove sequence message
     scenario.getOwnedMessages().remove(sequenceMessage);
   }
+  
+  private static void removeStateFragmentFromScenario(Scenario scenario, TimeLapse timeLapse) {    
+    StateFragment stateFragment = (StateFragment) timeLapse;
+    
+    // Remove state fragment
+    scenario.getOwnedTimeLapses().remove(timeLapse);
+    
+    // Remove interaction fragments
+    scenario.getOwnedInteractionFragments().removeAll(Arrays.asList(stateFragment.getStart(), stateFragment.getFinish()));
+  }
 
   private static boolean foundCapellaMessageInXText(SequenceMessage capellaSequenceMessage,
       List<EObject> allXtextSequenceMessages) {
     for (EObject message : allXtextSequenceMessages) {
       if (isSameMessage(message, capellaSequenceMessage)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  
+  private static boolean foundCapellaStateFragmentInXText(Scenario scenario, TimeLapse timelapse,
+      List<EObject> allXtextStateFragments, List<org.polarsys.capella.scenario.editor.dsl.textualScenario.StateFragment> processedXtextStateFragments) {
+    for (EObject stateFragment : allXtextStateFragments) {
+      if (!processedXtextStateFragments.contains(stateFragment) 
+          && isSameStateFragment(scenario, stateFragment, timelapse)) {
+        processedXtextStateFragments.add((org.polarsys.capella.scenario.editor.dsl.textualScenario.StateFragment) stateFragment);
         return true;
       }
     }
@@ -823,6 +881,23 @@ public class XtextToDiagramCommands {
         && !seqMessage.getReceivingEnd().getCoveredInstanceRoles().isEmpty()
         && message.getTarget().equals(seqMessage.getReceivingEnd().getCoveredInstanceRoles().get(0).getName())
         && message.getName().equals(seqMessage.getName())) {
+      return true;
+    }
+    return false;
+  }
+  
+
+  private static boolean isSameStateFragment(Scenario scenario, EObject fragment, TimeLapse timelapse) {
+    if (!(fragment instanceof org.polarsys.capella.scenario.editor.dsl.textualScenario.StateFragment)) {
+      return false;
+    }
+    org.polarsys.capella.scenario.editor.dsl.textualScenario.StateFragment stateFragment = 
+        (org.polarsys.capella.scenario.editor.dsl.textualScenario.StateFragment) fragment;
+    StateFragment capellaStateFragment = (StateFragment) timelapse;
+       
+    if (stateFragment.getTimeline().equals(capellaStateFragment.getStart().getCoveredInstanceRoles().get(0).getName())
+        && stateFragment.getKeyword().equals(EmbeddedEditorInstanceHelper.getStateFragmentType(capellaStateFragment))
+        && stateFragment.getName().equals(EmbeddedEditorInstanceHelper.getStateFragmentName(capellaStateFragment))) {
       return true;
     }
     return false;
