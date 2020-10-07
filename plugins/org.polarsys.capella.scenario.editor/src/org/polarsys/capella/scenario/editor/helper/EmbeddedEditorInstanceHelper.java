@@ -34,7 +34,6 @@ import org.polarsys.capella.core.data.cs.ExchangeItemAllocation;
 import org.polarsys.capella.core.data.ctx.SystemAnalysis;
 import org.polarsys.capella.core.data.epbs.EPBSArchitecture;
 import org.polarsys.capella.core.data.fa.AbstractFunction;
-import org.polarsys.capella.core.data.information.AbstractInstance;
 import org.polarsys.capella.core.data.information.ExchangeItem;
 import org.polarsys.capella.core.data.interaction.InstanceRole;
 import org.polarsys.capella.core.data.interaction.Scenario;
@@ -400,12 +399,12 @@ public class EmbeddedEditorInstanceHelper {
   public static String getStateFragmentType(StateFragment capellaStateFragment) {
     if (capellaStateFragment.getRelatedAbstractFunction() != null) {
       return DslConstants.FUNCTION;
-    } else if (capellaStateFragment.getRelatedAbstractState() != null
-        && capellaStateFragment.getRelatedAbstractState() instanceof State) {
-      return DslConstants.STATE;
-    } else {
+    } 
+    if (capellaStateFragment.getRelatedAbstractState() != null
+        && capellaStateFragment.getRelatedAbstractState() instanceof Mode) {
       return DslConstants.MODE;
-    }
+    } 
+    return DslConstants.STATE;
   }
   
   public static String getStateFragmentName(StateFragment capellaStateFragment) {
