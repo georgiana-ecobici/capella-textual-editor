@@ -39,6 +39,7 @@ import org.polarsys.capella.core.data.information.ExchangeItem;
 import org.polarsys.capella.core.data.interaction.InstanceRole;
 import org.polarsys.capella.core.data.interaction.Scenario;
 import org.polarsys.capella.core.data.interaction.ScenarioKind;
+import org.polarsys.capella.core.data.interaction.StateFragment;
 import org.polarsys.capella.core.data.interaction.properties.controllers.DataFlowHelper;
 import org.polarsys.capella.core.data.interaction.properties.dialogs.sequenceMessage.model.SelectInvokedOperationModelForSharedDataAndEvent;
 import org.polarsys.capella.core.data.la.LogicalArchitecture;
@@ -394,5 +395,25 @@ public class EmbeddedEditorInstanceHelper {
   public static List<AbstractFunction> getAllocatedFunctions(InstanceRole element) {
     return ScenarioExt.getAvailableFunctionsStateFragment(element.getRepresentedInstance()).stream()
         .collect(Collectors.toList());
+  }
+  
+  public static String getStateFragmentType(StateFragment capellaStateFragment) {
+    if (capellaStateFragment.getRelatedAbstractFunction() != null) {
+      return DslConstants.FUNCTION;
+    } else if (capellaStateFragment.getRelatedAbstractState() != null
+        && capellaStateFragment.getRelatedAbstractState() instanceof State) {
+      return DslConstants.STATE;
+    } else {
+      return DslConstants.MODE;
+    }
+  }
+  
+  public static String getStateFragmentName(StateFragment capellaStateFragment) {
+    if (capellaStateFragment.getRelatedAbstractFunction() != null) {
+      return capellaStateFragment.getRelatedAbstractFunction().getName();
+    } else if (capellaStateFragment.getRelatedAbstractState() != null) {
+      return capellaStateFragment.getRelatedAbstractState().getName();
+    }
+    return null;
   }
 }
