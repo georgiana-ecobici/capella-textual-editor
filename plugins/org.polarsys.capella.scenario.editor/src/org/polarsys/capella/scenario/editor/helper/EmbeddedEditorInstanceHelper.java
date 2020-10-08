@@ -34,12 +34,10 @@ import org.polarsys.capella.core.data.cs.ExchangeItemAllocation;
 import org.polarsys.capella.core.data.ctx.SystemAnalysis;
 import org.polarsys.capella.core.data.epbs.EPBSArchitecture;
 import org.polarsys.capella.core.data.fa.AbstractFunction;
-import org.polarsys.capella.core.data.information.AbstractInstance;
 import org.polarsys.capella.core.data.information.ExchangeItem;
 import org.polarsys.capella.core.data.interaction.InstanceRole;
 import org.polarsys.capella.core.data.interaction.Scenario;
 import org.polarsys.capella.core.data.interaction.ScenarioKind;
-import org.polarsys.capella.core.data.interaction.SequenceMessage;
 import org.polarsys.capella.core.data.interaction.StateFragment;
 import org.polarsys.capella.core.data.interaction.properties.controllers.DataFlowHelper;
 import org.polarsys.capella.core.data.interaction.properties.dialogs.sequenceMessage.model.SelectInvokedOperationModelForSharedDataAndEvent;
@@ -149,14 +147,13 @@ public class EmbeddedEditorInstanceHelper {
         exchangesAvailable = DataFlowHelper.getAvailableFonctionalExchangesFromFunctions(sourceIr, targetIr).stream()
             .filter(x -> x instanceof AbstractEvent).collect(Collectors.toList());
       } else {
+        //functional exchanges
         exchangesAvailable = DataFlowHelper.getAvailableFonctionalExchanges(sourceIr, targetIr).stream()
             .filter(x -> x instanceof AbstractEvent).collect(Collectors.toList());
 
         // communication means
-        if (exchangesAvailable.isEmpty()) {
-          exchangesAvailable = (List<AbstractEvent>) DataFlowHelper.getAvailableComponentExchanges(sourceIr, targetIr)
-              .stream().filter(x -> x instanceof AbstractEvent).collect(Collectors.toList());
-        }
+        exchangesAvailable.addAll((List<AbstractEvent>) DataFlowHelper.getAvailableComponentExchanges(sourceIr, targetIr)
+            .stream().filter(x -> x instanceof AbstractEvent).collect(Collectors.toList()));
       }
       break;
     default:

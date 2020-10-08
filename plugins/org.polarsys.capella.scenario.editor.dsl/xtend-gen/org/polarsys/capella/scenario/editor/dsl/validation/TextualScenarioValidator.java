@@ -83,12 +83,19 @@ public class TextualScenarioValidator extends AbstractTextualScenarioValidator {
     }
   }
   
+  /**
+   * check that a CE (component exchange) and an FE (functional exchange) are not used in the same place
+   */
   @Check
   public void checkMessagesExchangeType(final SequenceMessage message) {
-    Object scenarioExchangesType = TextualScenarioHelper.getScenarioAllowedExchangesType(null);
-    String exchangeType = TextualScenarioHelper.getExchangeType(message);
-    if (((!Objects.equal(scenarioExchangesType, null)) && (!scenarioExchangesType.equals(exchangeType)))) {
-      this.error("Exchange type can not be used", TextualScenarioPackage.Literals.MESSAGE__NAME);
+    Object model = TextualScenarioHelper.getModelContainer(message);
+    boolean _notEquals = (!Objects.equal(model, null));
+    if (_notEquals) {
+      Object scenarioExchangesType = TextualScenarioHelper.getScenarioAllowedExchangesType(((Model) model).getElements());
+      String exchangeType = TextualScenarioHelper.getMessageExchangeType(message);
+      if (((!Objects.equal(scenarioExchangesType, null)) && (!scenarioExchangesType.equals(exchangeType)))) {
+        this.error(("Exchange type can not be used, expected " + scenarioExchangesType), TextualScenarioPackage.Literals.MESSAGE__NAME);
+      }
     }
   }
   

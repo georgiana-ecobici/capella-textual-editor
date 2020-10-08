@@ -34,7 +34,7 @@ class TextualScenarioValidator extends AbstractTextualScenarioValidator {
 	public static val INVALID_NAME = 'invalidName'
 	public static val DUPILCATED_NAME = 'duplicatedName'
 	public static val DUPILCATED_MESSAGES_NAME = 'duplicatedMessageName'
-
+	
 	@Check
 	def checkPartExists(Participant participant) {
 		if (!EmbeddedEditorInstanceHelper.getAvailablePartNames(participant.keyword).contains(participant.name)) {
@@ -63,15 +63,21 @@ class TextualScenarioValidator extends AbstractTextualScenarioValidator {
 		}
 	}
 	
+	/*
+	 * check that a CE (component exchange) and an FE (functional exchange) are not used in the same place
+	 */
 	@Check
 	def checkMessagesExchangeType(SequenceMessage message) {
-		var scenarioExchangesType = TextualScenarioHelper.getScenarioAllowedExchangesType(null)
-		var exchangeType = TextualScenarioHelper.getExchangeType(message)
-		if (scenarioExchangesType != null && !scenarioExchangesType.equals(exchangeType)) {
-			error('Exchange type can not be used', TextualScenarioPackage.Literals.MESSAGE__NAME)
+		var model = TextualScenarioHelper.getModelContainer(message) //helper.model
+		if(model != null) {
+			var scenarioExchangesType = TextualScenarioHelper.getScenarioAllowedExchangesType((model as Model).elements)
+			var exchangeType = TextualScenarioHelper.getMessageExchangeType(message)
+			if (scenarioExchangesType != null && !scenarioExchangesType.equals(exchangeType)) {
+				error('Exchange type can not be used, expected ' + scenarioExchangesType, TextualScenarioPackage.Literals.MESSAGE__NAME)
+			}
 		}
 	}
-
+	
 	/*
 	 * Do not allow duplicated names, we have a combination of unique keyword + name
 	 * ex: not allowed: actor "A1", actor "A1"

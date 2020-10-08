@@ -23,6 +23,7 @@ import org.eclipse.emf.common.util.EList
 import org.polarsys.capella.core.data.fa.ComponentExchange
 import org.polarsys.capella.core.data.fa.FunctionalExchange
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.CombinedFragment
+import org.polarsys.capella.scenario.editor.dsl.textualScenario.Model
 
 /**
  * See https://www.eclipse.org/Xtext/documentation/304_ide_concepts.html#content-assist
@@ -64,5 +65,11 @@ class TextualScenarioHelper {
 		else if (exchangeElement instanceof FunctionalExchange)
 			return TYPE_FE
 		return null
+	}
+	
+	def static getModelContainer(EObject object) {
+		if(object instanceof Model)
+			return object as Model
+		getModelContainer(object.eContainer)	
 	}
 }

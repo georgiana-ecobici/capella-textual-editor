@@ -30,11 +30,6 @@ import org.polarsys.capella.core.model.helpers.CapellaElementExt
 import org.polarsys.capella.scenario.editor.helper.DslConstants
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.StateFragment
 import org.polarsys.capella.core.data.epbs.EPBSArchitecture
-import org.polarsys.capella.scenario.editor.EmbeddedEditorInstance
-import org.eclipse.emf.common.util.EList
-import org.polarsys.capella.core.data.fa.ComponentExchange
-import org.polarsys.capella.core.data.fa.FunctionalExchange
-import org.polarsys.capella.scenario.editor.dsl.textualScenario.CombinedFragment
 
 /**
  * See https://www.eclipse.org/Xtext/documentation/304_ide_concepts.html#content-assist

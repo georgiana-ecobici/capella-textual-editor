@@ -26,8 +26,10 @@ import org.eclipse.xtext.ui.editor.contentassist.ConfigurableCompletionProposal;
 import org.eclipse.xtext.ui.editor.contentassist.ContentAssistContext;
 import org.eclipse.xtext.ui.editor.contentassist.ICompletionProposalAcceptor;
 import org.eclipse.xtext.xbase.lib.CollectionLiterals;
+import org.polarsys.capella.common.data.behavior.AbstractEvent;
 import org.polarsys.capella.core.data.epbs.EPBSArchitecture;
 import org.polarsys.capella.core.model.helpers.CapellaElementExt;
+import org.polarsys.capella.scenario.editor.dsl.helpers.TextualScenarioHelper;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.Model;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.Participant;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.SequenceMessage;
@@ -163,18 +165,25 @@ public class TextualScenarioProposalProvider extends AbstractTextualScenarioProp
   }
   
   @Override
-  public void completeSequenceMessage_Name(final EObject model, final Assignment assignment, final ContentAssistContext context, final ICompletionProposalAcceptor acceptor) {
-    SequenceMessage sequenceMessage = ((SequenceMessage) model);
-    List<String> _messagesDefinedBefore = this.messagesDefinedBefore(((SequenceMessage) model));
-    for (final String el : _messagesDefinedBefore) {
+  public void completeSequenceMessage_Name(final EObject messageObj, final Assignment assignment, final ContentAssistContext context, final ICompletionProposalAcceptor acceptor) {
+    EObject _rootModel = context.getRootModel();
+    Object scenarioExchangesType = TextualScenarioHelper.getScenarioAllowedExchangesType(((Model) _rootModel).getElements());
+    SequenceMessage message = ((SequenceMessage) messageObj);
+    List<AbstractEvent> exchangesAvailable = EmbeddedEditorInstanceHelper.getExchangeMessages(message.getSource(), message.getTarget());
+    for (final EObject element : exchangesAvailable) {
       {
-        EObject _rootModel = context.getRootModel();
-        ((Model) _rootModel).getElements();
         EObject _rootModel_1 = context.getRootModel();
-        boolean _messageAlreadyInserted = this.messageAlreadyInserted(((Model) _rootModel_1), sequenceMessage.getSource(), sequenceMessage.getTarget(), el);
+        ((Model) _rootModel_1).getElements();
+        String elementName = CapellaElementExt.getName(element);
+        EObject _rootModel_2 = context.getRootModel();
+        boolean _messageAlreadyInserted = this.messageAlreadyInserted(((Model) _rootModel_2), message.getSource(), message.getTarget(), elementName);
         boolean _not = (!_messageAlreadyInserted);
         if (_not) {
-          acceptor.accept(this.createCompletionProposal((("\"" + el) + "\""), (("\"" + el) + "\""), null, context));
+          String exchangeType = TextualScenarioHelper.getExchangeType(element);
+          if ((Objects.equal(scenarioExchangesType, null) || scenarioExchangesType.equals(exchangeType))) {
+            acceptor.accept(
+              this.createCompletionProposal((("\"" + elementName) + "\""), (("\"" + elementName) + "\""), null, context));
+          }
         }
       }
     }
@@ -233,10 +242,6 @@ public class TextualScenarioProposalProvider extends AbstractTextualScenarioProp
       }
     }
     return false;
-  }
-  
-  public List<String> messagesDefinedBefore(final SequenceMessage message) {
-    return EmbeddedEditorInstanceHelper.getExchangeNames(message.getSource(), message.getTarget());
   }
   
   public Participant variablesDefinedBefore(final Participant sc) {

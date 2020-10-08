@@ -21,6 +21,7 @@ import org.polarsys.capella.core.data.fa.ComponentExchange;
 import org.polarsys.capella.core.data.fa.FunctionalExchange;
 import org.polarsys.capella.core.model.helpers.CapellaElementExt;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.CombinedFragment;
+import org.polarsys.capella.scenario.editor.dsl.textualScenario.Model;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.SequenceMessage;
 import org.polarsys.capella.scenario.editor.helper.EmbeddedEditorInstanceHelper;
 
@@ -72,5 +73,16 @@ public class TextualScenarioHelper {
       }
     }
     return null;
+  }
+  
+  public static Object getModelContainer(final EObject object) {
+    Object _xblockexpression = null;
+    {
+      if ((object instanceof Model)) {
+        return ((Model) object);
+      }
+      _xblockexpression = TextualScenarioHelper.getModelContainer(object.eContainer());
+    }
+    return _xblockexpression;
   }
 }
