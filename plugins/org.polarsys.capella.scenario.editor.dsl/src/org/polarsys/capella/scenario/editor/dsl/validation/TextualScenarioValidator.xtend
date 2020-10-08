@@ -23,6 +23,7 @@ import org.polarsys.capella.scenario.editor.helper.EmbeddedEditorInstanceHelper
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.Function
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.StateFragment
 import org.polarsys.capella.scenario.editor.helper.DslConstants
+import org.polarsys.capella.scenario.editor.dsl.helpers.TextualScenarioHelper
 
 /**
  * This class contains custom validation rules. 
@@ -30,11 +31,10 @@ import org.polarsys.capella.scenario.editor.helper.DslConstants
  * See https://www.eclipse.org/Xtext/documentation/303_runtime_concepts.html#validation
  */
 class TextualScenarioValidator extends AbstractTextualScenarioValidator {
-
 	public static val INVALID_NAME = 'invalidName'
 	public static val DUPILCATED_NAME = 'duplicatedName'
 	public static val DUPILCATED_MESSAGES_NAME = 'duplicatedMessageName'
-
+	
 	@Check
 	def checkPartExists(Participant participant) {
 		if (!EmbeddedEditorInstanceHelper.getAvailablePartNames(participant.keyword).contains(participant.name)) {
@@ -57,13 +57,31 @@ class TextualScenarioValidator extends AbstractTextualScenarioValidator {
 
 	@Check
 	def checkMessagesExist(SequenceMessage message) {
-		if (EmbeddedEditorInstanceHelper.getScenarioType().equals("INTERFACE") &&
-			!EmbeddedEditorInstanceHelper.getExchangeNames(message.getSource, message.getTarget).contains(
+		if (!EmbeddedEditorInstanceHelper.getExchangeNames(message.getSource, message.getTarget).contains(
 				message.name)) {
 			error('Message does not exist', TextualScenarioPackage.Literals.MESSAGE__NAME)
 		}
 	}
-
+	
+	/*
+	 * check that a CE (component exchange) and an FE (functional exchange) are not used in the same place
+	 */
+	@Check
+	def checkMessagesExchangeType(SequenceMessage message) {
+		if (EmbeddedEditorInstanceHelper.isESScenario()) {
+			var model = TextualScenarioHelper.getModelContainer(message)
+			if (model != null) {
+				var scenarioExchangesType = TextualScenarioHelper.
+					getScenarioAllowedExchangesType((model as Model).elements)
+				var exchangeType = TextualScenarioHelper.getMessageExchangeType(message)
+				if (scenarioExchangesType != null && !scenarioExchangesType.equals(exchangeType)) {
+					error('Exchange type can not be used, expected ' + scenarioExchangesType,
+						TextualScenarioPackage.Literals.MESSAGE__NAME)
+				}
+			}
+		}
+	}
+	
 	/*
 	 * Do not allow duplicated names, we have a combination of unique keyword + name
 	 * ex: not allowed: actor "A1", actor "A1"

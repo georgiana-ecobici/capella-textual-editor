@@ -62,6 +62,23 @@ public class EmbeddedEditorInstanceHelper {
     return currentScenario.getKind().toString();
   }
   
+  public static boolean isESScenario() {
+    Scenario scenario = EmbeddedEditorInstance.getAssociatedScenarioDiagram();
+    return ((scenario.getKind() == ScenarioKind.INTERACTION) || (scenario.getKind() == ScenarioKind.DATA_FLOW));
+  }
+  
+  public static boolean isCEScenario() {
+    return ScenarioExt.isDataFlowBehaviouralScenario(EmbeddedEditorInstance.getAssociatedScenarioDiagram());
+  }
+  
+  public static boolean isFEScenario() {
+    return ScenarioExt.isDataFlowFunctionalScenario(EmbeddedEditorInstance.getAssociatedScenarioDiagram());
+  }
+  
+  public static boolean isFSScenario() {
+    return ScenarioExt.isFunctionalScenario(EmbeddedEditorInstance.getAssociatedScenarioDiagram());
+  }
+  
   public static EObject getScenarioLevel() {
     Scenario currentScenario = EmbeddedEditorInstance.getAssociatedScenarioDiagram();
     return BlockArchitectureExt.getRootBlockArchitecture(currentScenario);
@@ -87,7 +104,22 @@ public class EmbeddedEditorInstanceHelper {
 
     return messages;
   }
-
+  
+  /**
+   * get the names of the available exchanges
+   * 
+   * @param source
+   *          - the name of the source element
+   * @param target
+   *          - the name of the target element
+   * @return list of exchanges
+   *
+   */
+  public static List<AbstractEvent> getExchangeMessages(String source, String target) {
+    List<AbstractEvent> exchanges = getAvailableExchanges(source, target);
+    return exchanges;
+  }
+  
   /**
    * returns the list of available exchanges possible to be inserted between source and target
    * 
@@ -107,9 +139,8 @@ public class EmbeddedEditorInstanceHelper {
     switch (currentScenario.getKind()) {
     case DATA_FLOW:
       exchangesAvailable = (List<AbstractEvent>) DataFlowHelper.getAvailableComponentExchanges(sourceIr, targetIr);
-      if (exchangesAvailable.isEmpty())
-        exchangesAvailable = DataFlowHelper.getAvailableFonctionalExchanges(sourceIr, targetIr).stream()
-            .filter(x -> x instanceof AbstractEvent).collect(Collectors.toList());
+      exchangesAvailable.addAll(DataFlowHelper.getAvailableFonctionalExchanges(sourceIr, targetIr).stream()
+            .filter(x -> x instanceof AbstractEvent).collect(Collectors.toList()));
       break;
     case FUNCTIONAL:
       exchangesAvailable = DataFlowHelper.getAvailableFonctionalExchangesFromFunctions(sourceIr, targetIr).stream()
@@ -133,14 +164,13 @@ public class EmbeddedEditorInstanceHelper {
         exchangesAvailable = DataFlowHelper.getAvailableFonctionalExchangesFromFunctions(sourceIr, targetIr).stream()
             .filter(x -> x instanceof AbstractEvent).collect(Collectors.toList());
       } else {
+        //functional exchanges
         exchangesAvailable = DataFlowHelper.getAvailableFonctionalExchanges(sourceIr, targetIr).stream()
             .filter(x -> x instanceof AbstractEvent).collect(Collectors.toList());
 
         // communication means
-        if (exchangesAvailable.isEmpty()) {
-          exchangesAvailable = (List<AbstractEvent>) DataFlowHelper.getAvailableComponentExchanges(sourceIr, targetIr)
-              .stream().filter(x -> x instanceof AbstractEvent).collect(Collectors.toList());
-        }
+        exchangesAvailable.addAll((List<AbstractEvent>) DataFlowHelper.getAvailableComponentExchanges(sourceIr, targetIr)
+            .stream().filter(x -> x instanceof AbstractEvent).collect(Collectors.toList()));
       }
       break;
     default:
