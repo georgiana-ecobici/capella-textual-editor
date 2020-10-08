@@ -763,7 +763,7 @@ public class XtextToDiagramCommands {
     List<TimeLapse> stateFragmentsToBeDeleted = new ArrayList<TimeLapse>();
     
     for (TimeLapse timeLapse : capellaStateFragments) {
-      if (!foundCapellaStateFragmentInXText(scenario, timeLapse, allXtextStateFragments, processedXtextStateFragments)) {
+      if (!foundCapellaStateFragmentInXText(timeLapse, allXtextStateFragments, processedXtextStateFragments)) {
         stateFragmentsToBeDeleted.add(timeLapse);
       }
     }
@@ -833,11 +833,11 @@ public class XtextToDiagramCommands {
   }
 
   
-  private static boolean foundCapellaStateFragmentInXText(Scenario scenario, TimeLapse timelapse,
+  private static boolean foundCapellaStateFragmentInXText(TimeLapse timelapse,
       List<EObject> allXtextStateFragments, List<org.polarsys.capella.scenario.editor.dsl.textualScenario.StateFragment> processedXtextStateFragments) {
     for (EObject stateFragment : allXtextStateFragments) {
       if (!processedXtextStateFragments.contains(stateFragment) 
-          && isSameStateFragment(scenario, stateFragment, timelapse)) {
+          && isSameStateFragment(stateFragment, timelapse)) {
         processedXtextStateFragments.add((org.polarsys.capella.scenario.editor.dsl.textualScenario.StateFragment) stateFragment);
         return true;
       }
@@ -886,7 +886,7 @@ public class XtextToDiagramCommands {
   }
   
 
-  private static boolean isSameStateFragment(Scenario scenario, EObject fragment, TimeLapse timelapse) {
+  private static boolean isSameStateFragment(EObject fragment, TimeLapse timelapse) {
     if (!(fragment instanceof org.polarsys.capella.scenario.editor.dsl.textualScenario.StateFragment)) {
       return false;
     }
