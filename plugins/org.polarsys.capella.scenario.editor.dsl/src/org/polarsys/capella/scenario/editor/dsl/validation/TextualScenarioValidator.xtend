@@ -68,12 +68,16 @@ class TextualScenarioValidator extends AbstractTextualScenarioValidator {
 	 */
 	@Check
 	def checkMessagesExchangeType(SequenceMessage message) {
-		var model = TextualScenarioHelper.getModelContainer(message) //helper.model
-		if(model != null) {
-			var scenarioExchangesType = TextualScenarioHelper.getScenarioAllowedExchangesType((model as Model).elements)
-			var exchangeType = TextualScenarioHelper.getMessageExchangeType(message)
-			if (scenarioExchangesType != null && !scenarioExchangesType.equals(exchangeType)) {
-				error('Exchange type can not be used, expected ' + scenarioExchangesType, TextualScenarioPackage.Literals.MESSAGE__NAME)
+		if (EmbeddedEditorInstanceHelper.isESScenario()) {
+			var model = TextualScenarioHelper.getModelContainer(message)
+			if (model != null) {
+				var scenarioExchangesType = TextualScenarioHelper.
+					getScenarioAllowedExchangesType((model as Model).elements)
+				var exchangeType = TextualScenarioHelper.getMessageExchangeType(message)
+				if (scenarioExchangesType != null && !scenarioExchangesType.equals(exchangeType)) {
+					error('Exchange type can not be used, expected ' + scenarioExchangesType,
+						TextualScenarioPackage.Literals.MESSAGE__NAME)
+				}
 			}
 		}
 	}

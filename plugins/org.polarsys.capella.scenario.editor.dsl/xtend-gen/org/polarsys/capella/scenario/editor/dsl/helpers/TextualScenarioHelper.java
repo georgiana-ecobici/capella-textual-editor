@@ -39,15 +39,26 @@ public class TextualScenarioHelper {
    * calculate the type of exchanges allowed to be declared in the text
    */
   public static Object getScenarioAllowedExchangesType(final EList<EObject> elements) {
-    for (final EObject element : elements) {
-      {
-        if ((element instanceof SequenceMessage)) {
-          SequenceMessage message = ((SequenceMessage) element);
-          return TextualScenarioHelper.getMessageExchangeType(message);
-        }
-        if ((element instanceof CombinedFragment)) {
-          CombinedFragment combinedFragment = ((CombinedFragment) element);
-          return TextualScenarioHelper.getScenarioAllowedExchangesType(combinedFragment.getBlock().getBlockElements());
+    boolean _isESScenario = EmbeddedEditorInstanceHelper.isESScenario();
+    if (_isESScenario) {
+      boolean _isCEScenario = EmbeddedEditorInstanceHelper.isCEScenario();
+      if (_isCEScenario) {
+        return TextualScenarioHelper.TYPE_CE;
+      }
+      boolean _isFEScenario = EmbeddedEditorInstanceHelper.isFEScenario();
+      if (_isFEScenario) {
+        return TextualScenarioHelper.TYPE_FE;
+      }
+      for (final EObject element : elements) {
+        {
+          if ((element instanceof SequenceMessage)) {
+            SequenceMessage message = ((SequenceMessage) element);
+            return TextualScenarioHelper.getMessageExchangeType(message);
+          }
+          if ((element instanceof CombinedFragment)) {
+            CombinedFragment combinedFragment = ((CombinedFragment) element);
+            return TextualScenarioHelper.getScenarioAllowedExchangesType(combinedFragment.getBlock().getBlockElements());
+          }
         }
       }
     }

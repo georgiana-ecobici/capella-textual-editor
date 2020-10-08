@@ -36,14 +36,20 @@ class TextualScenarioHelper {
 	 * calculate the type of exchanges allowed to be declared in the text
 	 */
 	def static getScenarioAllowedExchangesType(EList<EObject> elements) {
-		for(element : elements) {
-			if(element instanceof SequenceMessage) {
-				var message = element as SequenceMessage
-				return getMessageExchangeType(message)
-			}
-			if(element instanceof CombinedFragment) {
-				var combinedFragment = element as CombinedFragment
-				return getScenarioAllowedExchangesType(combinedFragment.block.blockElements)
+		if (EmbeddedEditorInstanceHelper.isESScenario()) {
+			if(EmbeddedEditorInstanceHelper.isCEScenario())
+				return TYPE_CE
+			if(EmbeddedEditorInstanceHelper.isFEScenario())
+				return TYPE_FE
+			for (element : elements) {
+				if (element instanceof SequenceMessage) {
+					var message = element as SequenceMessage
+					return getMessageExchangeType(message)
+				}
+				if (element instanceof CombinedFragment) {
+					var combinedFragment = element as CombinedFragment
+					return getScenarioAllowedExchangesType(combinedFragment.block.blockElements)
+				}
 			}
 		}
 		return null

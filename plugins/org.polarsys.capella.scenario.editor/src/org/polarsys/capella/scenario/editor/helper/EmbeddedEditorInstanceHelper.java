@@ -62,6 +62,23 @@ public class EmbeddedEditorInstanceHelper {
     return currentScenario.getKind().toString();
   }
   
+  public static boolean isESScenario() {
+    Scenario scenario = EmbeddedEditorInstance.getAssociatedScenarioDiagram();
+    return ((scenario.getKind() == ScenarioKind.INTERACTION) || (scenario.getKind() == ScenarioKind.DATA_FLOW));
+  }
+  
+  public static boolean isCEScenario() {
+    return ScenarioExt.isDataFlowBehaviouralScenario(EmbeddedEditorInstance.getAssociatedScenarioDiagram());
+  }
+  
+  public static boolean isFEScenario() {
+    return ScenarioExt.isDataFlowFunctionalScenario(EmbeddedEditorInstance.getAssociatedScenarioDiagram());
+  }
+  
+  public static boolean isFSScenario() {
+    return ScenarioExt.isFunctionalScenario(EmbeddedEditorInstance.getAssociatedScenarioDiagram());
+  }
+  
   public static EObject getScenarioLevel() {
     Scenario currentScenario = EmbeddedEditorInstance.getAssociatedScenarioDiagram();
     return BlockArchitectureExt.getRootBlockArchitecture(currentScenario);

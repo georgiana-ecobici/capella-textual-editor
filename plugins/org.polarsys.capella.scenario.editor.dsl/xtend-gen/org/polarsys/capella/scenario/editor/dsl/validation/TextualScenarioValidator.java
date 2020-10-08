@@ -88,13 +88,17 @@ public class TextualScenarioValidator extends AbstractTextualScenarioValidator {
    */
   @Check
   public void checkMessagesExchangeType(final SequenceMessage message) {
-    Object model = TextualScenarioHelper.getModelContainer(message);
-    boolean _notEquals = (!Objects.equal(model, null));
-    if (_notEquals) {
-      Object scenarioExchangesType = TextualScenarioHelper.getScenarioAllowedExchangesType(((Model) model).getElements());
-      String exchangeType = TextualScenarioHelper.getMessageExchangeType(message);
-      if (((!Objects.equal(scenarioExchangesType, null)) && (!scenarioExchangesType.equals(exchangeType)))) {
-        this.error(("Exchange type can not be used, expected " + scenarioExchangesType), TextualScenarioPackage.Literals.MESSAGE__NAME);
+    boolean _isESScenario = EmbeddedEditorInstanceHelper.isESScenario();
+    if (_isESScenario) {
+      Object model = TextualScenarioHelper.getModelContainer(message);
+      boolean _notEquals = (!Objects.equal(model, null));
+      if (_notEquals) {
+        Object scenarioExchangesType = TextualScenarioHelper.getScenarioAllowedExchangesType(((Model) model).getElements());
+        String exchangeType = TextualScenarioHelper.getMessageExchangeType(message);
+        if (((!Objects.equal(scenarioExchangesType, null)) && (!scenarioExchangesType.equals(exchangeType)))) {
+          this.error(("Exchange type can not be used, expected " + scenarioExchangesType), 
+            TextualScenarioPackage.Literals.MESSAGE__NAME);
+        }
       }
     }
   }
