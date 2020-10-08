@@ -452,6 +452,7 @@ public class XtextToDiagramCommands {
             (org.polarsys.capella.scenario.editor.dsl.textualScenario.CombinedFragment) xtextElement);
         if (capellaFragment == null) {
           InteractionFragment lastInteractionFragment = null;
+          
           if (!sequenceMessages.isEmpty()) {
             SequenceMessage lastSequenceMessage = sequenceMessages.get(sequenceMessages.size() - 1);
             lastInteractionFragment = lastSequenceMessage.getReceivingEnd();
@@ -711,15 +712,41 @@ public class XtextToDiagramCommands {
         CombinedFragment candidateCombinedFragment = (CombinedFragment) ((FragmentEnd) element).getAbstractFragment();
         if (candidateCombinedFragment.getOperator().toString().toLowerCase()
             .equals(textCombinedFragment.getKeyword())) {
-          List<InteractionOperand> ownedOperands = candidateCombinedFragment.getReferencedOperands();
-          if (ownedOperands.size() == textCombinedFragment.getOperands().size() + 1) {
-            // todo check each thing
-            return candidateCombinedFragment;
+          List<InteractionOperand> capellaOperands = candidateCombinedFragment.getReferencedOperands();
+          if (capellaOperands.size() == textCombinedFragment.getOperands().size() + 1) {
+            if (operandsHaveSameExpressions(textCombinedFragment, capellaOperands)) {
+              return candidateCombinedFragment;
+            }
           }
         }
       }
     }
     return null;
+  }
+
+  private static boolean operandsHaveSameExpressions(
+      org.polarsys.capella.scenario.editor.dsl.textualScenario.CombinedFragment textCombinedFragment,
+      List<InteractionOperand> capellaOperands) {
+    
+    //check expression on first operand
+    InteractionOperand capellaOperand = capellaOperands.get(0);
+    Operand xtextOperand;
+    boolean operandsHaveSameExpressions = true;
+    if (!HelperCommands.getExpressionText(capellaOperand).equals(textCombinedFragment.getExpression())) {
+      operandsHaveSameExpressions = false;
+    }
+    
+    //check expression on the rest of the operands           
+    int i = 1;
+    while (i < capellaOperands.size() && operandsHaveSameExpressions) {
+      capellaOperand = capellaOperands.get(i);
+      xtextOperand = textCombinedFragment.getOperands().get(i - 1);
+      if (!HelperCommands.getExpressionText(capellaOperand).equals(xtextOperand.getExpression())) {
+        operandsHaveSameExpressions = false;
+      }
+      i++;
+    }
+    return operandsHaveSameExpressions;
   }
 
   private static void cleanUpMessages(Scenario scenario, EList<EObject> messages) {
@@ -1044,11 +1071,11 @@ public class XtextToDiagramCommands {
     scenario.getOwnedInteractionFragments().add(finish);
 
     if (lastInteractionFragment != null)
-      ScenarioExt.moveEndOnBeginingOfScenario(lastInteractionFragment);
+      ScenarioExt.moveEndOnScenario(start, lastInteractionFragment);
     else
       ScenarioExt.moveEndOnBeginingOfScenario(start);
 
-    CombinedFragment combinedFragment = addCombinedFragment(start, finish, InteractionOperatorKind.ALT);
+    CombinedFragment combinedFragment = addCombinedFragment(start, finish, InteractionOperatorKind.getByName(condition.getKeyword().toUpperCase()));
     scenario.getOwnedTimeLapses().add(combinedFragment);
 
     Block firstBlock = condition.getBlock();
