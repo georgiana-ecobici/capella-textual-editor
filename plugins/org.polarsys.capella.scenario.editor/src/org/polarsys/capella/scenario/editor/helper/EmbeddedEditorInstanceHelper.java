@@ -39,6 +39,7 @@ import org.polarsys.capella.core.data.information.ExchangeItem;
 import org.polarsys.capella.core.data.interaction.InstanceRole;
 import org.polarsys.capella.core.data.interaction.Scenario;
 import org.polarsys.capella.core.data.interaction.ScenarioKind;
+import org.polarsys.capella.core.data.interaction.SequenceMessage;
 import org.polarsys.capella.core.data.interaction.StateFragment;
 import org.polarsys.capella.core.data.interaction.properties.controllers.DataFlowHelper;
 import org.polarsys.capella.core.data.interaction.properties.dialogs.sequenceMessage.model.SelectInvokedOperationModelForSharedDataAndEvent;
@@ -88,7 +89,22 @@ public class EmbeddedEditorInstanceHelper {
 
     return messages;
   }
-
+  
+  /**
+   * get the names of the available exchanges
+   * 
+   * @param source
+   *          - the name of the source element
+   * @param target
+   *          - the name of the target element
+   * @return list of exchanges
+   *
+   */
+  public static List<AbstractEvent> getExchangeMessages(String source, String target) {
+    List<AbstractEvent> exchanges = getAvailableExchanges(source, target);
+    return exchanges;
+  }
+  
   /**
    * returns the list of available exchanges possible to be inserted between source and target
    * 
@@ -108,9 +124,8 @@ public class EmbeddedEditorInstanceHelper {
     switch (currentScenario.getKind()) {
     case DATA_FLOW:
       exchangesAvailable = (List<AbstractEvent>) DataFlowHelper.getAvailableComponentExchanges(sourceIr, targetIr);
-      if (exchangesAvailable.isEmpty())
-        exchangesAvailable = DataFlowHelper.getAvailableFonctionalExchanges(sourceIr, targetIr).stream()
-            .filter(x -> x instanceof AbstractEvent).collect(Collectors.toList());
+      exchangesAvailable.addAll(DataFlowHelper.getAvailableFonctionalExchanges(sourceIr, targetIr).stream()
+            .filter(x -> x instanceof AbstractEvent).collect(Collectors.toList()));
       break;
     case FUNCTIONAL:
       exchangesAvailable = DataFlowHelper.getAvailableFonctionalExchangesFromFunctions(sourceIr, targetIr).stream()

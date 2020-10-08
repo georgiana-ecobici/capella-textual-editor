@@ -12,6 +12,7 @@
  */
 package org.polarsys.capella.scenario.editor.dsl.validation;
 
+import com.google.common.base.Objects;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -19,6 +20,7 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.xtext.validation.Check;
 import org.eclipse.xtext.xbase.lib.CollectionLiterals;
+import org.polarsys.capella.scenario.editor.dsl.helpers.TextualScenarioHelper;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.Function;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.Model;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.Participant;
@@ -73,10 +75,20 @@ public class TextualScenarioValidator extends AbstractTextualScenarioValidator {
   
   @Check
   public void checkMessagesExist(final SequenceMessage message) {
-    if ((EmbeddedEditorInstanceHelper.getScenarioType().equals("INTERFACE") && 
-      (!EmbeddedEditorInstanceHelper.getExchangeNames(message.getSource(), message.getTarget()).contains(
-        message.getName())))) {
+    boolean _contains = EmbeddedEditorInstanceHelper.getExchangeNames(message.getSource(), message.getTarget()).contains(
+      message.getName());
+    boolean _not = (!_contains);
+    if (_not) {
       this.error("Message does not exist", TextualScenarioPackage.Literals.MESSAGE__NAME);
+    }
+  }
+  
+  @Check
+  public void checkMessagesExchangeType(final SequenceMessage message) {
+    Object scenarioExchangesType = TextualScenarioHelper.getScenarioAllowedExchangesType(null);
+    String exchangeType = TextualScenarioHelper.getExchangeType(message);
+    if (((!Objects.equal(scenarioExchangesType, null)) && (!scenarioExchangesType.equals(exchangeType)))) {
+      this.error("Exchange type can not be used", TextualScenarioPackage.Literals.MESSAGE__NAME);
     }
   }
   

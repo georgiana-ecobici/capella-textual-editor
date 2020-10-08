@@ -23,6 +23,7 @@ import org.polarsys.capella.scenario.editor.helper.EmbeddedEditorInstanceHelper
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.Function
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.StateFragment
 import org.polarsys.capella.scenario.editor.helper.DslConstants
+import org.polarsys.capella.scenario.editor.dsl.helpers.TextualScenarioHelper
 
 /**
  * This class contains custom validation rules. 
@@ -30,7 +31,6 @@ import org.polarsys.capella.scenario.editor.helper.DslConstants
  * See https://www.eclipse.org/Xtext/documentation/303_runtime_concepts.html#validation
  */
 class TextualScenarioValidator extends AbstractTextualScenarioValidator {
-
 	public static val INVALID_NAME = 'invalidName'
 	public static val DUPILCATED_NAME = 'duplicatedName'
 	public static val DUPILCATED_MESSAGES_NAME = 'duplicatedMessageName'
@@ -57,10 +57,18 @@ class TextualScenarioValidator extends AbstractTextualScenarioValidator {
 
 	@Check
 	def checkMessagesExist(SequenceMessage message) {
-		if (EmbeddedEditorInstanceHelper.getScenarioType().equals("INTERFACE") &&
-			!EmbeddedEditorInstanceHelper.getExchangeNames(message.getSource, message.getTarget).contains(
+		if (!EmbeddedEditorInstanceHelper.getExchangeNames(message.getSource, message.getTarget).contains(
 				message.name)) {
 			error('Message does not exist', TextualScenarioPackage.Literals.MESSAGE__NAME)
+		}
+	}
+	
+	@Check
+	def checkMessagesExchangeType(SequenceMessage message) {
+		var scenarioExchangesType = TextualScenarioHelper.getScenarioAllowedExchangesType(null)
+		var exchangeType = TextualScenarioHelper.getExchangeType(message)
+		if (scenarioExchangesType != null && !scenarioExchangesType.equals(exchangeType)) {
+			error('Exchange type can not be used', TextualScenarioPackage.Literals.MESSAGE__NAME)
 		}
 	}
 
