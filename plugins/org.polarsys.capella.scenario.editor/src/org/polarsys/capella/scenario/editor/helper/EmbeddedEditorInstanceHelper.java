@@ -62,6 +62,11 @@ public class EmbeddedEditorInstanceHelper {
     return currentScenario.getKind().toString();
   }
   
+  public static boolean isInteractionScenario() {
+    Scenario scenario = EmbeddedEditorInstance.getAssociatedScenarioDiagram();
+    return scenario.getKind().equals(ScenarioKind.INTERACTION);
+  }
+  
   public static boolean isESScenario() {
     Scenario scenario = EmbeddedEditorInstance.getAssociatedScenarioDiagram();
     return ((scenario.getKind() == ScenarioKind.INTERACTION) || (scenario.getKind() == ScenarioKind.DATA_FLOW));
