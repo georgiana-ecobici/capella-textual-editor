@@ -490,20 +490,25 @@ public class DiagramToXtextCommands {
     case ASYNCHRONOUS_CALL:
     case SYNCHRONOUS_CALL:
       seqMessage = factory.createSequenceMessage();
+      ((org.polarsys.capella.scenario.editor.dsl.textualScenario.SequenceMessageType) seqMessage).setArrow("->");
       break;
     case CREATE:
       seqMessage = factory.createCreateMessage();
+      ((org.polarsys.capella.scenario.editor.dsl.textualScenario.SequenceMessageType) seqMessage).setArrow("->+");
       break;
     case DELETE:
       seqMessage = factory.createDeleteMessage();
+      ((org.polarsys.capella.scenario.editor.dsl.textualScenario.SequenceMessageType) seqMessage).setArrow("->x");
       break;
     case REPLY:
       // seqMessage = factory.createReturnMessage();
       break;
     case TIMER:
       seqMessage = factory.createArmTimerMessage();
+      ((org.polarsys.capella.scenario.editor.dsl.textualScenario.ArmTimerMessage) seqMessage).setArrow("->>");
       ((org.polarsys.capella.scenario.editor.dsl.textualScenario.ArmTimerMessage) seqMessage)
           .setName(sequenceMessage.getName());
+      ((org.polarsys.capella.scenario.editor.dsl.textualScenario.ArmTimerMessage) seqMessage).setDoubleDot(":");
       if (sequenceMessage.getSendingEnd() != null
           && !sequenceMessage.getSendingEnd().getCoveredInstanceRoles().isEmpty())
         ((org.polarsys.capella.scenario.editor.dsl.textualScenario.ArmTimerMessage) seqMessage)
@@ -511,6 +516,7 @@ public class DiagramToXtextCommands {
       return seqMessage;
     default:
       seqMessage = factory.createSequenceMessage();
+      ((org.polarsys.capella.scenario.editor.dsl.textualScenario.SequenceMessageType) seqMessage).setArrow("->");
       break;
     }
     if (seqMessage != null) {
@@ -524,6 +530,7 @@ public class DiagramToXtextCommands {
           && !sequenceMessage.getReceivingEnd().getCoveredInstanceRoles().isEmpty())
         ((org.polarsys.capella.scenario.editor.dsl.textualScenario.SequenceMessageType) seqMessage)
             .setTarget(sequenceMessage.getReceivingEnd().getCoveredInstanceRoles().get(0).getName());
+      ((org.polarsys.capella.scenario.editor.dsl.textualScenario.SequenceMessageType) seqMessage).setDoubleDot(":");
     }
     return seqMessage;
   }
