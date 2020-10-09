@@ -31,6 +31,7 @@ import org.eclipse.sirius.diagram.sequence.business.internal.operation.Synchroni
 import org.eclipse.sirius.diagram.ui.business.internal.operation.AbstractModelChangeOperation;
 import org.eclipse.sirius.viewpoint.description.AnnotationEntry;
 import org.eclipse.xtext.resource.XtextResource;
+import org.polarsys.capella.common.data.behavior.AbstractEvent;
 import org.polarsys.capella.common.menu.dynamic.CreationHelper;
 import org.polarsys.capella.core.data.capellacommon.AbstractState;
 import org.polarsys.capella.core.data.capellacore.CapellaElement;
@@ -992,15 +993,15 @@ public class XtextToDiagramCommands {
     receivingEnd.setEvent(eventRecvOperation);
 
     // get operation by name from the list of available exchanges
-    List<CapellaElement> exchanges = null;
+    List<AbstractEvent> exchanges = null;
     if (isReplyMessage) {
-      exchanges = SelectInvokedOperationModelForSharedDataAndEvent.getAvailableExchangeItems(target, source, false);
+      exchanges = EmbeddedEditorInstanceHelper.getExchangeMessages(target.getName(), source.getName());
     } else {
-      exchanges = SelectInvokedOperationModelForSharedDataAndEvent.getAvailableExchangeItems(source, target, false);
+      exchanges = EmbeddedEditorInstanceHelper.getExchangeMessages(source.getName(), target.getName());
     }
+    
     exchanges = exchanges.stream()
-        .filter(ex -> ((ExchangeItemAllocation) ex).getAllocatedItem().getName().equals(seqMessage.getName()))
-        .collect(Collectors.toList());
+      .filter(ex -> ex.getName().equals(seqMessage.getName())).collect(Collectors.toList());
     if (!exchanges.isEmpty()) {
       eventRecvOperation.setOperation((AbstractEventOperation) exchanges.get(0));
       eventSentOperation.setOperation((AbstractEventOperation) exchanges.get(0));
