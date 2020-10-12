@@ -143,7 +143,7 @@ class TextualScenarioProposalProvider extends AbstractTextualScenarioProposalPro
 	}
 	
 	override completeSequenceMessage_Arrow(EObject model, Assignment assignment, ContentAssistContext context, ICompletionProposalAcceptor acceptor) {
-		acceptor.accept(createCompletionProposal("->", "Sequence Message: ->", null, context))
+		acceptor.accept(createCompletionProposal("->", "-> : Sequence Message", null, context))
 	}
 
 	override completeSequenceMessage_Target(EObject model, Assignment assignment, ContentAssistContext context,
@@ -195,11 +195,11 @@ class TextualScenarioProposalProvider extends AbstractTextualScenarioProposalPro
 	override completeCreateMessage_Arrow(EObject model, Assignment assignment, ContentAssistContext context,
 		ICompletionProposalAcceptor acceptor) {
 		if (!EmbeddedEditorInstanceHelper.isFSScenario() && !EmbeddedEditorInstanceHelper.isESScenario()) {
-			acceptor.accept(createCompletionProposal("->+", "Create Message: ->+", null, context))
+			acceptor.accept(createCompletionProposal("->+", "->+ : Create Message", null, context))
 		}
 		
 		if (EmbeddedEditorInstanceHelper.isInteractionScenario && !EmbeddedEditorInstanceHelper.isFSScenario()) {
-			acceptor.accept(createCompletionProposal("->+", "Create Message: ->+", null, context))
+			acceptor.accept(createCompletionProposal("->+", "->+ : Create Message", null, context))
 		}
 	}
 	
@@ -228,11 +228,11 @@ class TextualScenarioProposalProvider extends AbstractTextualScenarioProposalPro
 	override completeDeleteMessage_Arrow(EObject model, Assignment assignment, ContentAssistContext context,
 		ICompletionProposalAcceptor acceptor) {
 		if (!EmbeddedEditorInstanceHelper.isFSScenario() && !EmbeddedEditorInstanceHelper.isESScenario()) {
-			acceptor.accept(createCompletionProposal("->x", "Delete Message: ->x", null, context))
+			acceptor.accept(createCompletionProposal("->x", "->x : Delete Message", null, context))
 		}
 		
 		if (EmbeddedEditorInstanceHelper.isInteractionScenario && !EmbeddedEditorInstanceHelper.isFSScenario()) {
-			acceptor.accept(createCompletionProposal("->x", "Delete Message: ->x", null, context))
+			acceptor.accept(createCompletionProposal("->x", "->x : Delete Message", null, context))
 		}
 	}
 	
@@ -263,7 +263,7 @@ class TextualScenarioProposalProvider extends AbstractTextualScenarioProposalPro
 	override completeArmTimerMessage_Arrow(EObject model, Assignment assignment, ContentAssistContext context,
 		ICompletionProposalAcceptor acceptor) {
 		if (!EmbeddedEditorInstanceHelper.isFSScenario()) {
-			acceptor.accept(createCompletionProposal("->>", "Arm Timer : ->>", null, context))
+			acceptor.accept(createCompletionProposal("->>", "->> : Arm Timer", null, context))
 		}
 	}
 	

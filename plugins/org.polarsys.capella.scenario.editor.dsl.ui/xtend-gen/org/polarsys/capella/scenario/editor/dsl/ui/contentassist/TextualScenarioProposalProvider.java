@@ -159,7 +159,7 @@ public class TextualScenarioProposalProvider extends AbstractTextualScenarioProp
   
   @Override
   public void completeSequenceMessage_Arrow(final EObject model, final Assignment assignment, final ContentAssistContext context, final ICompletionProposalAcceptor acceptor) {
-    acceptor.accept(this.createCompletionProposal("->", "Sequence Message: ->", null, context));
+    acceptor.accept(this.createCompletionProposal("->", "-> : Sequence Message", null, context));
   }
   
   @Override
@@ -213,10 +213,10 @@ public class TextualScenarioProposalProvider extends AbstractTextualScenarioProp
   @Override
   public void completeCreateMessage_Arrow(final EObject model, final Assignment assignment, final ContentAssistContext context, final ICompletionProposalAcceptor acceptor) {
     if (((!EmbeddedEditorInstanceHelper.isFSScenario()) && (!EmbeddedEditorInstanceHelper.isESScenario()))) {
-      acceptor.accept(this.createCompletionProposal("->+", "Create Message: ->+", null, context));
+      acceptor.accept(this.createCompletionProposal("->+", "->+ : Create Message", null, context));
     }
     if ((EmbeddedEditorInstanceHelper.isInteractionScenario() && (!EmbeddedEditorInstanceHelper.isFSScenario()))) {
-      acceptor.accept(this.createCompletionProposal("->+", "Create Message: ->+", null, context));
+      acceptor.accept(this.createCompletionProposal("->+", "->+ : Create Message", null, context));
     }
   }
   
@@ -250,10 +250,10 @@ public class TextualScenarioProposalProvider extends AbstractTextualScenarioProp
   @Override
   public void completeDeleteMessage_Arrow(final EObject model, final Assignment assignment, final ContentAssistContext context, final ICompletionProposalAcceptor acceptor) {
     if (((!EmbeddedEditorInstanceHelper.isFSScenario()) && (!EmbeddedEditorInstanceHelper.isESScenario()))) {
-      acceptor.accept(this.createCompletionProposal("->x", "Delete Message: ->x", null, context));
+      acceptor.accept(this.createCompletionProposal("->x", "->x : Delete Message", null, context));
     }
     if ((EmbeddedEditorInstanceHelper.isInteractionScenario() && (!EmbeddedEditorInstanceHelper.isFSScenario()))) {
-      acceptor.accept(this.createCompletionProposal("->x", "Delete Message: ->x", null, context));
+      acceptor.accept(this.createCompletionProposal("->x", "->x : Delete Message", null, context));
     }
   }
   
@@ -289,7 +289,7 @@ public class TextualScenarioProposalProvider extends AbstractTextualScenarioProp
     boolean _isFSScenario = EmbeddedEditorInstanceHelper.isFSScenario();
     boolean _not = (!_isFSScenario);
     if (_not) {
-      acceptor.accept(this.createCompletionProposal("->>", "Arm Timer : ->>", null, context));
+      acceptor.accept(this.createCompletionProposal("->>", "->> : Arm Timer", null, context));
     }
   }
   
