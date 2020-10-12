@@ -34,6 +34,7 @@ import org.polarsys.capella.scenario.editor.dsl.textualScenario.CreateMessage
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.DeleteMessage
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.ArmTimerMessage
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.SequenceMessageType
+import org.polarsys.capella.core.data.cs.ExchangeItemAllocation
 
 /**
  * See https://www.eclipse.org/Xtext/documentation/304_ide_concepts.html#content-assist
@@ -170,9 +171,14 @@ class TextualScenarioProposalProvider extends AbstractTextualScenarioProposalPro
 
 		var message = messageObj as SequenceMessage
 		var exchangesAvailable = EmbeddedEditorInstanceHelper.getExchangeMessages(message.getSource, message.getTarget)
+		var elementName = new String
 		for (EObject element : exchangesAvailable) {
 			(context.rootModel as Model).elements
-			var elementName = CapellaElementExt.getName(element)
+			if (EmbeddedEditorInstanceHelper.isInterfaceScenario) {
+				elementName = CapellaElementExt.getName((element as ExchangeItemAllocation).allocatedItem)
+			} else {
+				elementName = CapellaElementExt.getName(element)
+			}
 			// do not propose a message between source and target that is already inserted, to avoid duplicates of the same message
 			if (!messageAlreadyInserted(context.rootModel as Model, message.source, message.target, elementName)) {
 				// in a scenario, cannot combine FE and CE in same scenario (functional and component exchanges)
@@ -351,8 +357,13 @@ class TextualScenarioProposalProvider extends AbstractTextualScenarioProposalPro
 	def completeCreateDeleteMessageName(EObject model, ContentAssistContext context, ICompletionProposalAcceptor acceptor) {
 		var message = model as SequenceMessageType
 		var exchangesAvailable = EmbeddedEditorInstanceHelper.getExchangeMessages(message.getSource, message.getTarget)
+		var elementName = new String
 		for (EObject element : exchangesAvailable) {
-			var elementName = CapellaElementExt.getName(element)
+			if (EmbeddedEditorInstanceHelper.isInterfaceScenario) {
+				elementName = CapellaElementExt.getName((element as ExchangeItemAllocation).allocatedItem)
+			} else {
+				elementName = CapellaElementExt.getName(element)
+			}
 			if (elementName !== null) {
 				acceptor.accept(
 					createCompletionProposal("\"" + elementName + "\"", "\"" + elementName + "\"", null, context))
