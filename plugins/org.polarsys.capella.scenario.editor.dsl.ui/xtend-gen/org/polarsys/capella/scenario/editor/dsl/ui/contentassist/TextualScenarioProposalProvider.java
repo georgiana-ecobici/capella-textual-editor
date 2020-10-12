@@ -26,8 +26,9 @@ import org.eclipse.xtext.ui.editor.contentassist.ConfigurableCompletionProposal;
 import org.eclipse.xtext.ui.editor.contentassist.ContentAssistContext;
 import org.eclipse.xtext.ui.editor.contentassist.ICompletionProposalAcceptor;
 import org.eclipse.xtext.xbase.lib.CollectionLiterals;
-import org.polarsys.capella.common.data.behavior.AbstractEvent;
+import org.polarsys.capella.core.data.cs.ExchangeItemAllocation;
 import org.polarsys.capella.core.data.epbs.EPBSArchitecture;
+import org.polarsys.capella.core.data.information.AbstractEventOperation;
 import org.polarsys.capella.core.model.helpers.CapellaElementExt;
 import org.polarsys.capella.scenario.editor.dsl.helpers.TextualScenarioHelper;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.ArmTimerMessage;
@@ -183,12 +184,18 @@ public class TextualScenarioProposalProvider extends AbstractTextualScenarioProp
     EObject _rootModel = context.getRootModel();
     Object scenarioExchangesType = TextualScenarioHelper.getScenarioAllowedExchangesType(((Model) _rootModel).getElements());
     SequenceMessage message = ((SequenceMessage) messageObj);
-    List<AbstractEvent> exchangesAvailable = EmbeddedEditorInstanceHelper.getExchangeMessages(message.getSource(), message.getTarget());
+    List<AbstractEventOperation> exchangesAvailable = EmbeddedEditorInstanceHelper.getExchangeMessages(message.getSource(), message.getTarget());
+    String elementName = new String();
     for (final EObject element : exchangesAvailable) {
       {
         EObject _rootModel_1 = context.getRootModel();
         ((Model) _rootModel_1).getElements();
-        String elementName = CapellaElementExt.getName(element);
+        boolean _isInterfaceScenario = EmbeddedEditorInstanceHelper.isInterfaceScenario();
+        if (_isInterfaceScenario) {
+          elementName = CapellaElementExt.getName(((ExchangeItemAllocation) element).getAllocatedItem());
+        } else {
+          elementName = CapellaElementExt.getName(element);
+        }
         EObject _rootModel_2 = context.getRootModel();
         boolean _messageAlreadyInserted = this.messageAlreadyInserted(((Model) _rootModel_2), message.getSource(), message.getTarget(), elementName);
         boolean _not = (!_messageAlreadyInserted);
@@ -378,10 +385,16 @@ public class TextualScenarioProposalProvider extends AbstractTextualScenarioProp
   
   public void completeCreateDeleteMessageName(final EObject model, final ContentAssistContext context, final ICompletionProposalAcceptor acceptor) {
     SequenceMessageType message = ((SequenceMessageType) model);
-    List<AbstractEvent> exchangesAvailable = EmbeddedEditorInstanceHelper.getExchangeMessages(message.getSource(), message.getTarget());
+    List<AbstractEventOperation> exchangesAvailable = EmbeddedEditorInstanceHelper.getExchangeMessages(message.getSource(), message.getTarget());
+    String elementName = new String();
     for (final EObject element : exchangesAvailable) {
       {
-        String elementName = CapellaElementExt.getName(element);
+        boolean _isInterfaceScenario = EmbeddedEditorInstanceHelper.isInterfaceScenario();
+        if (_isInterfaceScenario) {
+          elementName = CapellaElementExt.getName(((ExchangeItemAllocation) element).getAllocatedItem());
+        } else {
+          elementName = CapellaElementExt.getName(element);
+        }
         if ((elementName != null)) {
           acceptor.accept(
             this.createCompletionProposal((("\"" + elementName) + "\""), (("\"" + elementName) + "\""), null, context));

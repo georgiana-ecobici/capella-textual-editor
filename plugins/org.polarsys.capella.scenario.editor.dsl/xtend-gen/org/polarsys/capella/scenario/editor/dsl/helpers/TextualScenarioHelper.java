@@ -16,9 +16,9 @@ import com.google.common.base.Objects;
 import java.util.List;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
-import org.polarsys.capella.common.data.behavior.AbstractEvent;
 import org.polarsys.capella.core.data.fa.ComponentExchange;
 import org.polarsys.capella.core.data.fa.FunctionalExchange;
+import org.polarsys.capella.core.data.information.AbstractEventOperation;
 import org.polarsys.capella.core.model.helpers.CapellaElementExt;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.CombinedFragment;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.Model;
@@ -66,8 +66,8 @@ public class TextualScenarioHelper {
   }
   
   public static String getMessageExchangeType(final SequenceMessage message) {
-    List<AbstractEvent> exchangesAvailable = EmbeddedEditorInstanceHelper.getExchangeMessages(message.getSource(), message.getTarget());
-    for (final AbstractEvent exchange : exchangesAvailable) {
+    List<AbstractEventOperation> exchangesAvailable = EmbeddedEditorInstanceHelper.getExchangeMessages(message.getSource(), message.getTarget());
+    for (final AbstractEventOperation exchange : exchangesAvailable) {
       if (((!Objects.equal(message.getName(), null)) && message.getName().equals(CapellaElementExt.getName(exchange)))) {
         return TextualScenarioHelper.getExchangeType(exchange);
       }

@@ -34,7 +34,7 @@ import org.polarsys.capella.core.data.cs.ExchangeItemAllocation;
 import org.polarsys.capella.core.data.ctx.SystemAnalysis;
 import org.polarsys.capella.core.data.epbs.EPBSArchitecture;
 import org.polarsys.capella.core.data.fa.AbstractFunction;
-import org.polarsys.capella.core.data.information.ExchangeItem;
+import org.polarsys.capella.core.data.information.AbstractEventOperation;
 import org.polarsys.capella.core.data.interaction.InstanceRole;
 import org.polarsys.capella.core.data.interaction.Scenario;
 import org.polarsys.capella.core.data.interaction.ScenarioKind;
@@ -67,6 +67,11 @@ public class EmbeddedEditorInstanceHelper {
     return scenario.getKind().equals(ScenarioKind.INTERACTION);
   }
   
+  public static boolean isInterfaceScenario() {
+    Scenario scenario = EmbeddedEditorInstance.getAssociatedScenarioDiagram();
+    return scenario.getKind().equals(ScenarioKind.INTERFACE);
+  }
+
   public static boolean isESScenario() {
     Scenario scenario = EmbeddedEditorInstance.getAssociatedScenarioDiagram();
     return ((scenario.getKind() == ScenarioKind.INTERACTION) || (scenario.getKind() == ScenarioKind.DATA_FLOW));
@@ -102,9 +107,13 @@ public class EmbeddedEditorInstanceHelper {
   public static List<String> getExchangeNames(String source, String target) {
     List<String> messages = new ArrayList<String>();
 
-    List<AbstractEvent> exchanges = getAvailableExchanges(source, target);
-    for (AbstractEvent exchange : exchanges) {
-      messages.add(exchange.getName());
+    List<AbstractEventOperation> exchanges = getAvailableExchanges(source, target);
+    for (AbstractEventOperation exchange : exchanges) {
+      if (isInterfaceScenario()) {
+        messages.add(((ExchangeItemAllocation) exchange).getAllocatedItem().getName());
+      } else {
+        messages.add(exchange.getName());
+      }
     }
 
     return messages;
@@ -120,8 +129,8 @@ public class EmbeddedEditorInstanceHelper {
    * @return list of exchanges
    *
    */
-  public static List<AbstractEvent> getExchangeMessages(String source, String target) {
-    List<AbstractEvent> exchanges = getAvailableExchanges(source, target);
+  public static List<AbstractEventOperation> getExchangeMessages(String source, String target) {
+    List<AbstractEventOperation> exchanges = getAvailableExchanges(source, target);
     return exchanges;
   }
   
@@ -135,46 +144,42 @@ public class EmbeddedEditorInstanceHelper {
    * @return list of exchanges
    *
    */
-  public static List<AbstractEvent> getAvailableExchanges(String source, String target) {
-    List<AbstractEvent> exchangesAvailable = new ArrayList();
+  public static List<AbstractEventOperation> getAvailableExchanges(String source, String target) {
+    List<AbstractEventOperation> exchangesAvailable = new ArrayList<AbstractEventOperation>();
     InstanceRole sourceIr = EmbeddedEditorInstanceHelper.getInstanceRole(source);
     InstanceRole targetIr = EmbeddedEditorInstanceHelper.getInstanceRole(target);
     Scenario currentScenario = EmbeddedEditorInstance.getAssociatedScenarioDiagram();
 
     switch (currentScenario.getKind()) {
     case DATA_FLOW:
-      exchangesAvailable = (List<AbstractEvent>) DataFlowHelper.getAvailableComponentExchanges(sourceIr, targetIr);
+      exchangesAvailable = (List<AbstractEventOperation>) DataFlowHelper.getAvailableComponentExchanges(sourceIr, targetIr);
       exchangesAvailable.addAll(DataFlowHelper.getAvailableFonctionalExchanges(sourceIr, targetIr).stream()
-            .filter(x -> x instanceof AbstractEvent).collect(Collectors.toList()));
+            .filter(x -> x instanceof AbstractEventOperation).collect(Collectors.toList()));
       break;
     case FUNCTIONAL:
       exchangesAvailable = DataFlowHelper.getAvailableFonctionalExchangesFromFunctions(sourceIr, targetIr).stream()
-          .filter(x -> x instanceof AbstractEvent).collect(Collectors.toList());
+          .filter(x -> x instanceof AbstractEventOperation).collect(Collectors.toList());
       break;
     case INTERFACE:
       List<CapellaElement> exchanges = SelectInvokedOperationModelForSharedDataAndEvent
           .getAvailableExchangeItems(sourceIr, targetIr, false);
-      for (CapellaElement message : exchanges) {
-        if (message instanceof ExchangeItemAllocation) {
-          ExchangeItemAllocation allocation = (ExchangeItemAllocation) message;
-          if (allocation.getAllocatedItem() instanceof ExchangeItem) {
-            ExchangeItem item = allocation.getAllocatedItem();
-            exchangesAvailable.add(item);
-          }
+      for (CapellaElement exchange : exchanges) {
+        if (exchange instanceof ExchangeItemAllocation) {
+          exchangesAvailable.add((AbstractEventOperation) exchange);
         }
       }
       break;
     case INTERACTION:
       if (ScenarioExt.isFunctionalScenario(currentScenario)) {
         exchangesAvailable = DataFlowHelper.getAvailableFonctionalExchangesFromFunctions(sourceIr, targetIr).stream()
-            .filter(x -> x instanceof AbstractEvent).collect(Collectors.toList());
+            .filter(x -> x instanceof AbstractEventOperation).collect(Collectors.toList());
       } else {
         //functional exchanges
         exchangesAvailable = DataFlowHelper.getAvailableFonctionalExchanges(sourceIr, targetIr).stream()
-            .filter(x -> x instanceof AbstractEvent).collect(Collectors.toList());
+            .filter(x -> x instanceof AbstractEventOperation).collect(Collectors.toList());
 
         // communication means
-        exchangesAvailable.addAll((List<AbstractEvent>) DataFlowHelper.getAvailableComponentExchanges(sourceIr, targetIr)
+        exchangesAvailable.addAll((List<AbstractEventOperation>) DataFlowHelper.getAvailableComponentExchanges(sourceIr, targetIr)
             .stream().filter(x -> x instanceof AbstractEvent).collect(Collectors.toList()));
       }
       break;

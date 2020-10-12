@@ -992,15 +992,21 @@ public class XtextToDiagramCommands {
     receivingEnd.setEvent(eventRecvOperation);
 
     // get operation by name from the list of available exchanges
-    List<CapellaElement> exchanges = null;
+    List<AbstractEventOperation> exchanges = null;
     if (isReplyMessage) {
-      exchanges = SelectInvokedOperationModelForSharedDataAndEvent.getAvailableExchangeItems(target, source, false);
+      exchanges = EmbeddedEditorInstanceHelper.getExchangeMessages(target.getName(), source.getName());
     } else {
-      exchanges = SelectInvokedOperationModelForSharedDataAndEvent.getAvailableExchangeItems(source, target, false);
+      exchanges = EmbeddedEditorInstanceHelper.getExchangeMessages(source.getName(), target.getName());
     }
-    exchanges = exchanges.stream()
-        .filter(ex -> ((ExchangeItemAllocation) ex).getAllocatedItem().getName().equals(seqMessage.getName()))
-        .collect(Collectors.toList());
+    
+    if (EmbeddedEditorInstanceHelper.isInterfaceScenario()) {
+      exchanges = exchanges.stream()
+          .filter(ex -> ((ExchangeItemAllocation) ex).getAllocatedItem().getName().equals(seqMessage.getName()))
+          .collect(Collectors.toList());
+    } else {
+      exchanges = exchanges.stream().filter(ex -> ex.getName().equals(seqMessage.getName()))
+          .collect(Collectors.toList());
+    }
     if (!exchanges.isEmpty()) {
       eventRecvOperation.setOperation((AbstractEventOperation) exchanges.get(0));
       eventSentOperation.setOperation((AbstractEventOperation) exchanges.get(0));
