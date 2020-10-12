@@ -33,7 +33,6 @@ import org.eclipse.sirius.viewpoint.description.AnnotationEntry;
 import org.eclipse.xtext.resource.XtextResource;
 import org.polarsys.capella.common.menu.dynamic.CreationHelper;
 import org.polarsys.capella.core.data.capellacommon.AbstractState;
-import org.polarsys.capella.core.data.capellacore.CapellaElement;
 import org.polarsys.capella.core.data.capellacore.CapellacoreFactory;
 import org.polarsys.capella.core.data.capellacore.Constraint;
 import org.polarsys.capella.core.data.cs.ExchangeItemAllocation;
@@ -64,7 +63,6 @@ import org.polarsys.capella.core.data.interaction.Scenario;
 import org.polarsys.capella.core.data.interaction.SequenceMessage;
 import org.polarsys.capella.core.data.interaction.StateFragment;
 import org.polarsys.capella.core.data.interaction.TimeLapse;
-import org.polarsys.capella.core.data.interaction.properties.dialogs.sequenceMessage.model.SelectInvokedOperationModelForSharedDataAndEvent;
 import org.polarsys.capella.core.model.helpers.AbstractFragmentExt;
 import org.polarsys.capella.core.model.helpers.ConstraintExt;
 import org.polarsys.capella.core.model.helpers.ScenarioExt;
@@ -256,6 +254,7 @@ public class XtextToDiagramCommands {
         // remove messages and state fragments that appear in diagram and do not appear in text
         cleanUpMessages(scenario, elements);
         cleanUpStateFragments(scenario, elements);
+        cleanUpCombinedFragments(scenario, elements);
 
         editElements(scenario, elements);
 
@@ -630,13 +629,14 @@ public class XtextToDiagramCommands {
 
   private static InteractionOperand getCapellaInteractionOperand(Scenario scenario,
       org.polarsys.capella.scenario.editor.dsl.textualScenario.Operand textOperandBlock,
-      CombinedFragment capellaCombinedFragment) {
+      CombinedFragment capellaCombinedFragment, List<InteractionOperand> processedOperands) {
     List<InteractionOperand> combinedFragmentOperands = AbstractFragmentExt.getOwnedOperands(capellaCombinedFragment,
         scenario);
-
+    combinedFragmentOperands.removeAll(processedOperands);
     for (InteractionOperand operand : combinedFragmentOperands) {
       // go trough each text operand and check that
       if (textOperandBlock.getExpression().equals(HelperCommands.getExpressionText(operand))) {
+        processedOperands.add(operand);
         return operand;
       }
     }
@@ -666,8 +666,11 @@ public class XtextToDiagramCommands {
 
     orderedOperands.add(getFirstCapellaInteractionOperand(scenario, textCombinedFragment, capellaCombinedFragment));
 
+    List<InteractionOperand> processedOperands = new ArrayList<InteractionOperand>();
+    processedOperands.add(orderedOperands.get(0));
+    
     for (Operand textOperandBlock : textCombinedFragment.getOperands()) {
-      orderedOperands.add(getCapellaInteractionOperand(scenario, textOperandBlock, capellaCombinedFragment));
+      orderedOperands.add(getCapellaInteractionOperand(scenario, textOperandBlock, capellaCombinedFragment, processedOperands));
     }
 
     return orderedOperands;
@@ -779,6 +782,65 @@ public class XtextToDiagramCommands {
     }
   }
 
+  private static void cleanUpCombinedFragments(Scenario scenario, EList<EObject> xTextElements) {
+    // Delete all diagram combined fragments that don't appear in the xtext scenario
+    List<EObject> allXtextCombinedFragments =  xTextElements.stream()
+        .filter(element -> element instanceof org.polarsys.capella.scenario.editor.dsl.textualScenario.CombinedFragment)
+        .collect(Collectors.toList());
+
+    List<TimeLapse> combinedFragmentsToBeDeleted = getCapellaCombinedFragmentsToBeDeleted(scenario, allXtextCombinedFragments);
+    
+    for (TimeLapse timeLapse : combinedFragmentsToBeDeleted) {
+      removeCombinedFragmentFromScenario(scenario, timeLapse);
+    }
+  }
+
+  private static List<TimeLapse> getCapellaCombinedFragmentsToBeDeleted(Scenario scenario,
+      List<EObject> allXtextCombinedFragments) {
+    // We mark for deletion all combined fragments in scenario that don't have corresponding xtext fragments
+    List<TimeLapse> capellaCombinedFragments = scenario.getOwnedTimeLapses().stream()
+        .filter(timelapse -> timelapse instanceof CombinedFragment).collect(Collectors.toList());
+    
+    List<org.polarsys.capella.scenario.editor.dsl.textualScenario.CombinedFragment> processedXtextCombinedFragments = 
+        new ArrayList<org.polarsys.capella.scenario.editor.dsl.textualScenario.CombinedFragment>();
+    List<TimeLapse> combinedFragmentsToBeDeleted = new ArrayList<TimeLapse>();
+    
+    for (TimeLapse timeLapse : capellaCombinedFragments) {
+      if (!foundCapellaCombinedFragmentInXText(timeLapse, allXtextCombinedFragments, processedXtextCombinedFragments)) {
+        combinedFragmentsToBeDeleted.add(timeLapse);
+      }
+    }
+    
+    return combinedFragmentsToBeDeleted;
+  }
+
+  private static boolean foundCapellaCombinedFragmentInXText(TimeLapse timeLapse,
+      List<EObject> allXtextCombinedFragments,
+      List<org.polarsys.capella.scenario.editor.dsl.textualScenario.CombinedFragment> processedXtextCombinedFragments) {
+    for (EObject xtextCombinedFragment : allXtextCombinedFragments) {
+      if (!processedXtextCombinedFragments.contains(xtextCombinedFragment) 
+          && isSameCombinedFragment(xtextCombinedFragment, timeLapse)) {
+        processedXtextCombinedFragments.add((org.polarsys.capella.scenario.editor.dsl.textualScenario.CombinedFragment) xtextCombinedFragment);
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private static boolean isSameCombinedFragment(EObject fragment, TimeLapse timeLapse) {
+    if (!(fragment instanceof org.polarsys.capella.scenario.editor.dsl.textualScenario.CombinedFragment)) {
+      return false;
+    }
+    org.polarsys.capella.scenario.editor.dsl.textualScenario.CombinedFragment xtextCombinedFragment = 
+        (org.polarsys.capella.scenario.editor.dsl.textualScenario.CombinedFragment) fragment;   
+    CombinedFragment correspondingCapellaFragment = getCorrespondingCapellaCombinedFragment((Scenario) timeLapse.eContainer(), xtextCombinedFragment);
+    
+    if (timeLapse.equals(correspondingCapellaFragment)) {
+      return true;
+    }
+    return false;
+  }
+
   private static List<TimeLapse> getCapellaStateFragmentsToBeDeleted(Scenario scenario,
       List<EObject> allXtextStateFragments) {
     // We mark for deletion all state fragments in scenario that don't have corresponding xtext fragments
@@ -849,6 +911,18 @@ public class XtextToDiagramCommands {
     scenario.getOwnedInteractionFragments().removeAll(Arrays.asList(stateFragment.getStart(), stateFragment.getFinish()));
   }
 
+  
+  private static void removeCombinedFragmentFromScenario(Scenario scenario, TimeLapse timeLapse) {
+    CombinedFragment combinedFragment = (CombinedFragment) timeLapse;
+    
+    // Remove combined fragment
+    scenario.getOwnedTimeLapses().remove(timeLapse);
+    
+    // Remove interaction fragments (start, finish, operands)
+    scenario.getOwnedInteractionFragments().removeAll(Arrays.asList(combinedFragment.getStart(), combinedFragment.getFinish(), 
+        combinedFragment.getReferencedOperands()));
+  }
+
   private static boolean foundCapellaMessageInXText(SequenceMessage capellaSequenceMessage,
       List<EObject> allXtextSequenceMessages) {
     for (EObject message : allXtextSequenceMessages) {
@@ -911,7 +985,6 @@ public class XtextToDiagramCommands {
     }
     return false;
   }
-  
 
   private static boolean isSameStateFragment(EObject fragment, TimeLapse timelapse) {
     if (!(fragment instanceof org.polarsys.capella.scenario.editor.dsl.textualScenario.StateFragment)) {
@@ -1057,14 +1130,14 @@ public class XtextToDiagramCommands {
    * Display in diagram, the elements of an alt sequence
    */
   private static void createCapellaCombinedFragmentBlock(Scenario scenario,
-      org.polarsys.capella.scenario.editor.dsl.textualScenario.CombinedFragment condition,
+      org.polarsys.capella.scenario.editor.dsl.textualScenario.CombinedFragment xtextCombinedFragment,
       InteractionFragment lastInteractionFragment) {
 
-    // generate CombinedFragment, FramentEnd, FragmentEnd, IntreationOperands from alt
+    // generate CombinedFragment, FramentEnd, FragmentEnd, IntreationOperands from xtext combined fragment
     FragmentEnd start = InteractionFactory.eINSTANCE.createFragmentEnd();
     FragmentEnd finish = InteractionFactory.eINSTANCE.createFragmentEnd();
 
-    condition.getTimelines().forEach(timeline -> {
+    xtextCombinedFragment.getTimelines().forEach(timeline -> {
       InstanceRole instanceRole = EmbeddedEditorInstanceHelper.getInstanceRole(timeline);
       start.getCoveredInstanceRoles().add(instanceRole);
       finish.getCoveredInstanceRoles().add(instanceRole);
@@ -1081,12 +1154,12 @@ public class XtextToDiagramCommands {
     else
       ScenarioExt.moveEndOnBeginingOfScenario(start);
 
-    CombinedFragment combinedFragment = addCombinedFragment(start, finish, InteractionOperatorKind.getByName(condition.getKeyword().toUpperCase()));
+    CombinedFragment combinedFragment = addCombinedFragment(start, finish, InteractionOperatorKind.getByName(xtextCombinedFragment.getKeyword().toUpperCase()));
     scenario.getOwnedTimeLapses().add(combinedFragment);
 
-    Block firstBlock = condition.getBlock();
+    Block firstBlock = xtextCombinedFragment.getBlock();
     if (firstBlock != null) {
-      InteractionOperand operand = addInteractionOperand(start.getCoveredInstanceRoles(), condition.getExpression());
+      InteractionOperand operand = addInteractionOperand(start.getCoveredInstanceRoles(), xtextCombinedFragment.getExpression());
       combinedFragment.getReferencedOperands().add(operand);
       scenario.getOwnedInteractionFragments().add(operand);
       ScenarioExt.moveEndOnScenario(operand, start);
@@ -1094,7 +1167,7 @@ public class XtextToDiagramCommands {
       editElements(scenario, firstBlock.getBlockElements());
 
       InteractionOperand prevEnd = operand;
-      for (Operand operandBlock : condition.getOperands()) {
+      for (Operand operandBlock : xtextCombinedFragment.getOperands()) {
         InteractionOperand operand2 = addInteractionOperand(start.getCoveredInstanceRoles(),
             operandBlock.getExpression());
         combinedFragment.getReferencedOperands().add(operand2);
