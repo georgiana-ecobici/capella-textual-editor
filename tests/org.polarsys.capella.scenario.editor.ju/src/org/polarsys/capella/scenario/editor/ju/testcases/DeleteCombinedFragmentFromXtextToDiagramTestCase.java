@@ -20,8 +20,8 @@ public class DeleteCombinedFragmentFromXtextToDiagramTestCase extends TextualSce
     
     testUpdateDiagram(deleteCombinedFragmentSimpleDiagramName, deleteCombinedFragmentSimpleFileContentExpected, 
         "[FS]_Capability_1_Combined_Fragments_New", elementsNew);
-    testUpdateDiagram(deleteCombinedFragmentSimpleDiagramName, deleteCombinedFragmentSimpleFileContentExpected, 
-        "[FS]_Capability_1_Combined_Fragments_New", elementsNew);
+    testUpdateDiagram(deleteCombinedFragmentESDiagramName, deleteCombinedFragmentESFileContentExpected, 
+        "[ES]_Capability_1_Combined_Fragments_New", elementsNew);
   }
 
 }
