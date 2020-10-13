@@ -25,11 +25,13 @@ import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.emf.transaction.util.TransactionUtil;
 import org.eclipse.gmf.runtime.notation.Diagram;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.sirius.diagram.DDiagram;
 import org.eclipse.sirius.diagram.sequence.SequenceDDiagram;
 import org.eclipse.sirius.diagram.sequence.business.internal.operation.SynchronizeGraphicalOrderingOperation;
 import org.eclipse.sirius.diagram.ui.business.internal.operation.AbstractModelChangeOperation;
 import org.eclipse.sirius.viewpoint.description.AnnotationEntry;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.xtext.resource.XtextResource;
 import org.polarsys.capella.common.menu.dynamic.CreationHelper;
 import org.polarsys.capella.core.data.capellacommon.AbstractState;
@@ -83,24 +85,30 @@ public class XtextToDiagramCommands {
     if (embeddedEditorViewPart != null) {
       TextualScenarioProvider p = embeddedEditorViewPart.getProvider();
       XtextResource resource = p.getResource();
-      EList<EObject> content = resource.getContents();
 
-      Model domainModel = (Model) content.get(0);
-      // get participants
-      EList<Participant> participants = domainModel.getParticipants();
+      if (HelperCommands.isValidTextResource(resource)) {
+        EList<EObject> content = resource.getContents();
+        Model domainModel = (Model) content.get(0);
 
-      // get messages
-      EList<EObject> messages = domainModel.getElements();
+        // get participants
+        EList<Participant> participants = domainModel.getParticipants();
 
-      doEditingOnParticipants(scenario, participants, messages);
+        // get messages
+        EList<EObject> messages = domainModel.getElements();
 
-      doEditingOnElements(scenario, messages);
+        doEditingOnParticipants(scenario, participants, messages);
 
-      // do refresh - when the messages associated with the removed actors are deleted too,
-      // a refresh is needed to update also the editor
-      EmbeddedEditorView eeView = XtextEditorHelper.getActiveEmbeddedEditorView();
-      Scenario scenarioDiagram = EmbeddedEditorInstance.getAssociatedScenarioDiagram();
-      DiagramToXtextCommands.process(scenarioDiagram, eeView);
+        doEditingOnElements(scenario, messages);
+
+        // do refresh - when the messages associated with the removed actors are deleted too,
+        // a refresh is needed to update also the editor
+        EmbeddedEditorView eeView = XtextEditorHelper.getActiveEmbeddedEditorView();
+        Scenario scenarioDiagram = EmbeddedEditorInstance.getAssociatedScenarioDiagram();
+        DiagramToXtextCommands.process(scenarioDiagram, eeView);
+      } else {
+        MessageDialog.openError(Display.getCurrent().getActiveShell(), "Invalid data",
+            "Please fix the errors in the textual editor!");
+      }
     }
   }
 
