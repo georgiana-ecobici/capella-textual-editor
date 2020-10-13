@@ -14,6 +14,7 @@ package org.polarsys.capella.scenario.editor.embeddededitor.commands;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Stack;
@@ -225,10 +226,10 @@ public class XtextToDiagramCommands {
   private static void removeEditorMessages(EList<EObject> messagesOrReferences, String participantName) {
     List<EObject> messagesToRemove = new ArrayList<EObject>();
     for (EObject message : messagesOrReferences) {
-      if (message instanceof org.polarsys.capella.scenario.editor.dsl.textualScenario.SequenceMessage) {
-        String source = ((org.polarsys.capella.scenario.editor.dsl.textualScenario.SequenceMessage) message)
+      if (message instanceof org.polarsys.capella.scenario.editor.dsl.textualScenario.SequenceMessageType) {
+        String source = ((org.polarsys.capella.scenario.editor.dsl.textualScenario.SequenceMessageType) message)
             .getSource();
-        String target = ((org.polarsys.capella.scenario.editor.dsl.textualScenario.SequenceMessage) message)
+        String target = ((org.polarsys.capella.scenario.editor.dsl.textualScenario.SequenceMessageType) message)
             .getTarget();
         if (source.equals(participantName) || target.equals(participantName)) {
           messagesToRemove.add(message);
@@ -737,17 +738,33 @@ public class XtextToDiagramCommands {
       if (element instanceof FragmentEnd) {
         CombinedFragment candidateCombinedFragment = (CombinedFragment) ((FragmentEnd) element).getAbstractFragment();
         if (candidateCombinedFragment.getOperator().toString().toLowerCase()
-            .equals(textCombinedFragment.getKeyword())) {
-          List<InteractionOperand> capellaOperands = candidateCombinedFragment.getReferencedOperands();
-          if (capellaOperands.size() == textCombinedFragment.getOperands().size() + 1) {
-            if (operandsHaveSameExpressions(textCombinedFragment, capellaOperands)) {
-              return candidateCombinedFragment;
-            }
+            .equals(textCombinedFragment.getKeyword())) {          
+          //check timelines
+          if (haveSameTimelines(textCombinedFragment, candidateCombinedFragment)) {
+            List<InteractionOperand> capellaOperands = candidateCombinedFragment.getReferencedOperands();
+            if (capellaOperands.size() == textCombinedFragment.getOperands().size() + 1) {
+              if (operandsHaveSameExpressions(textCombinedFragment, capellaOperands)) {
+                return candidateCombinedFragment;
+              }
+            }  
           }
         }
       }
     }
     return null;
+  }
+
+  private static boolean haveSameTimelines(
+      org.polarsys.capella.scenario.editor.dsl.textualScenario.CombinedFragment textCombinedFragment,
+      CombinedFragment candidateCombinedFragment) {
+    
+    EList<String> xtextTimelines = textCombinedFragment.getTimelines();    
+    List<String> capellaTimelines = candidateCombinedFragment.getStart().getCoveredInstanceRoles().stream()
+        .map(role -> role.getName()).collect(Collectors.toList());
+    
+    xtextTimelines.sort(Comparator.naturalOrder());
+    capellaTimelines.sort(Comparator.naturalOrder());
+    return xtextTimelines.equals(capellaTimelines);
   }
 
   private static boolean operandsHaveSameExpressions(
@@ -973,7 +990,7 @@ public class XtextToDiagramCommands {
     ArrayList<EObject> xtextSequenceMessages = new ArrayList<EObject>();
     for (EObject element : textMessages) {
       // SequenceMessage -> add it
-      if (element instanceof org.polarsys.capella.scenario.editor.dsl.textualScenario.SequenceMessage) {
+      if (element instanceof org.polarsys.capella.scenario.editor.dsl.textualScenario.SequenceMessageType) {
         xtextSequenceMessages.add(element);
       }
       // CombinedFragment -> go inside and find all sequence messages at all levels
