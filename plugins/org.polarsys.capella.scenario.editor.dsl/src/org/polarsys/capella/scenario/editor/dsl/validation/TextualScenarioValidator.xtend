@@ -24,6 +24,11 @@ import org.polarsys.capella.scenario.editor.dsl.textualScenario.Function
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.StateFragment
 import org.polarsys.capella.scenario.editor.helper.DslConstants
 import org.polarsys.capella.scenario.editor.dsl.helpers.TextualScenarioHelper
+import org.polarsys.capella.scenario.editor.dsl.textualScenario.CreateMessage
+import java.util.stream.Collectors
+import org.eclipse.emf.ecore.EObject
+import org.polarsys.capella.scenario.editor.dsl.textualScenario.DeleteMessage
+import org.polarsys.capella.scenario.editor.dsl.textualScenario.CombinedFragment
 
 /**
  * This class contains custom validation rules. 
@@ -57,6 +62,14 @@ class TextualScenarioValidator extends AbstractTextualScenarioValidator {
 
 	@Check
 	def checkMessagesExist(SequenceMessage message) {
+		if (!EmbeddedEditorInstanceHelper.getExchangeNames(message.getSource, message.getTarget).contains(
+				message.name)) {
+			error('Message does not exist', TextualScenarioPackage.Literals.MESSAGE__NAME)
+		}
+	}
+	
+	@Check
+	def checkMessageExists(SequenceMessageType message) {
 		if (!EmbeddedEditorInstanceHelper.getExchangeNames(message.getSource, message.getTarget).contains(
 				message.name)) {
 			error('Message does not exist', TextualScenarioPackage.Literals.MESSAGE__NAME)
@@ -161,6 +174,100 @@ class TextualScenarioValidator extends AbstractTextualScenarioValidator {
 			index++
 		}
 	}
+	
+	@Check
+	def checkCreateMessage(CreateMessage createMessage) {
+		var model = createMessage.eContainer()	
+		var elements = (model as Model).elements
+		var target = createMessage.target
+		for (EObject element : elements) {
+			if (element instanceof SequenceMessageType) {
+				if (element.equals(createMessage)) {
+					return 
+				}
+					
+				if ((element as SequenceMessageType).target.equals(target) ||
+				(element as SequenceMessageType).source.equals(target)) {
+					errorCreateDeleteMessage
+					return
+				}
+			}
+			
+			if (element instanceof CombinedFragment) {
+				if ((element as CombinedFragment).timelines.contains(target)) {
+					errorCreateDeleteMessage
+					return 
+				}
+			}
+			
+			if (element instanceof StateFragment) {
+				if ((element as StateFragment).timeline.equals(target)) {
+					errorCreateDeleteMessage
+					return 
+				}
+			}
+		}
+	}
+	
+	@Check
+	def checkTimelinesMessages(SequenceMessageType message) {
+		var model = message.eContainer()
+		var participantsNames = (model as Model).participants.stream.map(x | x.name).collect(Collectors::toList)
+		if (!participantsNames.contains(message.source)) {
+			error(String.format("Participant does not exist"), TextualScenarioPackage.Literals.SEQUENCE_MESSAGE_TYPE__SOURCE)
+			return
+		}
+		
+		if (!participantsNames.contains(message.target)) {
+			error(String.format("Participant does not exist"), TextualScenarioPackage.Literals.SEQUENCE_MESSAGE_TYPE__TARGET)
+			return
+		}
+	}
+	
+	@Check
+	def checkDeleteMessage(DeleteMessage deleteMessage) {
+		var model = deleteMessage.eContainer()
+		var elements = (model as Model).elements
+		var deleteMessageOccurs = false
+
+		for (EObject element : elements) {
+			if (deleteMessageOccurs) {
+				if (element instanceof SequenceMessageType) {
+					if (checkIfMessageContainsTarget(element, deleteMessage.target)) {
+						return
+					}
+				}
+
+				if (element instanceof CombinedFragment) {
+					if ((element as CombinedFragment).timelines.contains(deleteMessage.target)) {
+						errorCreateDeleteMessage
+						return
+					}
+				}
+
+				if (element instanceof StateFragment) {
+					if ((element as StateFragment).timeline.equals(deleteMessage.target)) {
+						errorCreateDeleteMessage
+						return
+					}
+				}
+
+			} else if (element.equals(deleteMessage)) {
+				deleteMessageOccurs = true
+			}
+		}
+	}
+	
+	def checkIfMessageContainsTarget(SequenceMessageType message, String target) {
+		if (message.target.equals(target) || message.source.equals(target)) {
+			errorCreateDeleteMessage
+			return true
+		}
+		return false
+	}
+	
+	
+	
 
 	/*
 	 * Check that the state fragment exists
@@ -250,5 +357,10 @@ class TextualScenarioValidator extends AbstractTextualScenarioValidator {
 
 	def getMessagesMapKey(SequenceMessageType m) {
 		m.name + ":" + m.source + ":" + m.target
+	}
+	
+	def errorCreateDeleteMessage() {
+		error(String.format("Create message can not be used"),
+							TextualScenarioPackage.Literals.SEQUENCE_MESSAGE_TYPE__TARGET)
 	}
 }

@@ -16,11 +16,15 @@ import com.google.common.base.Objects;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.xtext.validation.Check;
 import org.eclipse.xtext.xbase.lib.CollectionLiterals;
 import org.polarsys.capella.scenario.editor.dsl.helpers.TextualScenarioHelper;
+import org.polarsys.capella.scenario.editor.dsl.textualScenario.CombinedFragment;
+import org.polarsys.capella.scenario.editor.dsl.textualScenario.CreateMessage;
+import org.polarsys.capella.scenario.editor.dsl.textualScenario.DeleteMessage;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.Function;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.Model;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.Participant;
@@ -75,6 +79,16 @@ public class TextualScenarioValidator extends AbstractTextualScenarioValidator {
   
   @Check
   public void checkMessagesExist(final SequenceMessage message) {
+    boolean _contains = EmbeddedEditorInstanceHelper.getExchangeNames(message.getSource(), message.getTarget()).contains(
+      message.getName());
+    boolean _not = (!_contains);
+    if (_not) {
+      this.error("Message does not exist", TextualScenarioPackage.Literals.MESSAGE__NAME);
+    }
+  }
+  
+  @Check
+  public void checkMessageExists(final SequenceMessageType message) {
     boolean _contains = EmbeddedEditorInstanceHelper.getExchangeNames(message.getSource(), message.getTarget()).contains(
       message.getName());
     boolean _not = (!_contains);
@@ -183,6 +197,107 @@ public class TextualScenarioValidator extends AbstractTextualScenarioValidator {
     }
   }
   
+  @Check
+  public void checkCreateMessage(final CreateMessage createMessage) {
+    EObject model = createMessage.eContainer();
+    EList<EObject> elements = ((Model) model).getElements();
+    String target = createMessage.getTarget();
+    for (final EObject element : elements) {
+      {
+        if ((element instanceof SequenceMessageType)) {
+          boolean _equals = ((SequenceMessageType)element).equals(createMessage);
+          if (_equals) {
+            return;
+          }
+          if ((((SequenceMessageType) element).getTarget().equals(target) || 
+            ((SequenceMessageType) element).getSource().equals(target))) {
+            this.errorCreateDeleteMessage();
+            return;
+          }
+        }
+        if ((element instanceof CombinedFragment)) {
+          boolean _contains = ((CombinedFragment) element).getTimelines().contains(target);
+          if (_contains) {
+            this.errorCreateDeleteMessage();
+            return;
+          }
+        }
+        if ((element instanceof StateFragment)) {
+          boolean _equals_1 = ((StateFragment) element).getTimeline().equals(target);
+          if (_equals_1) {
+            this.errorCreateDeleteMessage();
+            return;
+          }
+        }
+      }
+    }
+  }
+  
+  @Check
+  public void checkTimelinesMessages(final SequenceMessageType message) {
+    EObject model = message.eContainer();
+    final java.util.function.Function<Participant, String> _function = (Participant x) -> {
+      return x.getName();
+    };
+    List<String> participantsNames = ((Model) model).getParticipants().stream().<String>map(_function).collect(Collectors.<String>toList());
+    boolean _contains = participantsNames.contains(message.getSource());
+    boolean _not = (!_contains);
+    if (_not) {
+      this.error(String.format("Participant does not exist"), TextualScenarioPackage.Literals.SEQUENCE_MESSAGE_TYPE__SOURCE);
+      return;
+    }
+    boolean _contains_1 = participantsNames.contains(message.getTarget());
+    boolean _not_1 = (!_contains_1);
+    if (_not_1) {
+      this.error(String.format("Participant does not exist"), TextualScenarioPackage.Literals.SEQUENCE_MESSAGE_TYPE__TARGET);
+      return;
+    }
+  }
+  
+  @Check
+  public void checkDeleteMessage(final DeleteMessage deleteMessage) {
+    EObject model = deleteMessage.eContainer();
+    EList<EObject> elements = ((Model) model).getElements();
+    boolean deleteMessageOccurs = false;
+    for (final EObject element : elements) {
+      if (deleteMessageOccurs) {
+        if ((element instanceof SequenceMessageType)) {
+          boolean _checkIfMessageContainsTarget = this.checkIfMessageContainsTarget(((SequenceMessageType)element), deleteMessage.getTarget());
+          if (_checkIfMessageContainsTarget) {
+            return;
+          }
+        }
+        if ((element instanceof CombinedFragment)) {
+          boolean _contains = ((CombinedFragment) element).getTimelines().contains(deleteMessage.getTarget());
+          if (_contains) {
+            this.errorCreateDeleteMessage();
+            return;
+          }
+        }
+        if ((element instanceof StateFragment)) {
+          boolean _equals = ((StateFragment) element).getTimeline().equals(deleteMessage.getTarget());
+          if (_equals) {
+            this.errorCreateDeleteMessage();
+            return;
+          }
+        }
+      } else {
+        boolean _equals_1 = element.equals(deleteMessage);
+        if (_equals_1) {
+          deleteMessageOccurs = true;
+        }
+      }
+    }
+  }
+  
+  public boolean checkIfMessageContainsTarget(final SequenceMessageType message, final String target) {
+    if ((message.getTarget().equals(target) || message.getSource().equals(target))) {
+      this.errorCreateDeleteMessage();
+      return true;
+    }
+    return false;
+  }
+  
   /**
    * Check that the state fragment exists
    */
@@ -288,5 +403,10 @@ public class TextualScenarioValidator extends AbstractTextualScenarioValidator {
     String _plus_2 = (_plus_1 + ":");
     String _target = m.getTarget();
     return (_plus_2 + _target);
+  }
+  
+  public void errorCreateDeleteMessage() {
+    this.error(String.format("Create message can not be used"), 
+      TextualScenarioPackage.Literals.SEQUENCE_MESSAGE_TYPE__TARGET);
   }
 }
