@@ -330,7 +330,7 @@ class TextualScenarioValidator extends AbstractTextualScenarioValidator {
 	}
 
 	/*
-	 * No keyword shall be put on a combined fragment that is not ALT
+	 * Check that the combine fragments is allocated on valid timelines
 	 */
 	@Check
 	def checkCombinedFragmentOnValidTimelines(CombinedFragment combinedFragment) {
@@ -338,19 +338,19 @@ class TextualScenarioValidator extends AbstractTextualScenarioValidator {
 		var unexistingTimelines = "";
 		var participantsDefined = TextualScenarioHelper.participantsDefinedBeforeNames(combinedFragment);
 		for (timeline : combinedFragment.timelines) {
-			if (!participantsDefined.contains(timeline)) {
-				undefinedTimelines += " " + timeline;
-			}
 			if (!EmbeddedEditorInstanceHelper.checkValidTimeline(timeline)) {
 				unexistingTimelines += " " + timeline;
 			}
-		}
-		if (!undefinedTimelines.isEmpty) {
-			error('Timelines not defined in text:' + undefinedTimelines,
-				TextualScenarioPackage.eINSTANCE.getCombinedFragment_Timelines())
+			if (!participantsDefined.contains(timeline)) {
+				undefinedTimelines += " " + timeline;
+			}
 		}
 		if (!unexistingTimelines.isEmpty) {
 			error('Timelines not present in diagram:' + unexistingTimelines,
+				TextualScenarioPackage.eINSTANCE.getCombinedFragment_Timelines())
+		}
+		if (!undefinedTimelines.isEmpty) {
+			error('Timelines not defined in text:' + undefinedTimelines,
 				TextualScenarioPackage.eINSTANCE.getCombinedFragment_Timelines())
 		}
 	}

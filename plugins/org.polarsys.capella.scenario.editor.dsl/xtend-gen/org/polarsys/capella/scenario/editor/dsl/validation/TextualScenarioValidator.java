@@ -363,7 +363,7 @@ public class TextualScenarioValidator extends AbstractTextualScenarioValidator {
   }
   
   /**
-   * No keyword shall be put on a combined fragment that is not ALT
+   * Check that the combine fragments is allocated on valid timelines
    */
   @Check
   public void checkCombinedFragmentOnValidTimelines(final CombinedFragment combinedFragment) {
@@ -373,30 +373,30 @@ public class TextualScenarioValidator extends AbstractTextualScenarioValidator {
     EList<String> _timelines = combinedFragment.getTimelines();
     for (final String timeline : _timelines) {
       {
-        boolean _contains = participantsDefined.contains(timeline);
-        boolean _not = (!_contains);
-        if (_not) {
-          String _undefinedTimelines = undefinedTimelines;
-          undefinedTimelines = (_undefinedTimelines + (" " + timeline));
-        }
         boolean _checkValidTimeline = EmbeddedEditorInstanceHelper.checkValidTimeline(timeline);
-        boolean _not_1 = (!_checkValidTimeline);
-        if (_not_1) {
+        boolean _not = (!_checkValidTimeline);
+        if (_not) {
           String _unexistingTimelines = unexistingTimelines;
           unexistingTimelines = (_unexistingTimelines + (" " + timeline));
         }
+        boolean _contains = participantsDefined.contains(timeline);
+        boolean _not_1 = (!_contains);
+        if (_not_1) {
+          String _undefinedTimelines = undefinedTimelines;
+          undefinedTimelines = (_undefinedTimelines + (" " + timeline));
+        }
       }
     }
-    boolean _isEmpty = undefinedTimelines.isEmpty();
+    boolean _isEmpty = unexistingTimelines.isEmpty();
     boolean _not = (!_isEmpty);
     if (_not) {
-      this.error(("Timelines not defined in text:" + undefinedTimelines), 
+      this.error(("Timelines not present in diagram:" + unexistingTimelines), 
         TextualScenarioPackage.eINSTANCE.getCombinedFragment_Timelines());
     }
-    boolean _isEmpty_1 = unexistingTimelines.isEmpty();
+    boolean _isEmpty_1 = undefinedTimelines.isEmpty();
     boolean _not_1 = (!_isEmpty_1);
     if (_not_1) {
-      this.error(("Timelines not present in diagram:" + unexistingTimelines), 
+      this.error(("Timelines not defined in text:" + undefinedTimelines), 
         TextualScenarioPackage.eINSTANCE.getCombinedFragment_Timelines());
     }
   }
