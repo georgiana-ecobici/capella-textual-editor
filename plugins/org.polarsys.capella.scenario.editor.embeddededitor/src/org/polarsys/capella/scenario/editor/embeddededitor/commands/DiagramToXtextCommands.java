@@ -48,6 +48,7 @@ import org.polarsys.capella.core.data.oa.Role;
 import org.polarsys.capella.core.model.helpers.AbstractFragmentExt;
 import org.polarsys.capella.core.model.helpers.ScenarioExt;
 import org.polarsys.capella.core.sirius.analysis.SequenceDiagramServices;
+import org.polarsys.capella.scenario.editor.dsl.textualScenario.ArmTimerMessage;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.Block;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.CombinedFragment;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.Message;
@@ -90,8 +91,12 @@ public class DiagramToXtextCommands {
 
         content.add(domainModel);
 
-        String serialized = ((XtextResource) domainModel.eResource()).getSerializer().serialize(domainModel);
-        EmbeddedEditorInstanceHelper.updateModel(serialized);
+        try {
+          String serialized = ((XtextResource) domainModel.eResource()).getSerializer().serialize(domainModel);
+          EmbeddedEditorInstanceHelper.updateModel(serialized);
+        } catch (Exception e) {
+          System.err.println("Error refreshing diagram from Textual Editor");
+        }
       }
     }
   }
@@ -207,7 +212,7 @@ public class DiagramToXtextCommands {
     // The list of fragments contains both ends of each sequence message (sender and receiver)
     // and only one end of each execution (the one where execution ends). This means that we should skip
     // the receiving end for each message, so that we don't duplicate the generated xtext message.
-    Stack<org.polarsys.capella.scenario.editor.dsl.textualScenario.SequenceMessage> messagesToDeactivate = new Stack();
+    Stack<org.polarsys.capella.scenario.editor.dsl.textualScenario.Message> messagesToDeactivate = new Stack();
 
     Stack<CombinedFragment> combinedFragments = new Stack();
     Stack<Block> blockOperands = new Stack();
@@ -215,7 +220,12 @@ public class DiagramToXtextCommands {
     int i = 0;
     while (i < ends.length) {
       if (ends[i] instanceof MessageEnd) {
-        i = generateMessages(ends, i, messagesToDeactivate, combinedFragments, blockOperands, elements, factory);
+        if (isTimerReceivingEnd((MessageEnd) ends[i])) {
+          //skip TIMER receiving ends, as the sending end will give the message to put in xtext
+          i = i + 1;
+        } else {
+          i = generateMessages(ends, i, messagesToDeactivate, combinedFragments, blockOperands, elements, factory);
+        }
       } else if (ends[i] instanceof ExecutionEnd) {
         generateDeactivatioOnMessages((ExecutionEnd) ends[i], messagesToDeactivate, blockOperands, elements, factory);
         i++;
@@ -231,6 +241,17 @@ public class DiagramToXtextCommands {
         i = i + 1;
       }
     }
+  }
+
+  private static boolean isTimerReceivingEnd(MessageEnd messageEnd) {
+    SequenceMessage currentSequenceMessage = messageEnd.getMessage();
+    if (currentSequenceMessage.getKind() != MessageKind.TIMER) {
+      return false;
+    }
+    if (currentSequenceMessage.getReceivingEnd().equals(messageEnd)) {
+      return true;
+    }
+    return false;
   }
 
   private static int processCombinedFragments(Object[] ends, int i, Stack<CombinedFragment> combinedFragments,
@@ -316,7 +337,7 @@ public class DiagramToXtextCommands {
   }
 
   private static void generateDeactivatioOnMessages(ExecutionEnd executionEnd,
-      Stack<org.polarsys.capella.scenario.editor.dsl.textualScenario.SequenceMessage> messagesToDeactivate,
+      Stack<org.polarsys.capella.scenario.editor.dsl.textualScenario.Message> messagesToDeactivate,
       Stack<Block> blockOperands, EList<EObject> elements, TextualScenarioFactory factory) {
     EObject participantDeactivateMsg = getParticipantDeactivationMsgFromExecutionEnd(executionEnd, factory);
 
@@ -331,7 +352,7 @@ public class DiagramToXtextCommands {
   }
 
   private static int generateMessages(Object[] ends, int i,
-      Stack<org.polarsys.capella.scenario.editor.dsl.textualScenario.SequenceMessage> messagesToDeactivate,
+      Stack<Message> messagesToDeactivate,
       Stack<CombinedFragment> combinedFragments, Stack<Block> blockOperands, EList<EObject> elements,
       TextualScenarioFactory factory) {
 
@@ -403,6 +424,12 @@ public class DiagramToXtextCommands {
         } else {
           addMessageToDeactivate(messagesToDeactivate, message);
         }
+        
+        // update i, for TIMER messages
+        if (currentSequenceMessage.getKind() == MessageKind.TIMER) {
+          // don't skip the next MessageEnd for TIMER messages, as it might belong to another message
+          i = i - 1;
+        }
       }
       return i;
     }
@@ -410,19 +437,24 @@ public class DiagramToXtextCommands {
   }
 
   private static void addMessageToDeactivate(
-      Stack<org.polarsys.capella.scenario.editor.dsl.textualScenario.SequenceMessage> messagesToDeactivate,
+      Stack<org.polarsys.capella.scenario.editor.dsl.textualScenario.Message> messagesToDeactivate,
       EObject message) {
-    if (message instanceof org.polarsys.capella.scenario.editor.dsl.textualScenario.SequenceMessage) {
-      messagesToDeactivate.push((org.polarsys.capella.scenario.editor.dsl.textualScenario.SequenceMessage) message);
+    if (message instanceof org.polarsys.capella.scenario.editor.dsl.textualScenario.SequenceMessage ||
+        message instanceof ArmTimerMessage) {
+      messagesToDeactivate.push((org.polarsys.capella.scenario.editor.dsl.textualScenario.Message) message);
     }
   }
 
   private static void updateMessagesToDeactivate(
-      Stack<org.polarsys.capella.scenario.editor.dsl.textualScenario.SequenceMessage> messagesToDeactivate) {
+      Stack<org.polarsys.capella.scenario.editor.dsl.textualScenario.Message> messagesToDeactivate) {
     if (!messagesToDeactivate.isEmpty()) {
-      org.polarsys.capella.scenario.editor.dsl.textualScenario.SequenceMessage currentSequenceMessage = messagesToDeactivate
+      org.polarsys.capella.scenario.editor.dsl.textualScenario.Message currentSequenceMessage = messagesToDeactivate
           .pop();
-      currentSequenceMessage.setExecution(DslConstants.WITH_EXECUTION);
+      if (currentSequenceMessage instanceof org.polarsys.capella.scenario.editor.dsl.textualScenario.SequenceMessage) {
+        ((org.polarsys.capella.scenario.editor.dsl.textualScenario.SequenceMessage) currentSequenceMessage).setExecution(DslConstants.WITH_EXECUTION);
+      } else {
+        ((org.polarsys.capella.scenario.editor.dsl.textualScenario.ArmTimerMessage) currentSequenceMessage).setExecution(DslConstants.WITH_EXECUTION);
+      }
     }
   }
 

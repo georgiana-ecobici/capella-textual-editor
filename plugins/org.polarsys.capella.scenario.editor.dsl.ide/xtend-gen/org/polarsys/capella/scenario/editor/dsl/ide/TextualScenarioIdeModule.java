@@ -8,7 +8,7 @@
  *  SPDX-License-Identifier: EPL-2.0
  *  
  *  Contributors:
- *     Thales - initial API and implementation
+ *       Thales - initial API and implementation
  ******************************************************************************/
 /**
  * Copyright (c) 2020 THALES GLOBAL SERVICES.
