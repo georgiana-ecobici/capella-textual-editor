@@ -13,15 +13,18 @@
 package org.polarsys.capella.scenario.editor.dsl.helpers;
 
 import com.google.common.base.Objects;
+import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.xtext.xbase.lib.CollectionLiterals;
 import org.polarsys.capella.core.data.fa.ComponentExchange;
 import org.polarsys.capella.core.data.fa.FunctionalExchange;
 import org.polarsys.capella.core.data.information.AbstractEventOperation;
 import org.polarsys.capella.core.model.helpers.CapellaElementExt;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.CombinedFragment;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.Model;
+import org.polarsys.capella.scenario.editor.dsl.textualScenario.Participant;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.SequenceMessage;
 import org.polarsys.capella.scenario.editor.helper.EmbeddedEditorInstanceHelper;
 
@@ -95,5 +98,30 @@ public class TextualScenarioHelper {
       _xblockexpression = TextualScenarioHelper.getModelContainer(object.eContainer());
     }
     return _xblockexpression;
+  }
+  
+  public static EList<Participant> participantsDefinedBefore(final EObject element) {
+    if ((element instanceof Model)) {
+      return ((Model) element).getParticipants();
+    } else {
+      Object _modelContainer = TextualScenarioHelper.getModelContainer(element);
+      Model model = ((Model) _modelContainer);
+      return model.getParticipants();
+    }
+  }
+  
+  public static ArrayList<String> participantsDefinedBeforeNames(final EObject element) {
+    EList<Participant> participants = TextualScenarioHelper.participantsDefinedBefore(element);
+    ArrayList<String> participantsNames = CollectionLiterals.<String>newArrayList();
+    for (final Participant participant : participants) {
+      participantsNames.add(participant.getName());
+    }
+    return participantsNames;
+  }
+  
+  public static boolean isParticipantKeyword(final String keywordValue) {
+    ArrayList<String> participantsKeywords = CollectionLiterals.<String>newArrayList("actor", "entity", "role", "activity", "component", 
+      "configuration_item", "function");
+    return participantsKeywords.contains(keywordValue);
   }
 }

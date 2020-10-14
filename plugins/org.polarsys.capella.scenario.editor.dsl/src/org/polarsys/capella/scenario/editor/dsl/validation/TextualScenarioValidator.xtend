@@ -24,6 +24,8 @@ import org.polarsys.capella.scenario.editor.dsl.textualScenario.Function
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.StateFragment
 import org.polarsys.capella.scenario.editor.helper.DslConstants
 import org.polarsys.capella.scenario.editor.dsl.helpers.TextualScenarioHelper
+import org.polarsys.capella.scenario.editor.dsl.textualScenario.CombinedFragment
+import org.polarsys.capella.scenario.editor.dsl.textualScenario.Operand
 
 /**
  * This class contains custom validation rules. 
@@ -63,6 +65,27 @@ class TextualScenarioValidator extends AbstractTextualScenarioValidator {
 		}
 	}
 	
+		
+	/*
+	 * Check that the source and the target of the sequence messages type are defined in text, before using them in the message 
+	 */
+	@Check
+	def checkParticipantsInvolvedExist(SequenceMessageType message) {
+		var participantsDefined = TextualScenarioHelper.participantsDefinedBeforeNames(message);
+		if (!participantsDefined.contains(message.source)) {
+			error(
+				'Source participant not defined in text',
+				TextualScenarioPackage.Literals.SEQUENCE_MESSAGE_TYPE__SOURCE
+			)
+		}
+		if (!participantsDefined.contains(message.target)) {
+			error(
+				'Target participant not defined in text',
+				TextualScenarioPackage.Literals.SEQUENCE_MESSAGE_TYPE__TARGET
+			)
+		}
+	}
+	
 	/*
 	 * check that a CE (component exchange) and an FE (functional exchange) are not used in the same place
 	 */
@@ -94,7 +117,7 @@ class TextualScenarioValidator extends AbstractTextualScenarioValidator {
 		for (p : model.participants) {
 			if (!names.add(getParticipantsMapKey(p))) {
 				error(
-					'Multiple participants with the same name',
+					'Duplicated participant',
 					TextualScenarioPackage.Literals.MODEL__PARTICIPANTS,
 					index,
 					DUPILCATED_NAME
@@ -117,7 +140,7 @@ class TextualScenarioValidator extends AbstractTextualScenarioValidator {
 			if (p instanceof SequenceMessageType) {
 				if (!names.add(getMessagesMapKey(p))) {
 					error(
-						'Multiple messages with the same name',
+						'Duplicated message! Another message with same source, target, exchange already defined',
 						TextualScenarioPackage.Literals.MODEL__ELEMENTS,
 						index,
 						DUPILCATED_MESSAGES_NAME
@@ -173,7 +196,7 @@ class TextualScenarioValidator extends AbstractTextualScenarioValidator {
 		}
 
 		if (!EmbeddedEditorInstanceHelper.checkValidTimeline(fragment.timeline)) {
-			error(String.format("Timeline is not present in diagram", fragment.keyword),
+			error(String.format("Timeline not present in diagram", fragment.keyword),
 				TextualScenarioPackage.Literals.STATE_FRAGMENT__TIMELINE)
 			return
 		}
@@ -243,6 +266,95 @@ class TextualScenarioValidator extends AbstractTextualScenarioValidator {
 			)
 		}
 	}
+	
+	/*
+	 * Expression shall not be empty
+	 */
+	@Check
+	def checkCombinedFragmentEmptyExpression(CombinedFragment combinedFragment) {
+		if (combinedFragment.expression == null || combinedFragment.expression.isEmpty) {
+			error(
+				'Expression can not be empty',
+				TextualScenarioPackage.Literals.COMBINED_FRAGMENT__EXPRESSION
+			)
+		}
+	}
+
+	/*
+	 * Expression shall not be empty
+	 */
+	@Check
+	def checkOperandEmptyExpression(Operand operand) {
+		if (operand.expression == null || operand.expression.isEmpty) {
+			error(
+				'Expression can not be empty',
+				TextualScenarioPackage.Literals.OPERAND__EXPRESSION
+			)
+		}
+	}
+
+	/*
+	 * Else keyword shall be put on a combined fragment that is ALT
+	 */
+	@Check
+	def checkElseKeyworkAvailable(Operand operand) {
+		if (operand.eContainer instanceof CombinedFragment) {
+			var combinedFragment = operand.eContainer as CombinedFragment
+			if (combinedFragment.keyword == 'alt' && !combinedFragment.operands.isEmpty) {
+				if (operand.keyword != 'else') {
+					error(
+						'Expected \'else\' keyword',
+						TextualScenarioPackage.Literals.OPERAND__KEYWORD
+					)
+				}
+			}
+		}
+	}
+
+	/*
+	 * No keyword shall be put on a combined fragment that is not ALT
+	 */
+	@Check
+	def checkKeyworkNotAvailable(Operand operand) {
+		if (operand.eContainer instanceof CombinedFragment) {
+			var combinedFragment = operand.eContainer as CombinedFragment
+			if (combinedFragment.keyword != 'alt' && !combinedFragment.operands.isEmpty) {
+				if (operand.keyword != null || !operand.keyword.isEmpty) {
+					error(
+						'Unexpected keyword',
+						TextualScenarioPackage.Literals.OPERAND__KEYWORD
+					)
+				}
+			}
+		}
+	}
+
+	/*
+	 * No keyword shall be put on a combined fragment that is not ALT
+	 */
+	@Check
+	def checkCombinedFragmentOnValidTimelines(CombinedFragment combinedFragment) {
+		var undefinedTimelines = "";
+		var unexistingTimelines = "";
+		var participantsDefined = TextualScenarioHelper.participantsDefinedBeforeNames(combinedFragment);
+		for (timeline : combinedFragment.timelines) {
+			if (!participantsDefined.contains(timeline)) {
+				undefinedTimelines += " " + timeline;
+			}
+			if (!EmbeddedEditorInstanceHelper.checkValidTimeline(timeline)) {
+				unexistingTimelines += " " + timeline;
+			}
+		}
+		if (!undefinedTimelines.isEmpty) {
+			error('Timelines not defined in text:' + undefinedTimelines,
+				TextualScenarioPackage.eINSTANCE.getCombinedFragment_Timelines())
+		}
+		if (!unexistingTimelines.isEmpty) {
+			error('Timelines not present in diagram:' + unexistingTimelines,
+				TextualScenarioPackage.eINSTANCE.getCombinedFragment_Timelines())
+		}
+	}
+
 
 	def getParticipantsMapKey(Participant p) {
 		p.name + ":" + p.keyword

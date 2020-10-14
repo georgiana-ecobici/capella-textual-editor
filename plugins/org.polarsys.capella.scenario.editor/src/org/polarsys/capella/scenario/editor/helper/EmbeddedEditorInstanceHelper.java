@@ -314,9 +314,6 @@ public class EmbeddedEditorInstanceHelper {
     Scenario currentScenario = EmbeddedEditorInstance.getAssociatedScenarioDiagram();
     BlockArchitecture blockArchitecture = BlockArchitectureExt.getRootBlockArchitecture(currentScenario);
 
-    if (keyword.equals("withExecution") || keyword.equals("deactivate")) {
-      return true;
-    }
     if (currentScenario.getKind() == ScenarioKind.INTERACTION) {
       if (ScenarioExt.isFunctionalScenario(currentScenario)) {
         return keyword.equals(DslConstants.ACTIVITY);

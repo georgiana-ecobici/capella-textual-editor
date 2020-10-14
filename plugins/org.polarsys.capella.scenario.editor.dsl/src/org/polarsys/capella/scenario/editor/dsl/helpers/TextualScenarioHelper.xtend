@@ -78,4 +78,28 @@ class TextualScenarioHelper {
 			return object as Model
 		getModelContainer(object.eContainer)	
 	}
+	
+	def static participantsDefinedBefore(EObject element) {
+		if(element instanceof Model)
+			return (element as Model).participants
+		else {
+			var model = getModelContainer(element) as Model
+			return model.participants
+		}	
+	}
+	
+	def static participantsDefinedBeforeNames(EObject element) {
+		var participants = participantsDefinedBefore(element)
+		var participantsNames = newArrayList
+		for(participant : participants) {
+			participantsNames.add(participant.name)
+		}	
+		return participantsNames
+	}
+	
+	def static isParticipantKeyword(String keywordValue) {
+		var participantsKeywords = newArrayList("actor", "entity", "role", "activity", "component",
+			"configuration_item", "function")
+		return participantsKeywords.contains(keywordValue)
+	}
 }

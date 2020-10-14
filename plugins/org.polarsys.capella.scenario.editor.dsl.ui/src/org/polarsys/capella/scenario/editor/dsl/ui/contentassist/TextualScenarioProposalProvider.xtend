@@ -35,6 +35,8 @@ import org.polarsys.capella.scenario.editor.dsl.textualScenario.DeleteMessage
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.ArmTimerMessage
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.SequenceMessageType
 import org.polarsys.capella.core.data.cs.ExchangeItemAllocation
+import org.polarsys.capella.scenario.editor.dsl.textualScenario.TextualScenarioPackage
+import org.polarsys.capella.scenario.editor.dsl.textualScenario.CombinedFragment
 
 /**
  * See https://www.eclipse.org/Xtext/documentation/304_ide_concepts.html#content-assist
@@ -47,11 +49,16 @@ class TextualScenarioProposalProvider extends AbstractTextualScenarioProposalPro
 	 */
 	override completeKeyword(Keyword keyword, ContentAssistContext contentAssistContext,
 		ICompletionProposalAcceptor acceptor) {
-		if (EmbeddedEditorInstanceHelper.checkValidKeyword(keyword.getValue())) {
+		if (TextualScenarioHelper.isParticipantKeyword(keyword.value)) {
+			if (EmbeddedEditorInstanceHelper.checkValidKeyword(keyword.getValue())) {
+				super.completeKeyword(keyword, contentAssistContext, acceptor)
+			}
+		}
+		else {
 			super.completeKeyword(keyword, contentAssistContext, acceptor)
 		}
 	}
-
+	
 	override completeActor_Name(EObject model, Assignment assignment, ContentAssistContext context,
 		ICompletionProposalAcceptor acceptor) {
 		getExistingParticipants("actor", context, acceptor)
@@ -135,7 +142,7 @@ class TextualScenarioProposalProvider extends AbstractTextualScenarioProposalPro
 
 	override completeSequenceMessage_Source(EObject model, Assignment assignment, ContentAssistContext context,
 		ICompletionProposalAcceptor acceptor) {
-		for (EObject el : variablesDefinedBefore2(model as Model)) {
+		for (EObject el : TextualScenarioHelper.participantsDefinedBefore(model)) {
 			acceptor.accept(
 				createCompletionProposal("\"" + (el as Participant).name + "\"", (el as Participant).name, null,
 					context))
@@ -148,7 +155,7 @@ class TextualScenarioProposalProvider extends AbstractTextualScenarioProposalPro
 
 	override completeSequenceMessage_Target(EObject model, Assignment assignment, ContentAssistContext context,
 		ICompletionProposalAcceptor acceptor) {
-		for (EObject el : variablesDefinedBefore3(model as SequenceMessage)) {
+		for (EObject el : TextualScenarioHelper.participantsDefinedBefore(model)) {
 			acceptor.accept(
 				createCompletionProposal("\"" + (el as Participant).name + "\"", (el as Participant).name, null,
 					context))
@@ -206,7 +213,7 @@ class TextualScenarioProposalProvider extends AbstractTextualScenarioProposalPro
 	override completeCreateMessage_Target(EObject model, Assignment assignment, ContentAssistContext context,
 		ICompletionProposalAcceptor acceptor) {
 		var source = (model as CreateMessage).getSource()
-		for (EObject el : variablesDefinedBefore3(model as CreateMessage)) {
+		for (EObject el : TextualScenarioHelper.participantsDefinedBefore(model)) {
 			if (!(el as Participant).name.equals(source)) {
 				acceptor.accept(
 					createCompletionProposal("\"" + (el as Participant).name + "\"", (el as Participant).name, null,
@@ -239,7 +246,7 @@ class TextualScenarioProposalProvider extends AbstractTextualScenarioProposalPro
 	override completeDeleteMessage_Target(EObject model, Assignment assignment, ContentAssistContext context,
 		ICompletionProposalAcceptor acceptor) {
 		var source = (model as DeleteMessage).getSource()
-		for (EObject el : variablesDefinedBefore3(model as DeleteMessage)) {
+		for (EObject el : TextualScenarioHelper.participantsDefinedBefore(model)) {
 			if (!(el as Participant).name.equals(source)) {
 				acceptor.accept(
 					createCompletionProposal("\"" + (el as Participant).name + "\"", (el as Participant).name, null,
@@ -257,8 +264,6 @@ class TextualScenarioProposalProvider extends AbstractTextualScenarioProposalPro
 		ICompletionProposalAcceptor acceptor) {
 		completeCreateDeleteMessageName(model, context, acceptor)
 	}
-	
-	
 
 	override completeArmTimerMessage_Arrow(EObject model, Assignment assignment, ContentAssistContext context,
 		ICompletionProposalAcceptor acceptor) {
@@ -269,7 +274,7 @@ class TextualScenarioProposalProvider extends AbstractTextualScenarioProposalPro
 	
 	override completeArmTimerMessage_Participant(EObject model, Assignment assignment, ContentAssistContext context,
 		ICompletionProposalAcceptor acceptor) {
-		for (EObject el : variablesDefinedBefore3(model as ArmTimerMessage)) {
+		for (EObject el : TextualScenarioHelper.participantsDefinedBefore(model)) {
 			acceptor.accept(
 				createCompletionProposal("\"" + (el as Participant).name + "\"", (el as Participant).name, null,
 					context))
@@ -280,8 +285,6 @@ class TextualScenarioProposalProvider extends AbstractTextualScenarioProposalPro
 		ICompletionProposalAcceptor acceptor) {
 		acceptor.accept(createCompletionProposal("\"Arm Timer\"", "\"Arm Timer\"", null, context))
 	}
-	
-	
 	
 	override completeArmTimerMessage_DoubleDot(EObject model, Assignment assignment, ContentAssistContext context,
 		ICompletionProposalAcceptor acceptor) {
@@ -327,6 +330,17 @@ class TextualScenarioProposalProvider extends AbstractTextualScenarioProposalPro
 		}
 
 	}
+	
+	override completeCombinedFragment_Timelines(EObject model, Assignment assignment, ContentAssistContext context,
+		ICompletionProposalAcceptor acceptor) {
+		for (EObject el : TextualScenarioHelper.participantsDefinedBefore(model)) {
+			if (!(model as CombinedFragment).timelines.contains((el as Participant).name)) {
+				acceptor.accept(
+					createCompletionProposal("\"" + (el as Participant).name + "\"", (el as Participant).name, null,
+						context))
+			}
+		}
+	}
 
 	/*
 	 * check if a message is already used in the text
@@ -342,18 +356,6 @@ class TextualScenarioProposalProvider extends AbstractTextualScenarioProposalPro
 		return false
 	}
 
-	def variablesDefinedBefore(Participant sc) {
-		return sc
-	}
-
-	def variablesDefinedBefore2(Model m) {
-		return m.participants
-	}
-
-	def variablesDefinedBefore3(EObject seq) {
-		return (seq.eContainer as Model).participants
-	}
-	
 	def completeCreateDeleteMessageName(EObject model, ContentAssistContext context, ICompletionProposalAcceptor acceptor) {
 		var message = model as SequenceMessageType
 		var exchangesAvailable = EmbeddedEditorInstanceHelper.getExchangeMessages(message.getSource, message.getTarget)
