@@ -1,15 +1,3 @@
-/*******************************************************************************
- * Copyright (c) 2020 THALES GLOBAL SERVICES.
- *  
- *  This program and the accompanying materials are made available under the
- *  terms of the Eclipse Public License 2.0 which is available at
- *  http://www.eclipse.org/legal/epl-2.0
- *  
- *  SPDX-License-Identifier: EPL-2.0
- *  
- *  Contributors:
- *       Thales - initial API and implementation
- ******************************************************************************/
 /**
  * Copyright (c) 2020 THALES GLOBAL SERVICES.
  * 
@@ -25,6 +13,7 @@
 package org.polarsys.capella.scenario.editor.dsl.validation;
 
 import com.google.common.base.Objects;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -33,8 +22,10 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.xtext.validation.Check;
 import org.eclipse.xtext.xbase.lib.CollectionLiterals;
 import org.polarsys.capella.scenario.editor.dsl.helpers.TextualScenarioHelper;
+import org.polarsys.capella.scenario.editor.dsl.textualScenario.CombinedFragment;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.Function;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.Model;
+import org.polarsys.capella.scenario.editor.dsl.textualScenario.Operand;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.Participant;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.ParticipantDeactivation;
 import org.polarsys.capella.scenario.editor.dsl.textualScenario.SequenceMessage;
@@ -96,6 +87,28 @@ public class TextualScenarioValidator extends AbstractTextualScenarioValidator {
   }
   
   /**
+   * Check that the source and the target of the sequence messages type are defined in text, before using them in the message
+   */
+  @Check
+  public void checkParticipantsInvolvedExist(final SequenceMessageType message) {
+    ArrayList<String> participantsDefined = TextualScenarioHelper.participantsDefinedBeforeNames(message);
+    boolean _contains = participantsDefined.contains(message.getSource());
+    boolean _not = (!_contains);
+    if (_not) {
+      this.error(
+        "Source participant not defined in text", 
+        TextualScenarioPackage.Literals.SEQUENCE_MESSAGE_TYPE__SOURCE);
+    }
+    boolean _contains_1 = participantsDefined.contains(message.getTarget());
+    boolean _not_1 = (!_contains_1);
+    if (_not_1) {
+      this.error(
+        "Target participant not defined in text", 
+        TextualScenarioPackage.Literals.SEQUENCE_MESSAGE_TYPE__TARGET);
+    }
+  }
+  
+  /**
    * check that a CE (component exchange) and an FE (functional exchange) are not used in the same place
    */
   @Check
@@ -131,7 +144,7 @@ public class TextualScenarioValidator extends AbstractTextualScenarioValidator {
         boolean _not = (!_add);
         if (_not) {
           this.error(
-            "Multiple participants with the same name", 
+            "Duplicated participant", 
             TextualScenarioPackage.Literals.MODEL__PARTICIPANTS, index, 
             TextualScenarioValidator.DUPILCATED_NAME);
         }
@@ -157,7 +170,7 @@ public class TextualScenarioValidator extends AbstractTextualScenarioValidator {
           boolean _not = (!_add);
           if (_not) {
             this.error(
-              "Multiple messages with the same name", 
+              "Duplicated message! Another message with same source, target, exchange already defined", 
               TextualScenarioPackage.Literals.MODEL__ELEMENTS, index, 
               TextualScenarioValidator.DUPILCATED_MESSAGES_NAME);
           }
@@ -209,7 +222,7 @@ public class TextualScenarioValidator extends AbstractTextualScenarioValidator {
     boolean _checkValidTimeline = EmbeddedEditorInstanceHelper.checkValidTimeline(fragment.getTimeline());
     boolean _not = (!_checkValidTimeline);
     if (_not) {
-      this.error(String.format("Timeline is not present in diagram", fragment.getKeyword()), 
+      this.error(String.format("Timeline not present in diagram", fragment.getKeyword()), 
         TextualScenarioPackage.Literals.STATE_FRAGMENT__TIMELINE);
       return;
     }
@@ -282,6 +295,109 @@ public class TextualScenarioValidator extends AbstractTextualScenarioValidator {
         "Deactivation keyword expected for a withExecution message", 
         TextualScenarioPackage.Literals.MODEL__ELEMENTS, 
         (messageWithExecutionTargetsIndex.get(i)).intValue());
+    }
+  }
+  
+  /**
+   * Expression shall not be empty
+   */
+  @Check
+  public void checkCombinedFragmentEmptyExpression(final CombinedFragment combinedFragment) {
+    if ((Objects.equal(combinedFragment.getExpression(), null) || combinedFragment.getExpression().isEmpty())) {
+      this.error(
+        "Expression can not be empty", 
+        TextualScenarioPackage.Literals.COMBINED_FRAGMENT__EXPRESSION);
+    }
+  }
+  
+  /**
+   * Expression shall not be empty
+   */
+  @Check
+  public void checkOperandEmptyExpression(final Operand operand) {
+    if ((Objects.equal(operand.getExpression(), null) || operand.getExpression().isEmpty())) {
+      this.error(
+        "Expression can not be empty", 
+        TextualScenarioPackage.Literals.OPERAND__EXPRESSION);
+    }
+  }
+  
+  /**
+   * Else keyword shall be put on a combined fragment that is ALT
+   */
+  @Check
+  public void checkElseKeyworkAvailable(final Operand operand) {
+    EObject _eContainer = operand.eContainer();
+    if ((_eContainer instanceof CombinedFragment)) {
+      EObject _eContainer_1 = operand.eContainer();
+      CombinedFragment combinedFragment = ((CombinedFragment) _eContainer_1);
+      if ((Objects.equal(combinedFragment.getKeyword(), "alt") && (!combinedFragment.getOperands().isEmpty()))) {
+        String _keyword = operand.getKeyword();
+        boolean _notEquals = (!Objects.equal(_keyword, "else"));
+        if (_notEquals) {
+          this.error(
+            "Expected \'else\' keyword", 
+            TextualScenarioPackage.Literals.OPERAND__KEYWORD);
+        }
+      }
+    }
+  }
+  
+  /**
+   * No keyword shall be put on a combined fragment that is not ALT
+   */
+  @Check
+  public void checkKeyworkNotAvailable(final Operand operand) {
+    EObject _eContainer = operand.eContainer();
+    if ((_eContainer instanceof CombinedFragment)) {
+      EObject _eContainer_1 = operand.eContainer();
+      CombinedFragment combinedFragment = ((CombinedFragment) _eContainer_1);
+      if (((!Objects.equal(combinedFragment.getKeyword(), "alt")) && (!combinedFragment.getOperands().isEmpty()))) {
+        if (((!Objects.equal(operand.getKeyword(), null)) || (!operand.getKeyword().isEmpty()))) {
+          this.error(
+            "Unexpected keyword", 
+            TextualScenarioPackage.Literals.OPERAND__KEYWORD);
+        }
+      }
+    }
+  }
+  
+  /**
+   * Check that the combine fragments is allocated on valid timelines
+   */
+  @Check
+  public void checkCombinedFragmentOnValidTimelines(final CombinedFragment combinedFragment) {
+    String undefinedTimelines = "";
+    String unexistingTimelines = "";
+    ArrayList<String> participantsDefined = TextualScenarioHelper.participantsDefinedBeforeNames(combinedFragment);
+    EList<String> _timelines = combinedFragment.getTimelines();
+    for (final String timeline : _timelines) {
+      {
+        boolean _checkValidTimeline = EmbeddedEditorInstanceHelper.checkValidTimeline(timeline);
+        boolean _not = (!_checkValidTimeline);
+        if (_not) {
+          String _unexistingTimelines = unexistingTimelines;
+          unexistingTimelines = (_unexistingTimelines + (" " + timeline));
+        }
+        boolean _contains = participantsDefined.contains(timeline);
+        boolean _not_1 = (!_contains);
+        if (_not_1) {
+          String _undefinedTimelines = undefinedTimelines;
+          undefinedTimelines = (_undefinedTimelines + (" " + timeline));
+        }
+      }
+    }
+    boolean _isEmpty = unexistingTimelines.isEmpty();
+    boolean _not = (!_isEmpty);
+    if (_not) {
+      this.error(("Timelines not present in diagram:" + unexistingTimelines), 
+        TextualScenarioPackage.eINSTANCE.getCombinedFragment_Timelines());
+    }
+    boolean _isEmpty_1 = undefinedTimelines.isEmpty();
+    boolean _not_1 = (!_isEmpty_1);
+    if (_not_1) {
+      this.error(("Timelines not defined in text:" + undefinedTimelines), 
+        TextualScenarioPackage.eINSTANCE.getCombinedFragment_Timelines());
     }
   }
   
